@@ -292,12 +292,6 @@ provides:
       file: "commands/speckit.secrets.md"
       description: "Secret content tracker: map achievements, hidden content, easter eggs. Verify all secrets are discoverable, reachable, and properly documented."
     - type: "script"
-      name: "export"
-      file: "scripts/python/export.py"
-      description: "Export script: Twee 3/Sugarcube emitter, Ink emitter, Tier 1 hook translation layer, compatibility warnings for unsupported hooks."
-      language: "python"
-      requires: []
-    - type: "script"
       name: "compile"
       file: "scripts/python/compile.py"
       description: "Compilation script: Converts drafted node files to engine-specific output (Twine/SugarCube HTML, Ink, Ren'py, etc.). Handles mechanic hook translation, variable export, built-in structural validation."
