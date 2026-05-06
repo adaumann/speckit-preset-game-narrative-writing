@@ -91,6 +91,9 @@ This preset requires the following tools installed on your system:
    cd my-interactive-game
    specify init --preset game-narrative-writing
    ```
+from local repo (alternative)
+specify preset add --dev <localrepo>
+
 
 3. **(Optional) Install optional compilers**:
    ```powershell
