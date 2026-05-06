@@ -1,0 +1,60 @@
+{
+  "name": "Game RPG Narrative Writing Preset",
+  "description": "Tabletop RPG campaign design with mechanics-driven narrative structure. Supports D&D 5e, PBTA, FATE, and Blades in the Dark.",
+  "version": "1.0.0",
+  "author": "Spec Kit Community",
+  "license": "MIT",
+  "repository": "https://github.com/speckit-io/speckit-preset-game-narrative-writing",
+  "systems": [
+    {
+      "name": "D&D 5e",
+      "description": "Complete templates for 15-session D&D 5e campaigns with mechanics integration",
+      "templates": [
+        "spec-d5e.md",
+        "constitution-d5e.md",
+        "plan-d5e.md",
+        "variables-d5e.md",
+        "mechanics-d5e.md",
+        "endings-d5e.md"
+      ]
+    },
+    {
+      "name": "PBTA",
+      "description": "Powered by the Apocalypse mechanics patterns",
+      "templates": []
+    },
+    {
+      "name": "FATE",
+      "description": "FATE System with Aspects and Challenges",
+      "templates": []
+    },
+    {
+      "name": "Blades in the Dark",
+      "description": "Blades in the Dark faction and crew mechanics",
+      "templates": []
+    }
+  ],
+  "features": [
+    "Companion system with approval tracking",
+    "Faction reputation mechanics",
+    "Skill check system with DC scaling",
+    "Encounter CR scaling and XP awards",
+    "Seven ending paths with lock timing",
+    "RPG-specific validation tools",
+    "Campaign theme support (8 themes for D&D 5e)",
+    "Export to Ink or SugarCube engines"
+  ],
+  "keywords": [
+    "rpg",
+    "dnd",
+    "campaign",
+    "d&d-5e",
+    "pbta",
+    "fate",
+    "blades-in-the-dark",
+    "narrative",
+    "mechanics",
+    "tabletop",
+    "game-design"
+  ]
+}

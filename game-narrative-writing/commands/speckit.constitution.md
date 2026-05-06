@@ -65,6 +65,31 @@ Optional flags:
    **Interactive mode** (if `spec.md` is absent or incomplete):
    Work through each field in order, gathering values from user input or direct questions:
 
+   - **Template selection** (FIRST QUESTION): Ask user to start with a template or custom:
+     > "Would you like to start from a template or build custom?
+     > 
+     > **RPG Rule Sets:**
+     > (1) **d5e** — D&D 5e (ability scores, DC-based skill checks)
+     > (2) **pbta** — Powered by the Apocalypse (move-based, 10+/7-9/6-)
+     > (3) **fate** — FATE Accelerated (aspects, fate points)
+     > (4) **blades-dark** — Blades in the Dark (position/effect/resistance)
+     > (5) **world-darkness** — World of Darkness (d10 pool, sanity)
+     > (6) **shadowrun-6e** — Shadowrun 6e (d6 pool system)
+     > 
+     > **Game Types:**
+     > (7) **visual-novel** — VN routes with romance/affection gates
+     > (8) **point-and-click** — Adventure game with hotspots/items
+     > (9) **detective-mystery** — Investigation with clue gathering
+     > (10) **interactive-fiction** — Text-heavy branching narrative
+     > 
+     > **Other:**
+     > (11) **custom** — Build from scratch (generic template)
+     >
+     > Choose [1-11]:"
+     - If user selects 1–10: Load the corresponding template file, populate it, and skip repetitive questions (engine, POV, tone inferred from template).
+     - If user selects 11: Proceed with interactive questioning (current flow).
+     - Store chosen template in constitution metadata: `# Template: [template_name]` at top of file.
+
    - **Engine target**: twine/sugarcube, ink, renpy, ags, escoria, unity, generic — infer from narrative design doc, ask if absent:
      > "Which engine target?
      > (a) **twine/sugarcube** — Twee 3 / Sugarcube 2 macros
