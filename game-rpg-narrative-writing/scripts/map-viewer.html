@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpecKit RPG Map Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2a5a8f 100%);
+            color: #f0f0f0;
+            display: flex;
+            min-height: 100vh;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+            padding: 20px;
+        }
+        .sidebar {
+            width: 300px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .map-container {
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .controls button, .controls label, .controls input {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        .controls button:hover {
+            background: #2563eb;
+        }
+        .controls input[type="file"] {
+            cursor: pointer;
+            padding: 8px;
+        }
+        .controls label {
+            background: #666;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .controls input[type="range"] {
+            width: 100px;
+            padding: 5px;
+        }
+        canvas {
+            flex: 1;
+            background: #1a1a2e;
+            border-radius: 4px;
+            cursor: grab;
+        }
+        canvas:active {
+            cursor: grabbing;
+        }
+        h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+        h3 {
+            font-size: 14px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: #93c5fd;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .map-info {
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .map-info p {
+            margin: 5px 0;
+        }
+        .legend {
+            font-size: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 2px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .file-item {
+            padding: 10px;
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 3px solid #3b82f6;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s ease;
+        }
+        .file-item:hover {
+            background: rgba(59, 130, 246, 0.4);
+        }
+        .file-item.active {
+            background: rgba(59, 130, 246, 0.6);
+            border-left-color: #60a5fa;
+        }
+        .token {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .token-tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            color: #60a5fa;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1000;
+            border: 1px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Map Viewer</h2>
+            
+            <div>
+                <label for="file-input">Load Map (JSON):</label>
+                <input type="file" id="file-input" accept=".json" style="width: 100%; margin-top: 8px;">
+            </div>
+
+            <div style="margin-top: 15px;">
+                <h3>Recent Maps</h3>
+                <div class="file-list" id="file-list">
+                    <p style="font-size: 12px; color: #888;">No maps loaded yet</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;" id="map-info-container">
+                <h3>Map Info</h3>
+                <div class="map-info" id="map-info">
+                    <p style="color: #888;">Load a map to see details</p>
+                </div>
+            </div>
+
+            <div id="legend-container" style="display: none;">
+                <h3>Terrain Legend</h3>
+                <div class="legend" id="legend"></div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="map-container">
+                <div class="controls">
+                    <button onclick="resetView()">Reset View</button>
+                    <label>Zoom: <input type="range" id="zoom-slider" min="0.5" max="3" step="0.1" value="1" onchange="updateZoom(this.value)"></label>
+                    <label>Grid: <input type="checkbox" id="grid-toggle" checked onchange="redrawMap()"></label>
+                    <label>Tokens: <input type="checkbox" id="tokens-toggle" checked onchange="redrawMap()"></label>
+                    <button onclick="exportImage()">Export as PNG</button>
+                </div>
+                <canvas id="map-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('map-canvas');
+        const ctx = canvas.getContext('2d');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        
+        let currentMap = null;
+        let loadedMaps = {};
+        let zoom = 1;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+        
+        // Terrain colors
+        const terrainColors = {
+            grass: '#3a8c42',
+            water: '#2563eb',
+            stone: '#8b8b8b',
+            tree: '#2d5016',
+            wall: '#5a5a5a',
+            door: '#c4a747',
+            trap: '#ff6b6b',
+            treasure: '#ffd700',
+            default: '#444444'
+        };
+
+        // Resize canvas
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width - 40;
+            canvas.height = rect.height - 100;
+            redrawMap();
+        }
+
+        // Load map from file
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const map = JSON.parse(event.target.result);
+                        loadedMaps[file.name] = map;
+                        currentMap = map;
+                        updateFileList();
+                        updateMapInfo();
+                        resetView();
+                    } catch (error) {
+                        alert('Error parsing JSON: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function updateFileList() {
+            const files = Object.keys(loadedMaps);
+            if (files.length === 0) {
+                fileList.innerHTML = '<p style="font-size: 12px; color: #888;">No maps loaded yet</p>';
+                return;
+            }
+            fileList.innerHTML = files.map(name => 
+                `<div class="file-item ${currentMap && loadedMaps[name] === currentMap ? 'active' : ''}" onclick="switchMap('${name}')">${name}</div>`
+            ).join('');
+        }
+
+        function switchMap(name) {
+            currentMap = loadedMaps[name];
+            updateFileList();
+            updateMapInfo();
+            resetView();
+        }
+
+        function updateMapInfo() {
+            if (!currentMap) {
+                document.getElementById('map-info').innerHTML = '<p style="color: #888;">Load a map to see details</p>';
+                return;
+            }
+
+            const html = `
+                <p><strong>${currentMap.name || 'Unnamed Map'}</strong></p>
+                <p>Type: ${currentMap.type || 'Unknown'}</p>
+                <p>Session: ${currentMap.session || 'N/A'}</p>
+                <p>Size: ${currentMap.width}×${currentMap.height}</p>
+                <p>Scale: ${currentMap.scale || '5ft'}</p>
+                ${currentMap.encounters ? `<p>Encounters: ${currentMap.encounters.join(', ')}` : ''}
+                ${currentMap.notes ? `<p><em>${currentMap.notes}</em></p>` : ''}
+            `;
+            document.getElementById('map-info').innerHTML = html;
+
+            // Update legend
+            const terrainTypes = new Set();
+            if (currentMap.tiles) {
+                currentMap.tiles.forEach(tile => {
+                    if (tile.type) terrainTypes.add(tile.type);
+                });
+            }
+
+            if (terrainTypes.size > 0) {
+                const legendHtml = Array.from(terrainTypes).map(type => `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: ${terrainColors[type] || terrainColors.default};"></div>
+                        <span>${type}</span>
+                    </div>
+                `).join('');
+                document.getElementById('legend').innerHTML = legendHtml;
+                document.getElementById('legend-container').style.display = 'block';
+            }
+        }
+
+        function resetView() {
+            zoom = 1;
+            panX = 0;
+            panY = 0;
+            document.getElementById('zoom-slider').value = 1;
+            redrawMap();
+        }
+
+        function updateZoom(value) {
+            zoom = parseFloat(value);
+            redrawMap();
+        }
+
+        function redrawMap() {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (!currentMap) {
+                ctx.fillStyle = '#888';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Load a map to begin', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            ctx.save();
+            ctx.translate(canvas.width / 2 + panX, canvas.height / 2 + panY);
+            ctx.scale(zoom, zoom);
+            ctx.translate(-currentMap.width * 5, -currentMap.height * 5);
+
+            const showGrid = document.getElementById('grid-toggle').checked;
+            const showTokens = document.getElementById('tokens-toggle').checked;
+
+            // Draw grid
+            if (showGrid) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.lineWidth = 0.5;
+                for (let x = 0; x <= currentMap.width; x++) {
+                    ctx.beginPath();
+                    ctx.moveTo(x * 10, 0);
+                    ctx.lineTo(x * 10, currentMap.height * 10);
+                    ctx.stroke();
+                }
+                for (let y = 0; y <= currentMap.height; y++) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y * 10);
+                    ctx.lineTo(currentMap.width * 10, y * 10);
+                    ctx.stroke();
+                }
+            }
+
+            // Draw tiles
+            if (currentMap.tiles) {
+                currentMap.tiles.forEach(tile => {
+                    const x = tile.x * 10;
+                    const y = tile.y * 10;
+                    ctx.fillStyle = terrainColors[tile.type] || terrainColors.default;
+                    ctx.fillRect(x, y, 10, 10);
+                    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeRect(x, y, 10, 10);
+                });
+            }
+
+            // Draw tokens
+            if (showTokens && currentMap.tokens) {
+                currentMap.tokens.forEach(token => {
+                    const x = token.x * 10 + 5;
+                    const y = token.y * 10 + 5;
+                    
+                    // Token circle
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Token border
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // Token label
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 6px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(token.name ? token.name.substring(0, 3) : 'T', x, y);
+                });
+            }
+
+            ctx.restore();
+        }
+
+        function exportImage() {
+            if (!currentMap) {
+                alert('Load a map first');
+                return;
+            }
+
+            const exportCanvas = document.createElement('canvas');
+            exportCanvas.width = currentMap.width * 10 + 20;
+            exportCanvas.height = currentMap.height * 10 + 20;
+            const exportCtx = exportCanvas.getContext('2d');
+
+            exportCtx.fillStyle = '#1a1a2e';
+            exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+            exportCtx.translate(10, 10);
+
+            // Draw grid
+            exportCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            exportCtx.lineWidth = 0.5;
+            for (let x = 0; x <= currentMap.width; x++) {
+                exportCtx.beginPath();
+                exportCtx.moveTo(x * 10, 0);
+                exportCtx.lineTo(x * 10, currentMap.height * 10);
+                exportCtx.stroke();
+            }
+            for (let y = 0; y <= currentMap.height; y++) {
+                exportCtx.beginPath();
+                exportCtx.moveTo(0, y * 10);
+                exportCtx.lineTo(currentMap.width * 10, y * 10);
+                exportCtx.stroke();
+            }
+
+            // Draw tiles
+            if (currentMap.tiles) {
+                currentMap.tiles.forEach(tile => {
+                    exportCtx.fillStyle = terrainColors[tile.type] || terrainColors.default;
+                    exportCtx.fillRect(tile.x * 10, tile.y * 10, 10, 10);
+                });
+            }
+
+            // Draw tokens
+            if (currentMap.tokens) {
+                currentMap.tokens.forEach(token => {
+                    const x = token.x * 10 + 5;
+                    const y = token.y * 10 + 5;
+                    exportCtx.fillStyle = '#e74c3c';
+                    exportCtx.beginPath();
+                    exportCtx.arc(x, y, 4, 0, Math.PI * 2);
+                    exportCtx.fill();
+                });
+            }
+
+            // Download
+            const link = document.createElement('a');
+            link.href = exportCanvas.toDataURL('image/png');
+            link.download = `${currentMap.name || 'map'}.png`;
+            link.click();
+        }
+
+        // Mouse controls
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            dragStart = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                panX += e.clientX - dragStart.x;
+                panY += e.clientY - dragStart.y;
+                dragStart = { x: e.clientX, y: e.clientY };
+                redrawMap();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            zoom *= delta;
+            zoom = Math.max(0.5, Math.min(3, zoom));
+            document.getElementById('zoom-slider').value = zoom;
+            redrawMap();
+        });
+
+        // Initial setup
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
+</body>
+</html>

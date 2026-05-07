@@ -65,16 +65,48 @@ Optional flags:
    **Interactive mode** (if `spec.md` is absent or incomplete):
    Work through each field in order, gathering values from user input or direct questions:
 
-   - **Engine target**: twine/sugarcube, ink, renpy, ags, escoria, unity, generic — infer from narrative design doc, ask if absent:
+   - **RPG Ruleset**: applicable only for RPG narrative-writing preset. Ask early:
+     > "Which RPG ruleset is this campaign using?
+     > (a) **D&D 5e** — Dungeons & Dragons 5th Edition (default; templates ready)
+     > (b) **Pathfinder 2e** — Pathfinder 2nd Edition (planned)
+     > (c) **Shadowrun 6e** — Shadowrun 6th Edition (planned)
+     > (d) **Other/Generic** — System-neutral (uses base templates)
+     > 
+     > Your selection loads ruleset-specific templates for mechanics, planning, and node outlines."
+     - Store as `[RULESET]` in YAML frontmatter. Default: `D&D 5e`
+
+   - **Genre**: derive from narrative design doc or playtest feedback; ask if absent:
+     > "What is the primary genre for this campaign?
+     > (a) **Fantasy** — Swords, sorcery, medieval-inspired settings
+     > (b) **Sci-Fi** — Futuristic technology, space, advanced science
+     > (c) **Horror** — Cosmic dread, supernatural threats, survival
+     > (d) **Cyberpunk** — High-tech dystopia, corporate intrigue, netrunning
+     > (e) **Urban Fantasy** — Modern world with hidden magical elements
+     > (f) **Steampunk** — Steam-powered technology, industrial fantasy
+     > (g) **Post-Apocalyptic** — Survival after civilization collapse
+     > (h) **Historical** — Grounded in real historical period
+     > (i) **Mixed/Custom** — Blend or custom genre"
+     - Store as `[GENRE]` in YAML frontmatter.
+
+   - **Target Platform**: applicable only for RPG narrative-writing preset. Ask early:
+     > "Is this campaign for tabletop or computer game?
+     > (a) **Tabletop** — Dungeons Master/Game Master runs live sessions with players
+     > (b) **Computer Game** — Single/multiplayer video game implementation
+     > 
+     > Tabletop exports as Markdown only (no Ink). Computer game allows Ink, Sugarcube, or generic formats."
+     - Store as `[PLATFORM]` in YAML frontmatter. Default: `Tabletop`
+     - **If Tabletop**: auto-exclude `ink` from export engines; set `export_engines: [generic, sugarcube]` (Sugarcube for browser-based tabletop tools, generic for fallback)
+     - **If Computer Game**: allow full export range per engine target selection
+
+   - **Engine target**: generic, sugarcube, ink, yarn-spinner — infer from narrative design doc, ask if absent:
      > "Which engine target?
-     > (a) **twine/sugarcube** — Twee 3 / Sugarcube 2 macros
-     > (b) **ink** — Inkle's scripting language
-     > (c) **renpy** — Python-based visual novel engine (work in progress)
-     > (d) **ags** — Adventure Game Studio script (work in progress)
-     > (e) **escoria** — Godot-based point-and-click (.esc) (work in progress)
-     > (f) **unity** — C# stubs / Yarn Spinner format
-     (work in progress)
-     > (g) **generic** — Annotated Markdown (engine-agnostic prose with hook blocks)"
+     > (a) **generic** — Annotated Markdown (engine-agnostic prose with hook blocks; universal fallback)
+     > (b) **sugarcube** — Twee 3 / Sugarcube 2 macros (browser-based, good for web RPGs and tabletop tools)
+     > (c) **ink** — Inkle's scripting language (dialogue-heavy computer games, Unity, Unreal, Godot, other)
+     > (d) **yarn-spinner** — Yarn Spinner dialogue system (dialogue scripting for Unity/Godot RPGs)
+     > (e) **Multiple** — Select multiple engines to export to"
+     - **If Platform is Tabletop and `ink` is selected**: warn — "Ink is not recommended for tabletop campaigns. Suggest generic or sugarcube instead. Proceed anyway? (y/n)"
+     - **If Platform is Tabletop and `yarn-spinner` is selected**: warn — "Yarn Spinner is best for computer games. Tabletop campaigns typically use generic or sugarcube."
 
    - **Player perspective**: derive from narrative design doc; ask if absent:
      > "What is the player character's perspective?
@@ -124,7 +156,30 @@ Optional flags:
      > "What language is this game written in? (e.g. en, de, fr, es, it, pt, nl, ja, zh, fi, hu, tr)"
 
    - **`[STUDIO_NAME]`** / **`[AUTHOR_NAME]`** � publishing credit. Ask if not set.
-
+   - **[MAP_CONFIGURATION]** (NEW for RPG campaigns):
+     > "Does this campaign need maps?
+     > (a) **Yes** — I need battle maps, regional maps, or location maps
+     > (b) **No** — Maps not needed
+     >
+     > If YES: What format?
+     > (i) **JSON** — Structured map data for Foundry VTT, asset layers, or automation
+     > (ii) **Hex Grid** — Hexagonal battle maps (Foundry VTT, Roll20)
+     > (iii) **Asset Layers** — For computer game level layouts
+     > (iv) **Image Files** — PNG/SVG (Inkscape or similar)
+     >
+     > Map scale (for battle maps):
+     > • **5ft** (D&D 5e, Pathfinder standard)
+     > • **10ft** (larger encounters, fewer tiles)
+     > • **Custom** (specify your grid size)
+     >
+     > Player-facing maps?
+     > (y/n) Generate simplified handout versions for players?
+     >
+     > Your choice populates:
+     > - constitution.md § IX (Map Configuration)
+     > - plan.md § [MAP INVENTORY] (maps needed per session)
+     > - compile.md validation (map file format checks)"
+     - Store as `[MAP_FORMAT]`, `[MAP_SCALE]`, `[PLAYER_MAPS_NEEDED]` in YAML frontmatter
    - **`[COPYRIGHT]`** � ask the user to choose a format or enter custom text:
      > "Which copyright notice?
      > (a) � [YEAR] [STUDIO_NAME]. All rights reserved.
@@ -140,23 +195,38 @@ Optional flags:
 3. **Configure constitution.md**:
 
    **MANDATORY � read the template first**:
-   - Read the file `.specify/presets/game-narrative-writing/templates/constitution-template.md` in full before writing anything.
-   - The output MUST reproduce every section heading, table, and placeholder from that file � populated with the values gathered above.
-   - Do **NOT** use `.specify/templates/constitution-template.md` � that is the generic software-development template and is wrong for this project.
-   - Do **NOT** invent a structure from memory or training data. Use only the structure from the file you just read.
+   - **Ruleset-specific template selection**: Based on `[RULESET]` value, select the appropriate template:
+     - If `[RULESET]` is "D&D 5e" → read `templates/constitution-d5e.md`
+     - If `[RULESET]` is "Pathfinder 2e" → read `templates/constitution-pf2e.md` (if available; fallback to generic)
+     - If `[RULESET]` is "Shadowrun 6e" → read `templates/constitution-shadowrun.md` (if available; fallback to generic)
+     - If `[RULESET]` is "Other/Generic" → read `templates/constitution-template.md`
+   - The output MUST reproduce every section heading, table, and placeholder from the selected template – populated with the values gathered above.
+   - Do **NOT** use `.specify/templates/constitution-template.md` – that is the generic software-development template and is wrong for this project.
+   - Do **NOT** invent a structure from memory or training data. Use only the structure from the file you just selected.
+
+   **YAML frontmatter updates**:
+   - Add new fields before all existing fields:
+     - `ruleset: "[RULESET]"` (e.g., "D&D 5e")
+     - `genre: "[GENRE]"` (e.g., "Fantasy")
+     - `platform: "[PLATFORM]"` (e.g., "Tabletop" or "Computer Game")
+   - **Adjust export_engines** based on `[PLATFORM]`:
+     - If `[PLATFORM]` is "Tabletop": set `export_engines: [generic, sugarcube]` (exclude ink)
+     - If `[PLATFORM]` is "Computer Game": allow full selection (ink permitted)
 
    Populate all engine target, POV, language, and version fields
    - Active Mechanics Table: list every hook type the project uses, with Tier (1/2) and config notes
-     - Use `templates/mechanics-template.md` as the base for `specs/mechanics.md` � copy the relevant Tier 1 hook sections for the hooks listed in the Active Mechanics Table; leave Tier 2 stubs for any hooks declared but not Tier 1
-   - Inventory config: capacity limit, item list, weight system
-   - Timer config: type (turns/seconds), precision, failure condition
-   - Attribute/currency config: names, ranges, starting values
+     - **For D&D 5e specifically**: if `mechanics-d5e.md` exists, use it as the base; otherwise use `mechanics-template.md`
+     - Use `templates/mechanics-[RULESET_ABBREV].md` or `templates/mechanics-template.md` as the base for `specs/mechanics.md` – copy the relevant Tier 1 hook sections for the hooks listed in the Active Mechanics Table; leave Tier 2 stubs for any hooks declared but not Tier 1
+   - Inventory config: capacity limit, item list, weight system (if applicable to ruleset)
+   - Timer config: type (turns/seconds), precision, failure condition (if applicable)
+   - Attribute/currency config: names, ranges, starting values (per ruleset defaults)
    - Craft rules: confirm universal node rules (NR-001�NR-009) apply; add project-specific rules
      - NR-009: Choices must use export format `- [Label](NODE_ID) <!-- condition -->` under `## Choices` heading (required by `export.py` parse_choices())
    - Prose style rules: derive from narrative design doc tone + style mode selection
    - NPC voice guidelines: project-specific notes on dialogue consistency
    - Prohibited phrases: project-specific clichés or banned constructions
    - Content policy: based on target audience / rating
+   - **Ruleset-specific sections** (e.g., for D&D 5e: Campaign Themes table, Encounter Balance notes, NPC types per theme)
 
 3b. **Generate `.specify/memory/craft-rules.md`**:
    - Copy `templates/craft-rules-template.md`
@@ -166,7 +236,13 @@ Optional flags:
    - Write the result to `.specify/memory/craft-rules.md`
    - Emit: `✓ craft-rules.md written — loaded automatically by speckit.implement, speckit.checklist, speckit.continuity.`
 
-3c. **RAG Index System** – ask after node count is known:
+3c. **Load ruleset-specific supporting files** (if applicable):
+   - **For D&D 5e**: after constitution is written, auto-populate `specs/` with:
+     - `specs/mechanics-d5e.md` (copy from `templates/mechanics-d5e.md`)
+     - Flag that `specs/plan-d5e.md`, `specs/implement-d5e.md`, `specs/verify-d5e.md` templates are available
+   - **For other rulesets**: note in terminal that ruleset-specific mechanics are not yet available; user may copy generic mechanics-template.md manually
+
+3d. **RAG Index System** – ask after node count is known:
 
    Determine approximate node count. Compare against 150 nodes to form the recommendation label.
 
@@ -236,13 +312,16 @@ Optional flags:
    - Warn if Active Mechanics Table contains Tier 2 hooks: "Tier 2 hooks will export as stubs. Confirm this is acceptable."
 
 8. **Validate the final constitution**:
-   - No unresolved `[NEEDS CLARIFICATION]` tokens remain
-   - `[STUDIO_NAME]` or `[AUTHOR_NAME]` is set � warn if absent
+   - No unresolved `[NEEDS CLARIFICATION]` tokens remain   - **RPG-specific fields** (new validation):
+     - `[RULESET]` is set to one of: "D&D 5e", "Pathfinder 2e", "Shadowrun 6e", "Other/Generic"
+     - `[GENRE]` is set to one of: "Fantasy", "Sci-Fi", "Horror", "Cyberpunk", "Urban Fantasy", "Steampunk", "Post-Apocalyptic", "Historical", "Mixed/Custom"
+     - `[PLATFORM]` is set to one of: "Tabletop", "Computer Game"
+     - If `[PLATFORM]` is "Tabletop" and `ink` is in `export_engines`: warn — "Ink excluded from export for tabletop campaigns"   - `[STUDIO_NAME]` or `[AUTHOR_NAME]` is set � warn if absent
    - `[LANGUAGE]` is a valid BCP-47 code � warn if absent, default will be `en`
    - `[COPYRIGHT]` is set or explicitly skipped � info note if absent: `?? Copyright not set � dc:rights will be omitted from exports`
    - `[TONE]` is one of the 5 supported values
    - `[TARGET_AUDIENCE]` is one of the 5 supported values
-   - `[ENGINE_TARGET]` is one or more of: `generic`, `sugarcube`, `ink`, `renpy`, `ags`, `escoria`, `unity`
+   - `[ENGINE_TARGET]` is one or more of: `generic`, `sugarcube`, `ink`, `yarn-spinner`
    - If `humanized-ai` mode: `[PROSE_PROFILE]` is one of: `dialogue-heavy`, `environmental`, `action-forward`, `atmospheric`, `minimalist`
    - If `author-sample` mode: all 8 Extracted Style Markers have values
    - `[PLAYER_PERSPECTIVE]` is one of: `second-person`, `third-person`, `first-person`, `switching`

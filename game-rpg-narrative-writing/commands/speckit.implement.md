@@ -35,6 +35,13 @@ Accepted arguments:
 
 ## Pre-Execution Checks
 
+**Extract Platform & Ruleset** (auto-detect RPG context):
+- Read `.specify/memory/constitution.md` YAML frontmatter and extract `[PLATFORM]` and `[RULESET]`
+- If `[PLATFORM]` = "Tabletop": Set `SESSION.is_rpg = "tabletop"` and load Tabletop prose model
+- If `[PLATFORM]` = "Computer Game": Set `SESSION.is_rpg = "computer"` and load Computer Game prose model
+- If neither detected: Set `SESSION.is_rpg = false` (generic prose model)
+- Store `SESSION.platform` and `SESSION.ruleset` for conditional prose generation and validation
+
 **Check for extension hooks (before drafting)**:
 - Check if `.specify/extensions.yml` exists in the project root
 - If it exists, read it and look for entries under the `hooks.before_implement` key
@@ -47,6 +54,7 @@ Then:
 4. Confirm `specs/[FEATURE_DIR]/variables.md` exists — hooks declared in outlines must resolve
 5. Confirm `specs/[FEATURE_DIR]/characters.md` exists — dialogue and NPC references must resolve
 6. Confirm `specs/[FEATURE_DIR]/constitution.md` exists — prose_profile and engine settings needed
+7. **If RPG detected**: Confirm `specs/[FEATURE_DIR]/mechanics-[ruleset].md` exists — skill checks, approval gates, faction reps must resolve
 
 ## Execution Steps
 
@@ -54,7 +62,7 @@ Then:
 
 For each target node, load:
 - **Required**: Outline file `outlines/[NODE_ID].md` (Beat Summary, Variables, Choices, Mechanic Hooks)
-- **Required**: `constitution.md` (prose_profile, default POV, tone, style_mode)
+- **Required**: `constitution.md` (prose_profile, default POV, tone, style_mode, platform, ruleset)
 - **Required**: `spec.md` (research notes, world rules, context)
 - **Required**: `variables.md` (variable declarations for type checking)
 - **Required**: `characters.md` (NPC profiles, dialogue registers, relationship states)
@@ -63,6 +71,10 @@ For each target node, load:
 - **Optional**: `glossary.md` (for consistent terminology in prose)
 - **Optional**: `locations.md` (for sensory anchors and location-specific rules)
 - **Optional**: `themes.md` (for thematic resonance and motif placement)
+- **Optional**: `player-classes.md` (RPG tabletop & computer: player character classes, abilities, starting gear)
+- **RPG-Only**: `mechanics-[ruleset].md` (skill DC ranges, approval thresholds, faction reps, Tabletop session structure)
+- **Tabletop-Only**: `quests.md`, `npc-roster.md` (quest context, NPC stat blocks if any)
+- **Computer Game-Only**: `npc-roster.md`, `locations.md` (playstyle routing hints, difficulty scaling)
 
 ### 2. Parse Outline Choices & Consequences
 
@@ -192,6 +204,7 @@ Before marking node as ready:
 
 ### 8. Output Format
 
+**Generic/Computer Game**:
 Create `draft/[ENGINE_NAME]/[NODE_ID].md` (engine-agnostic markdown):
 
 ```markdown
@@ -218,20 +231,68 @@ outline_ref: outlines/[NODE_ID].md
 - [Label](NODE_TARGET) <!-- Effect: consequence from outline -->
 ```
 
+**Tabletop RPG**:
+Create `draft/SESSION-[N]/[NODE_ID].md` with **GM Notes** section at top:
+
+```markdown
+---
+node_id: NODE-001
+title: [Title from outline]
+session: [N]
+status: DRAFT
+pov: [POV]
+encounter_type: [Combat CR-X / Social / Investigation / Exploration]
+variables_read: [list]
+variables_set: [list]
+drafted: [YYYY-MM-DD]
+outline_ref: outlines/[NODE_ID].md
+---
+
+# [Node Title]
+
+## GM Notes [TABLETOP]
+
+**Session**: Session [N] | **Duration**: ~[minutes] | **Difficulty**: [Easy/Medium/Hard]
+**NPCs Present**: [NPC], [NPC]
+**Encounter**: [Type CR-X]
+**Key Variables**: [var1], [var2]
+
+<!-- Node ID: NODE_ID | Session: [N] | Status: DRAFT -->
+
+[PROSE WITH INLINE MECHANICS AND SKILL CHECKS]
+
+## Choices
+
+- [Label](NODE_TARGET) <!-- Effect: consequence -->
+```
+
 ### 9. Report
 
+**Generic/Computer Game**:
 List all drafted nodes with:
 - `[NODE_ID] [title] — [N] vars, [N] hooks, [N] choices, act [N]`
 
+**Tabletop RPG** (if first-time setup):
+List all generated documents:
+- ✅ `draft/campaign-guide.md` — Campaign overview + player introduction
+- ✅ `draft/SESSION-0-BRIEFING.md` — Session 0 (character creation) briefing
+- [NODE_ID] [title] — [N] vars, [N] hooks, [N] choices, session [N]
+- (repeat per drafted node)
+
+**All Modes**:
 Flag any:
 - Missing consequence comments in Choices section
 - Undeclared variables
 - Outline deviations (new choices, variables, or mechanics not in outline)
+- (RPG-specific warnings from Quality Checklist above)
 
 Remind the author to:
+- ✅ **Tabletop**: Share `campaign-guide.md` with players before first session
 - Review prose for coherence and tone
 - Verify all consequences are documented as comments in Choices section
 - Check that all outlined mechanics are present
+- **Tabletop**: Verify GM Notes section has session #, NPCs, encounter type
+- **Computer**: Verify playstyle routes and difficulty scaling documented
 - Change `status: DRAFT` → `status: APPROVED` when satisfied
 - Run `speckit.export` to convert to engine-specific format
 
@@ -241,120 +302,736 @@ Check `hooks.after_implement`: run if present.
 
 ---
 
-## Key Principle: Preserve Outline Fidelity
+## Key Principles: Outline Fidelity + RPG Awareness
 
 **The implement phase must NOT:**
 - Add new choices not in the outline
 - Remove outlined choices
 - Change choice targets
-- **Forget the narrative consequences** ← This is the common mistake
+- Forget narrative consequences (bridge between mechanics and story)
+- Skip GM Notes for Tabletop (session context, NPCs, encounter type)
+- Miss playstyle routing for Computer Game (all playstyles equally viable)
+- Omit skill check success/failure narration for any RPG
+- Lose ending gate implications in Choices section
 
 ---
 
-## RPG-Specific Implementation (--mode rpg)
+## Platform-Specific Implementation Summary
 
-**When activated**: If `--mode rpg` or `constitution.md` declares `game_system: "d5e"` (or other RPG system), populate these additional narrative elements:
+**Tabletop RPG**:
+1. Auto-generate `campaign-guide.md` + `SESSION-0-BRIEFING.md` on first run
+2. Include GM Notes (session #, NPCs, encounter type, skill checks) in each node
+3. Narrate skill checks with explicit success/failure outcomes (system-appropriate DCs)
+4. Use NPC names from `npc-roster.md`; show companion approval & faction rep changes
+5. Validate: CRs match party level, combat is foreshadowed, session pacing realistic
+6. Flag: CR misalignment, unjustified combat, pacing overruns
+
+**Computer Game RPG**:
+1. Document playstyle routes (all three paths reach same story beat)
+2. Include difficulty scaling (Easy/Normal/Hard variant descriptions)
+3. Narrate skill checks with branch outcomes (success leads to NODE-X, failure to NODE-Y)
+4. Mark accessibility features (colorblind mode, audio cues, timer adjustments)
+5. Validate: All playstyles viable, difficulty is scalable, no difficulty locks, accessibility complete
+6. Flag: Playstyle imbalance, difficulty locks, missing accessibility
+
+---
+
+## Check for Extension Hooks
+
+Check `hooks.after_implement`: run if present.
+
+## Tabletop RPG Campaign Prep (AUTO-GENERATED FOR FIRST SESSION)
+
+**Activated when**: `SESSION.is_rpg == "tabletop"` AND no `draft/campaign-guide.md` exists (first-time setup)
+
+**Generate Campaign Guide** (`draft/campaign-guide.md`):
+
+This document introduces the campaign to players before Session 1. Contents:
+
+### Section 1: Campaign Overview
+- **Campaign Name**: From `constitution.md`
+- **Setting**: From `spec.md` world-building section
+- **Tone & Expectations**: From `constitution.md` (e.g., "Heroic, high-stakes adventure with moments of levity")
+- **Campaign Length**: "Estimated [N] sessions, [level] to [level]" (from `spec.md` party progression)
+- **Playstyle**: "Focus on [combat/roleplay/exploration/intrigue]" (from `constitution.md` emphasis)
+- **Content Warnings**: From `constitution.md` if present
+
+### Section 2: House Rules & Mechanical Notes
+- System: "[D&D 5e / Pathfinder 2e / Shadowrun 6e / Custom]" (from `constitution.md`)
+- **Core Rule Mods**: Key divergences from base system (from `mechanics-[ruleset].md` Section II)
+- **Skill Check Difficulty**: "DC 10-12 for common challenges, up to 18+ for legendary deeds" (from `mechanics-[ruleset].md`)
+- **Combat Pacing**: "Expect [2-4] combat encounters per session of [2-4] hours" (from `spec.md`)
+- **Death & Character Loss**: How is character death handled? (from `constitution.md`)
+- **Downtime Between Sessions**: Any gold/crafting/rest mechanics? (from `spec.md` if applicable)
+
+### Section 3: Party Composition & Level
+- **Recommended Party Size**: [N] players, [level] characters (from `spec.md`)
+- **Recommended Classes/Multiclass**: Any restrictions or encouragements? (from `spec.md`)
+- **Starting Level**: [Level] (from `spec.md` / first node level gate)
+- **Ending Level**: [Level] (from `spec.md` final boss/ending gates)
+
+### Section 4: NPCs & Factions (Quick Reference)
+
+| NPC Name | Role | Faction | How They React to PCs |
+|---|---|---|---|
+| [NPC1] | [Quest-giver / Companion / Antagonist] | [Faction] | [Brief personality] |
+
+(From `npc-roster.md` Section I, pick top 5-7 NPCs)
+
+### Section 5: Companion System (if applicable)
+- **Companion Recruitment**: Approval gates, how companions join (from `spec.md` companion design)
+- **Companion Fates**: Possible outcomes for recruited companions (from `endings.md` if tied to endings)
+- **Romance Routes**: Approval thresholds for romance (if applicable, from `spec.md`)
+
+### Section 6: Campaign Questions (What Will You Discover?)
+- Q1: [Central dramatic question from `spec.md` Section I]
+- Q2: [Major mystery or conflict from `spec.md` Section II]
+- Q3: [Personal stakes - how does this affect the party? from `spec.md`]
+
+### Section 7: What's Expected of You (Player Contract)
+- Attendance/scheduling expectations
+- Communication (how to contact GM)
+- In-character vs. out-of-character tone
+- Consent & lines (if any content is off-limits)
+
+---
+
+**Generate Campaign Summary** (minimal, ~200 words for session prep):
+- Store as `draft/SESSION-0-BRIEFING.md` for Session 0 (character creation session)
+- Used by GM to set tone and answer player questions before first play session
+
+---
+
+## Player Character Creation Implementation (Tabletop RPG)
+
+**Activated when**: `SESSION.is_rpg == "tabletop"` AND no `draft/SESSION-0-CHARACTER-SHEET.md` exists (first-time setup)
+
+Generates player-facing character sheet template and character creation walkthrough.
+
+### Generate Character Sheet Template
+
+Create `draft/SESSION-0-CHARACTER-SHEET.md` with sections:
+
+#### D&D 5e Character Sheet
+
+```markdown
+# Character Sheet [D&D 5e]
+
+## Basics
+- **Name**: _________________
+- **Class**: _________________  **Level**: _____
+- **Race**: _________________  **Background**: _________________
+- **Alignment**: _________________
+
+## Ability Scores
+
+| Ability | Score | Modifier | Saving Throw |
+|---------|-------|----------|--------------|
+| Strength | ___ | ___ | ___ |
+| Dexterity | ___ | ___ | ___ |
+| Constitution | ___ | ___ | ___ |
+| Intelligence | ___ | ___ | ___ |
+| Wisdom | ___ | ___ | ___ |
+| Charisma | ___ | ___ | ___ |
+
+## Skills & Proficiencies
+
+**Proficiency Bonus**: +___ (Level ÷ 4, rounded up)
+
+| Skill | Ability | Proficient? | Modifier |
+|-------|---------|-------------|----------|
+| Acrobatics | DEX | ☐ | ___ |
+| Animal Handling | WIS | ☐ | ___ |
+| Arcana | INT | ☐ | ___ |
+| Athletics | STR | ☐ | ___ |
+| Deception | CHA | ☐ | ___ |
+| History | INT | ☐ | ___ |
+| Insight | WIS | ☐ | ___ |
+| Intimidation | CHA | ☐ | ___ |
+| Investigation | INT | ☐ | ___ |
+| Medicine | WIS | ☐ | ___ |
+| Nature | INT | ☐ | ___ |
+| Perception | WIS | ☐ | ___ |
+| Performance | CHA | ☐ | ___ |
+| Persuasion | CHA | ☐ | ___ |
+| Religion | INT | ☐ | ___ |
+| Sleight of Hand | DEX | ☐ | ___ |
+| Stealth | DEX | ☐ | ___ |
+| Survival | WIS | ☐ | ___ |
+
+## Hit Points & AC
+- **Hit Dice**: [CLASS] d[DICE]
+- **HP**: ___ / ___
+- **AC**: ___ (from armor/class)
+- **Initiative**: +___ (DEX modifier)
+
+## Equipment & Resources
+- **Armor**: _________________
+- **Weapon 1**: _________________ (damage: ___ + ___)
+- **Weapon 2**: _________________ (damage: ___ + ___)
+- **Backpack Items**: ________________________
+- **Gold**: ___ GP
+```
+
+#### Pathfinder 2e Character Sheet
+
+```markdown
+# Character Sheet [Pathfinder 2e]
+
+## Basics
+- **Name**: _________________
+- **Ancestry**: _________________  **Heritage**: _________________
+- **Background**: _________________
+- **Class**: _________________  **Level**: ___
+- **Deity/Cause**: _________________
+
+## Ability Scores
+
+| Ability | Score | Modifier | Spell DC | Class DC |
+|---------|-------|----------|----------|----------|
+| Strength | ___ | ___ | — | — |
+| Dexterity | ___ | ___ | — | — |
+| Constitution | ___ | ___ | — | — |
+| Intelligence | ___ | ___ | — | — |
+| Wisdom | ___ | ___ | — | — |
+| Charisma | ___ | ___ | — | — |
+
+## Skills (Proficiency: Untrained / Trained / Expert / Master / Legendary)
+
+| Skill | Ability | Proficiency | Modifier |
+|-------|---------|-------------|----------|
+| Acrobatics | DEX | ___ | ___ |
+| Arcana | INT | ___ | ___ |
+| Athletics | STR | ___ | ___ |
+| Crafting | INT | ___ | ___ |
+| Deception | CHA | ___ | ___ |
+| Diplomacy | CHA | ___ | ___ |
+| Intimidation | CHA | ___ | ___ |
+| Lore: ________________ | INT | ___ | ___ |
+| Medicine | WIS | ___ | ___ |
+| Nature | WIS | ___ | ___ |
+| Occultism | INT | ___ | ___ |
+| Performance | CHA | ___ | ___ |
+| Religion | WIS | ___ | ___ |
+| Society | INT | ___ | ___ |
+| Stealth | DEX | ___ | ___ |
+| Survival | WIS | ___ | ___ |
+| Thievery | DEX | ___ | ___ |
+
+## Combat
+- **HP**: ___ / ___
+- **AC**: ___ (Armor + DEX cap + [CLASS] bonuses)
+- **Armor**: _________________  (**Armor Bonus**: +___, **Check Penalty**: ___)
+- **Fortitude**: ___ | **Reflex**: ___ | **Will**: ___
+- **Initiative**: +___ (DEX modifier)
+- **Hero Points**: ___
+
+## Class Features & Feats
+- [ANCESTRY FEAT]: _________________
+- [1st LEVEL FEAT]: _________________
+- [CLASS FEATURE]: _________________
+
+## Spells (if applicable)
+- **Focus Points**: ___ / ___
+- **Cantrips**: _________________
+- **1st Level Spells**: _________________
+```
+
+#### Shadowrun 6e Character Sheet
+
+```markdown
+# Character Sheet [Shadowrun 6e]
+
+## Basics
+- **Name**: _________________
+- **Metatype**: _________________  **Archetype**: _________________
+- **Street Name**: _________________
+
+## Attributes (Rating 1-6)
+
+| Attribute | Rating | Modifier |
+|-----------|--------|----------|
+| Body (BOD) | ___ | +___ |
+| Agility (AGI) | ___ | +___ |
+| Reaction (RXN) | ___ | +___ |
+| Strength (STR) | ___ | +___ |
+| Willpower (WIL) | ___ | +___ |
+| Logic (LOG) | ___ | +___ |
+| Intuition (INT) | ___ | +___ |
+| Charisma (CHA) | ___ | +___ |
+
+## Special Attributes
+- **Essence**: ___ / 6  (1 per cybernetic implant)
+- **Edge**: ___ (Metatype base + bonuses)
+- **Magic / Resonance**: ___ (if applicable)
+
+## Skills (Rating 1-12)
+
+| Skill | Attribute | Rating | Specialization | Dice Pool |
+|-------|-----------|--------|-----------------|-----------|
+| Firearms | AGI | ___ | __________ | ___ |
+| Piloting: Vehicles | RXN | ___ | __________ | ___ |
+| Hacking | LOG | ___ | __________ | ___ |
+| Spellcasting | MAG | ___ | __________ | ___ |
+| Summoning | MAG | ___ | __________ | ___ |
+| Stealth | AGI | ___ | __________ | ___ |
+| Athletics | STR | ___ | __________ | ___ |
+| Perception | INT | ___ | __________ | ___ |
+| Negotiation | CHA | ___ | __________ | ___ |
+| | | | | |
+
+## Combat
+- **Initiative**: RXN + INT + modifiers = ___
+- **Armor Valor**: ___ (base) + ___ (cybernetics) = ___
+- **HP**: 8 + (2 × BOD) = ___
+- **Drones / Vehicles**: _________________
+
+## Cybernetics & Augmentations
+- _________________  (Cost: ___ Essence)
+- _________________  (Cost: ___ Essence)
+
+## Resources & Gear
+- **Nuyen (¥)**: _________________
+- **Primary Weapon**: _________________  (Damage: ___)
+- **Backup Weapon**: _________________  (Damage: ___)
+- **Armor**: _________________
+- **Gear**: _________________
+```
+
+### Generate Character Creation Tutorial
+
+Create `draft/SESSION-0-CREATION-GUIDE.md` with step-by-step instructions:
+
+#### For D&D 5e:
+
+```markdown
+# Character Creation Guide [D&D 5e]
+
+## Step 1: Choose Race
+- Pick from available races
+- Note race-based ability modifiers
+- Add racial traits & special abilities
+
+## Step 2: Choose Class
+- Pick from available classes
+- Note class hit dice & armor proficiencies
+- Select class features at 1st level
+
+## Step 3: Assign Ability Scores
+Method: [Standard Array / Point Buy / Roll 4d6]
+
+Standard Array: 8, 10, 12, 13, 14, 15
+- Assign each score to one ability
+- Apply racial modifiers (final scores: 3-18)
+
+Recommended Priority for [CLASS]:
+1. [Primary] (target 15-17 with racial bonus)
+2. [Secondary] (target 13-15)
+3. Constitution (target 13+, essential for HP)
+
+## Step 4: Calculate Modifiers
+- Take each ability score
+- Subtract 10
+- Divide by 2 (round down)
+- This is your modifier
+
+## Step 5: Record Saving Throws
+- For each ability where your class has proficiency, add your Proficiency Bonus to the modifier
+
+## Step 6: Select Skills (Proficiency Bonus Depends on Level)
+- Choose [CLASS-SPECIFIC COUNT] skills to be proficient in
+- Add Proficiency Bonus to those skill checks
+
+## Step 7: Choose Equipment & Background
+- Pick starting equipment package for your class, OR
+- Select individual items (with GM approval)
+- Choose a background (gain 2 additional skill proficiencies)
+
+## Step 8: Calculate Final Numbers
+- HP: [CLASS_HD] + CON modifier (minimum 1)
+- AC: 10 + DEX modifier (or armor + DEX cap)
+- Initiative: DEX modifier
+- Proficiency Bonus: +2 (1st level)
+
+## Step 9: Create Details
+- Personality traits
+- Ideals
+- Bonds
+- Flaws
+```
+
+#### For Pathfinder 2e:
+
+```markdown
+# Character Creation Guide [Pathfinder 2e]
+
+## Step 1: Choose Ancestry & Heritage
+- Pick ancestry (Human, Dwarf, Elf, etc.)
+- Apply ancestry ability bonuses (+2 to two abilities, -2 to one if applicable)
+- Choose heritage for additional benefits
+
+## Step 2: Choose Background
+- Grants 2 trained skills
+- Usually provides narrative context
+
+## Step 3: Choose Class
+- Records trained & expert skills from class
+- Tracks class features & feats
+
+## Step 4: Allocate Ability Scores
+All abilities start at 10. Make 4 ability boosts:
+- Boost 2 abilities by +2 each (priority: your class's main attributes)
+- Boost 1 ability by +2, gain +8 HP (alternative boost)
+
+Final scores usually range 8-18.
+
+## Step 5: Record Skills
+- Trained (from background + class): +3 + ability modifier
+- Expert (from class): +6 + ability modifier
+- Untrained: +0 + ability modifier
+
+## Step 6: Calculate Defenses & HP
+- HP: [CLASS_BASE] + 8 + (CON modifier × Level)
+- AC: 10 + DEX modifier + armor bonus (capped)
+- Fortitude: CON modifier + [CLASS bonuses]
+- Reflex: DEX modifier + [CLASS bonuses]
+- Will: WIS modifier + [CLASS bonuses]
+
+## Step 7: Select Feats & Abilities
+- 1st-level ancestry feat
+- 1st-level class feat
+- 1st-level general feat
+
+## Step 8: Spellcasting (if applicable)
+- Record spells & focus points
+- Note spell attack/save DCs
+
+## Step 9: Finalize Equipment & Resources
+- Starting wealth: [depends on background]
+- Acquire armor, weapons, adventuring gear
+- Establish relationships with other PCs
+```
+
+#### For Shadowrun 6e:
+
+```markdown
+# Character Creation Guide [Shadowrun 6e]
+
+## Step 1: Choose Metatype & Archetype
+- Metatype: Human, Elf, Dwarf, Orc, Troll
+- Archetype: Street Samurai, Rigger, Decker, Shaman, Sorcerer, Face, Physad
+
+## Step 2: Distribute Priorities
+Allocate 5 priorities across categories (A=best, E=worst):
+
+- **Metatype**: A (Troll/Orc power) → E (Human flexibility)
+- **Attributes**: A (start 4 in each) → E (start 2 in each)
+- **Magic / Resonance**: A (full magic) → E (no magic)
+- **Skills**: A (36 points) → E (10 points)
+- **Resources**: A (450,000¥) → E (50,000¥)
+
+## Step 3: Set Attributes
+Base each attribute at 1. Distribute priority points:
+- A: +2 to each (start at 4)
+- B: +1 to six attributes, +2 to two attributes
+- C: +1 to four attributes, +2 to one
+- D: +1 to three attributes
+- E: (remain at 2)
+
+Record modifiers for each (Rating - 1).
+
+## Step 4: Select Magic (if not E Priority)
+- Mages: Record spells, drain resistance
+- Shamans: Select spirit type, summoning
+- Adepts: Select powers, power points
+- No magic: Skip this step
+
+## Step 5: Distribute Skill Points
+Allocate points from priority:
+- A: 36 points (max 6 per skill)
+- B: 25 points
+- C: 16 points
+- D: 10 points
+- E: 6 points
+
+Choose specializations (+2 to specific skill applications).
+
+## Step 6: Calculate Derived Attributes
+- Initiative: RXN + INT (+ mods)
+- Armor Rating: base + cybernetics
+- HP: 8 + (2 × BOD)
+- Essence: 6.0 (reduced by cybernetics)
+
+## Step 7: Select Cybernetics (Resources Priority)
+- Street Samurai: cyberware for combat (datajack, reaction enhancer, weapon mount)
+- Rigger: vehicle modifications (vehicle control rig)
+- Decker: cyberdeck & hacking programs
+- Mage: none recommended (essence cost reduces magic)
+- Others: situational augmentations
+
+Each point of Essence reduces Magic/Resonance by 0.2.
+
+## Step 8: Acquire Gear & Weapons
+- Resources A: Premium gear, vehicle
+- Resources B: Good gear, advanced weapon
+- Resources C: Standard gear, reliable weapon
+- Resources D: Basic gear, budget weapon
+- Resources E: Minimal gear, improvised weapon
+
+## Step 9: Calculate Dice Pools
+For each skill: Attribute + Skill + specialization (if applicable) = total dice pool
+- Success: 1+ hits on d6 rolls (5-6 = hit)
+- Glitch: 2+ ones rolled (critical failure if all ones)
+```
+
+### Generate Starting Equipment & Resources
+
+Create `draft/SESSION-0-EQUIPMENT-CHECKLIST.md` with:
+
+- Class-specific starting equipment packages
+- Suggested gear for first session
+- Resource allocation by priority/class
+- Carry capacity & weight limits
+
+### Validate Character Build Consistency
+
+Verify:
+- ✓ All ability scores within valid range for ruleset
+- ✓ All skills use correct ability modifiers
+- ✓ Proficiency bonuses applied correctly
+- ✓ HP calculated correctly (class hit die + CON mod)
+- ✓ AC calculated correctly (armor + DEX cap or class-specific)
+- ✓ Spellcasting (if applicable) has correct DC calculations
+- ✓ Special abilities match class features (no contradictions)
+- ✓ Starting equipment is within budget constraints
+- ✓ (Shadowrun 6e): Essence total ≥ 0 after cybernetics
+
+---
+
+**Auto-activated when**: `SESSION.is_rpg == true` (either "tabletop" or "computer")
 
 ### RPG Prose Requirements
 
-**Skill Check Narration**:
-- Every skill check must have explicit success/failure outcomes in prose
-- Success text: Explain what the character learns/gains
-- Failure text: Explain what goes wrong or what they miss
+**TABLETOP RPG Node Context** (Session-Based):
 
-Example:
+At the top of each drafted node, include **GM Notes**:
+
 ```markdown
-You study the guard captain's face carefully.
-[MECHANIC:SKILL check=insight dc=12 success_text="You notice sweat on his brow—he's nervous about something" fail_text="He gives nothing away"]
+## GM Notes [TABLETOP]
 
-[if_success]
-  The captain shifts uncomfortably, confirming your suspicion.
-[else]
-  The captain maintains his composure.
+**Session**: Session [N] | **Duration**: ~[minutes] | **Difficulty**: [Easy/Medium/Hard]
+**NPCs Present**: [NPC1] ([Class/Level]), [NPC2] ([Class/Level])
+**Encounter**: [Type: Combat CR-[X] / Social / Investigation / Puzzle / Hybrid]
+**Key Variables**: [var1], [var2], [var3]
+**Skill Checks**: [Skill DC] — Success: [outcome]; Failure: [outcome]
 ```
 
-**Companion Reaction Narration**:
-- If companion is present and approval gate applies, show their reaction
-- Include approval change in dialogue
-- Example: `[if thorne_approval >= 50] THORNE: "This is a good plan." [MECHANIC:TRUST delta=+5]`
+**Skill Check Narration** (D&D 5e example):
+```markdown
+The guard's expression is unreadable.
+
+[MECHANIC:SKILL check=insight dc=12 success_text="He's nervous" fail_text="He maintains composure"]
+
+**DC 12+ (Success)**: His jaw tightens—he's guilty.
+**DC < 12 (Failure)**: The captain's face reveals nothing.
+```
+
+**Companion Reaction** (if present):
+```markdown
+[if thorne_approval >= 50]
+  THORNE: "This is a good plan." [MECHANIC:TRUST npc=thorne delta=+5]
+[elif thorne_approval >= 0]
+  THORNE: "I'll follow your lead."
+[else]
+  THORNE: "I can't support this." [MECHANIC:TRUST npc=thorne delta=-5]
+```
 
 **Faction Reputation Announcement**:
-- After choice that affects reputation, include explicit announcement
-- Example: `[MECHANIC:COUNTER variable=guard_rep delta=+10] The Guard Captain nods approvingly. "We won't forget this.""`
+```markdown
+[MECHANIC:COUNTER variable=guard_faction_rep delta=+10]
+The Guard Captain nods. "You've earned our trust."
+```
+
+---
+
+**COMPUTER GAME RPG Playthrough Context** (Playstyle-Based):
+
+Each node should indicate playstyle routes:
+
+```markdown
+## Routing [COMPUTER]
+
+**Available Paths**:
+- Combat: Direct fight → [NODE-045]
+- Dialogue: Persuade → [NODE-046]
+- Exploration: Sneak → [NODE-047]
+
+**Difficulty Scaling**:
+- Easy: 2 enemies, AC 15
+- Normal: 3 enemies, AC 17
+- Hard: 4 enemies, AC 19
+```
+
+**Skill Check Consequences** (branching by success/failure):
+```markdown
+**Persuasion Check (DC 12 - Dialogue playstyle)**
+Success → [NODE-046 PERSUADE]
+Failure → [NODE-045 COMBAT]
+```
+
+**Companion Approval** (with gate):
+```markdown
+[COMPANION:THORNE approval=60]
+THORNE: "I trust you." [Approval: +5]
+```
+
+**Difficulty-Scaled Narration**:
+```markdown
+[if difficulty == hard]
+  Three guards block the passage. A fourth emerges from shadows.
+[else]
+  Two guards block the passage.
+
+[MECHANIC:ENCOUNTER difficulty_scale=1.2]
+```
+
+**Accessibility Flags**:
+```markdown
+[ACCESSIBILITY: colorblind_mode, audio_cues, timer=adjustable]
+Solve the light puzzle (Normal: 60s | Extended: 90s)
+```
+
+---
+
+**Ruleset-Specific Prose** (D&D 5e / Pathfinder 2e / Shadowrun 6e):
+
+**D&D 5e**:
+- Skill DCs 5-20 with tier labels (Easy 10-12, Hard 16-18, Very Hard 19-20)
+- Spell/ability references with proper notation
+- Magic item rarity notes (Common, Uncommon, Rare, Very Rare, Legendary)
+- Companion class/level if relevant
+
+**Pathfinder 2e**:
+- Skill DCs 10-50+ with PF2e tier language
+- Degree of Success outcomes (Crit Success / Success / Failure / Crit Fail)
+- Hero Point opportunities if available
+- Ancestry/background implications for skill checks
+
+**Shadowrun 6e**:
+- Dice pools with [Pool size: Skill + Attribute]
+- Street / Matrix / Astral routing with distinct mechanics
+- Karma / Street Cred / Edge spending opportunities
+- Glitch notation for 2+ ones rolled
+
+---
 
 ### NPC Dialogue Tags (RPG-Specific)
 
-Use consistent NPC tags for multi-NPC scenes:
+Use consistent NPC tags matching `npc-roster.md`:
 
 ```markdown
 [GUARD_CAPTAIN]:
 "You're asking the wrong questions."
 
-[if_thorne_recruited]
-  [THORNE]:
-  "Maybe we should trust him... or maybe not."
+[THORNE]:
+"Let me handle this."
+
+[BRIGAND_LEADER]:
+"Kill them now."
 ```
 
 **Validation**:
-- All NPC dialogue tags must match character names from characters-d5e.md
-- Each NPC should have distinct voice (checked against character profile)
-- Multi-character dialogue shows reactions in order (first responder, then others)
+- All NPC dialogue tags must match `npc-roster.md` names
+- Each NPC uses distinct voice from character profile
+- Multi-character scenes show reactions in sequence (primary responder, then others)
 
-### Skill Check Consequences (RPG-Specific)
-
-Generate distinct outcomes for success/failure:
-
-```markdown
-## Skill Checks
-
-### Persuasion DC 12 (Charisma)
-**Success**: Guard believes your story; allows passage. guard_rep +5
-**Failure**: Guard becomes suspicious; threatens arrest. combat_triggered = true
-
-### Insight DC 13 (Wisdom)
-**Success**: You notice guard is conflicted; can persuade or blackmail. investigation_progress +1
-**Failure**: Guard seems straightforward; you gain no new information.
-```
+---
 
 ### Ending Gate Tracking (RPG-Specific)
 
-In the Choices section, show which ending paths each choice enables:
+In Choices section, indicate ending implications:
 
 ```markdown
 ## Choices
 
-- [Help the Guard](NODE-045) 
-  <!-- Effect: Gain Guard trust; enables Just Ruler ending | guard_rep +10 | thorne_approval -5 -->
+- [Help the Guard](NODE-045)
+  <!-- Effect: Guard gains trust | guard_rep +10 | Enables: Just Ruler | Blocks: Shadow Broker -->
 
-- [Side with the Temple](NODE-046)
-  <!-- Effect: Gain Temple trust; blocks Shadow Broker ending | temple_rep +10 | guard_rep -10 -->
+- [Side with Temple](NODE-046)
+  <!-- Effect: Temple gains trust | temple_rep +10 | Enables: Sacred Path | Blocks: Secular Authority -->
 ```
 
-**Format**: `<!-- Effect: [story] | [var1] [delta] | [var2] [delta] | Ending: [enables/blocks] -->`
+**Format**: `<!-- Effect: [narrative] | [var delta...] | Enables: [ending] | Blocks: [ending] -->`
 
-### RPG Quality Checklist
+---
 
-Validate during implement:
+### RPG Quality Checklist (Platform & Ruleset-Specific)
 
+**All RPG Contexts**:
 - ✓ All skill checks have explicit success/failure narration
-- ✓ All companion approvals shown if companion is present
-- ✓ All faction reputation changes announced explicitly
-- ✓ All NPC dialogue uses correct character voice
-- ✓ All choices preserve outline targets and consequences
+- ✓ All companion approvals shown when companion present
+- ✓ All faction reputation changes announced by NPCs
+- ✓ All NPC dialogue uses correct character voice from profile
+- ✓ All choices match outline targets and consequences
 - ✓ Ending paths are clear (which choice leads where)
-- ✓ Combat triggers are justified by story (not arbitrary)
-- ✓ Treasure/loot rewards are announced and tracked
 
-### RPG-Mode Warnings
+**Tabletop-Specific**:
+- ✓ GM Notes section present with session #, duration, difficulty
+- ✓ Encounter CRs appropriate to outlined party level
+- ✓ Skill check DCs fall within system range (D&D 5e: 5-20; PF2e: 10-50+; SR6e: pool size)
+- ✓ Combat triggers are foreshadowed, not arbitrary
+- ✓ Session pacing: assumes 2-4 hours per session
 
-Flag for author review:
+**Computer Game-Specific**:
+- ✓ Playstyle routes documented (all three playstyles reach same beat)
+- ✓ Difficulty scaling variants described (Easy/Normal/Hard)
+- ✓ Accessibility features documented (colorblind, audio, motor, cognitive)
+- ✓ Dialogue branches are manageable (<10 immediate choices)
+- ✓ No difficulty locks (all content completable on all difficulties)
 
-- ⚠️ `[SKILL CHECK WITHOUT OUTCOME]` — Skill check referenced but success/failure narration missing
-- ⚠️ `[APPROVAL CHANGE NOT ANNOUNCED]` — Companion's approval changed but not shown in dialogue/narration
-- ⚠️ `[REPUTATION CHANGE NOT ANNOUNCED]` — Faction reputation changed but not acknowledged by NPCs
-- ⚠️ `[NPC VOICE INCONSISTENT]` — Character dialogue doesn't match character profile
-- ⚠️ `[CHOICE WITHOUT ENDING CONTEXT]` — Can't tell which ending path this choice enables
-- ⚠️ `[COMBAT WITHOUT SETUP]` — Combat triggered but not foreshadowed or justified
+**D&D 5e-Specific**:
+- ✓ Skill DCs in range 5-20 with clear tier language
+- ✓ Spell references accurate and mechanical implications noted
+- ✓ Magic item rarity matches party level
+- ✓ Companion class/level noted if present
+
+**Pathfinder 2e-Specific**:
+- ✓ Skill DCs in range 10-50+ per PF2e scale
+- ✓ Degree of Success outcomes documented (all four results)
+- ✓ Hero Point usage documented if available
+- ✓ Ancestry/background implications acknowledged
+
+**Shadowrun 6e-Specific**:
+- ✓ Dice pools documented with Skill + Attribute notation
+- ✓ All three routing options (Street/Matrix/Astral) genuinely available
+- ✓ Karma economy tracked (no excessive spending in single node)
+- ✓ Glitch risk noted for critical rolls
+
+---
+
+### RPG Warnings (Auto-Flagged for Author Review)
+
+**General**:
+- ⚠️ `[SKILL CHECK MISSING OUTCOME]` — Skill check present but no success/failure narration
+- ⚠️ `[APPROVAL CHANGE NOT ANNOUNCED]` — Approval delta present but NPC doesn't acknowledge
+- ⚠️ `[REPUTATION CHANGE NOT ANNOUNCED]` — Rep delta present but NPC doesn't acknowledge
+- ⚠️ `[NPC VOICE INCONSISTENT]` — Dialogue doesn't match character profile
+- ⚠️ `[CHOICE LACKS ENDING CONTEXT]` — Can't tell which ending this choice enables/blocks
+
+**Tabletop-Specific**:
+- ⚠️ `[ENCOUNTER CR MISALIGNED]` — CR doesn't match outlined party level
+- ⚠️ `[COMBAT UNJUSTIFIED]` — Combat triggered without narrative setup
+- ⚠️ `[SESSION PACING LONG]` — Node may exceed 2-4 hour session assumption
+
+**Computer Game-Specific**:
+- ⚠️ `[PLAYSTYLE UNBALANCED]` — One playstyle path takes 3× longer than others
+- ⚠️ `[DIFFICULTY LOCKS CONTENT]` — Hard mode makes story progression impossible
+- ⚠️ `[ACCESSIBILITY MISSING]` — Puzzle/timed sequence lacks accessibility features
+
+**Ruleset-Specific**:
+- ⚠️ `[DC OUT OF RANGE]` — D&D 5e DC > 20, PF2e DC < 10 or > 50+, Shadowrun pool < 2
+- ⚠️ `[DEGREE OF SUCCESS INCOMPLETE]` — PF2e skill check missing outcome for one tier
+- ⚠️ `[ROUTING NOT BALANCED]` — Shadowrun Street/Matrix/Astral routes have unequal rewards
 
 ---
 

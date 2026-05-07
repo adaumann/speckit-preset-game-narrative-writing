@@ -1,106 +1,125 @@
 # RPG Narrative Writing Preset
 
-A Spec Kit preset for designing and implementing tabletop RPG campaigns with mechanics-driven narrative structure.
+A Spec Kit preset for designing and implementing RPG campaigns—both tabletop and computer games—with flexible ruleset support and mechanics-driven narrative structure.
 
 ## Overview
 
-This preset provides comprehensive templates and validation tools for creating RPG campaigns with:
-- **Campaign structure** across multiple sessions with pacing and progression
-- **Companion system** with recruitment, approval tracking, and conditional outcomes
-- **Faction system** with reputation mechanics and ending gates
-- **Skill check system** with difficulty scaling and consequence tracking
-- **Encounter system** with CR scaling and XP awards
-- **Seven endings** with multiple path requirements and lock timing
+This preset provides comprehensive templates and validation tools for creating RPG campaigns across:
+- **Multiple rulesets**: D&D 5e (full support), Pathfinder 2e, Shadowrun 6e, and generic system-agnostic templates
+- **Multiple platforms**: Tabletop campaigns (GM-run) and computer game implementations
+- **Multiple genres**: Fantasy, Sci-Fi, Horror, Cyberpunk, Urban Fantasy, Steampunk, and more
+- **Multiple export engines**: Generic Markdown, Sugarcube (web), Ink (dialogue scripting), Yarn Spinner (Unity/Godot)
 
-## Supported Systems
+Core narrative features include:
+- **Campaign/Quest structure** with branching narrative and player agency
+- **NPC characterization** with dynamic relationships and dialogue trees
+- **World-building** with faction systems, location mechanics, and lore consistency
+- **Encounter design** with skill checks, combat pacing, and consequences
+- **Endings system** with multiple paths and variable-based locking
 
-- **D&D 5e** (primary) — Complete templates for 15-session campaigns
-- **PBTA** (Powered by the Apocalypse) — Mechanics patterns documented
-- **FATE** — Aspect-based mechanics patterns documented
-- **Blades in the Dark** — Faction and crew mechanics patterns documented
+## Supported Rulesets
 
-See [campaign-themes-by-system.md](templates/campaign-themes-by-system.md) for system-specific mechanics.
+- **D&D 5e** (primary) — Complete templates for campaign design and mechanics
+- **Pathfinder 2e** (planned) — Templates ready; mechanics pending
+- **Shadowrun 6e** (planned) — Templates ready; mechanics pending
+- **Generic/System-Agnostic** — Templates with no system-specific assumptions
+
+See [campaign-themes-by-system.md](templates/campaign-themes-by-system.md) for system-specific guidance (D&D 5e themes documented; others in development).
 
 ## Quick Start
 
-### 1. Create Campaign Spec
+### 1. Initialize Campaign Constitution
 ```bash
-speckit spec --preset game-rpg-narrative-writing --system d5e
-```
-This generates a campaign pitch with 13 sections to define your core concept, setting, party, conflict, factions, companions, and ending conditions.
-
-### 2. Define Campaign Rules (Constitution)
-The constitution template defines:
-- Ability scores and skill modifiers
-- Encounter CR scaling and XP awards
-- Companion system (3 NPCs, -100 to +100 approval)
-- Faction system (3-4 factions, -100 to +100 reputation)
-- Seven ending conditions with lock timing
-- Campaign themes (Dungeon Delving, Monster Hunt, Political Intrigue, Heist, etc.)
-
-### 3. Plan Campaign Structure (Plan)
-Structure your 15-session campaign with:
-- Session-by-session goals and encounters
-- NPC appearance timelines
-- Companion recruitment schedule
-- Faction reputation progression
-- Ending gate viability tracking
-
-### 4. Define Campaign Variables
-Declare 150+ variables including:
-- Ability scores (immutable)
-- Skill modifiers (derived)
-- Companion approval tracking
-- Faction reputation tracking
-- Plot flags and inventory items
-- NPC state and combat tracking
-
-### 5. Configure Mechanic Hooks
-Choose from 8 hook types:
-- **FLAG** — Binary story states (conspiracy_discovered)
-- **COUNTER** — Numeric values with ranges (guard_rep: -100 to 100)
-- **VISITED** — Location tracking (guard_headquarters)
-- **INVENTORY** — Quest items (evidence_ledger)
-- **TIMER** — Countdown mechanics (investigation_deadline)
-- **TRUST** — NPC approval tracking (companion_1_approval)
-- **CURRENCY** — Gold accumulation (party_gold)
-- **NPC_STATE** — NPC status (alive/dead/wounded)
-
-### 6. Generate Node Outlines
-```bash
-speckit outline --mode rpg --session 3
+speckit constitution
 ```
 
-Generates outlines with:
-- RPG beat summary and pacing breakdown
-- Skill checks with DC, ability, success/failure outcomes
-- Companion interactions with approval gates
-- Faction effects with reputation changes
-- Ending gate status showing viable paths
+You'll be prompted to select:
+1. **Ruleset** — D&D 5e (complete), Pathfinder 2e, Shadowrun 6e, or Generic
+2. **Genre** — Fantasy, Sci-Fi, Horror, Cyberpunk, Urban Fantasy, Steampunk, Post-Apocalyptic, Historical, or Mixed
+3. **Platform** — Tabletop (GM-run) or Computer Game (video game implementation)
+4. **Export Engine** — Generic Markdown, Sugarcube (web), Ink (dialogue), or Yarn Spinner (game engines)
 
-### 7. Implement Dialogue and Mechanics
+**For Tabletop:** Platform auto-excludes Ink engine; exports to generic Markdown and Sugarcube.
+**For Computer Game:** All export engines available.
+
+This generates `.specify/memory/constitution.md` with your campaign's rules and configuration.
+
+### 2. Define Campaign Spec
 ```bash
-speckit implement --mode rpg --outline node-session-3-01.md
+speckit spec
+```
+This generates `specs/spec.md` with your campaign pitch:
+- Core concept and dramatic question
+- Setting and world rules
+- Party/Protagonist overview (for computer games) or Player guidance (tabletop)
+- Key conflicts and central premise
+- Ending conditions and narrative goals
+
+### 3. Configure Campaign Mechanics and Variables
+
+**Mechanics** — Create `specs/mechanics.md` with:
+- If D&D 5e: Encounter CR scaling, skill check ranges, loot tables, companion approval ranges
+- If other ruleset: Relevant system mechanics with ranges and thresholds
+- Universal hooks: FLAG (binary states), COUNTER (numeric), VISITED (locations), INVENTORY (items), TIMER (deadlines), TRUST (NPC approval), CURRENCY (resources), NPC_STATE (conditions)
+
+**Variables** — Create `specs/variables.md` with:
+- All tracked state (NPC approval, faction reputation, plot flags, inventory)
+- Type, scope, default value, and persistence rules per export engine
+
+### 4. Create Campaign Plan
+```bash
+speckit plan
 ```
 
-Draft dialogue with:
-- Skill check narration showing what characters learn
-- Companion reactions announcing approval changes
-- Faction announcements for reputation shifts
-- Choice consequences documenting ending impact
+Generates `specs/plan.md` with your campaign structure:
+- **For Tabletop**: Session-by-session breakdown, NPC encounter timeline, skill check pacing, faction rep changes
+- **For Computer Game**: Node-based flowmap, branching outcomes, player agency gates, ending path tracking
+- Ruleset-specific mechanics integration (D&D 5e uses encounter CR balance, Shadowrun uses action economy, etc.)
 
-### 8. Validate Campaign Structure
+### 5. Create Node Outlines
 ```bash
-speckit verify --mode rpg --campaign
+speckit outline
 ```
 
-Validates:
-- Skill check DCs within 5-20 range
-- Companion approval within -100 to +100
-- Faction reputation within -100 to +100
-- 2-3 endings viable at Session 8, exactly 1 by Session 15
-- All 3 companions recruited in logical sequence
-- Skill checks balanced across abilities
+Generates node outlines from the plan with:
+- Beat summary and pacing
+- Skill checks or ability-relevant challenges (ruleset-specific)
+- NPC interactions with relationship states
+- Mechanic hooks to trigger (flags, counters, state changes)
+- Choice branching and consequence mapping
+
+### 6. Draft Nodes
+```bash
+speckit implement
+```
+
+Draft node content with:
+- Prose body (narration, dialogue, environmental description)
+- Mechanic hook blocks embedded in narrative
+- Choice list with branch targets and conditions
+- Variables read/write for state management
+
+### 7. Verify and Polish
+```bash
+speckit verify
+```
+
+Validates campaign structure:
+- All variables registered and used correctly
+- Endings reachable via at least one path
+- Mechanic hooks compatible with target export engine
+- Choices properly formatted for export
+
+### 8. Export Campaign
+```bash
+speckit compile --engine [generic|sugarcube|ink|yarn-spinner]
+```
+
+Exports narrative and mechanics to your target platform:
+- **Generic**: Annotated Markdown (universal, portable)
+- **Sugarcube**: Twee 3 / Sugarcube 2 (web-based RPG tools)
+- **Ink**: Inkle dialogue scripting (dialogue-heavy games)
+- **Yarn Spinner**: Yarn Spinner format (Unity/Godot RPGs)
 
 ## Campaign Structure
 
