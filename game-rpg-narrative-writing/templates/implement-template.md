@@ -64,6 +64,33 @@ outline_ref: outlines/[NODE_ID].md
 [OPTIONAL PROSE DESCRIBING ITEM ACQUISITION]
 [/MECHANIC]
 
+[MECHANIC:EQUIP slot=armor item=[ITEM_VARIABLE] ac_bonus=N]
+<!-- Equips armor into the armor slot; sets stat_ac_bonus to N. Item must be in inventory first. -->
+[OPTIONAL PROSE DESCRIBING DONNING THE ARMOR]
+[/MECHANIC]
+
+[MECHANIC:EQUIP slot=weapon item=[ITEM_VARIABLE] damage_bonus=N]
+<!-- Equips a weapon into the weapon slot; sets stat_damage_bonus to N. Item must be in inventory first. -->
+[OPTIONAL PROSE DESCRIBING DRAWING THE WEAPON]
+[/MECHANIC]
+
+[MECHANIC:EQUIP slot=shield item=[ITEM_VARIABLE] ac_bonus=N]
+<!-- Equips a shield; adds N to stat_ac_bonus on top of armor. -->
+[/MECHANIC]
+
+[MECHANIC:EQUIP unequip slot=weapon]
+<!-- Unequips the weapon slot; resets stat_damage_bonus to 0. -->
+
+[MECHANIC:EQUIP check slot=armor item=[ITEM_VARIABLE]]
+<!-- Conditional content shown only when that armor is in the armor slot -->
+[OPTIONAL PROSE SHOWN WHEN ARMOR IS EQUIPPED]
+[/MECHANIC]
+
+[MECHANIC:EQUIP check slot=armor ac_bonus op=gte value=N]
+<!-- Conditional content shown only when total AC bonus meets the threshold -->
+[OPTIONAL PROSE SHOWN WHEN AC BONUS QUALIFIES]
+[/MECHANIC]
+
 [MECHANIC:TRUST npc=[NPC_ID] delta=[+N or -N]]
 <!-- Adjusts trust score for an NPC. Positive = gain, negative = loss -->
 

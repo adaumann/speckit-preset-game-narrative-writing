@@ -15,7 +15,7 @@ Complete reference for the D&D 5e template system: what files exist, what they d
 templates/
 ├── Core D&D 5e Templates (Campaign-Specific)
 │   ├── spec-d5e.md                          # Campaign pitch & initialization
-│   ├── constitution-d5e.md                  # Game bible & system rules (immutable)
+│   ├── constitution-template.md             # Game bible & system rules (unified, all rulesets)
 │   ├── plan-d5e.md                          # Campaign structure (15 sessions, 290 nodes)
 │   ├── variables-d5e.md                     # State registry (~150 variables)
 │   ├── mechanics-d5e.md                     # Mechanic hooks (8 types, 40+ hooks)
@@ -44,7 +44,7 @@ templates/
 ```
 spec-d5e.md (Campaign Pitch)
     ↓ (User approves & clarifies)
-constitution-d5e.md (Game Bible)
+constitution-template.md (Game Bible)
     ↓ (Defines system rules & mechanics)
 plan-d5e.md (Campaign Structure)
     ↓ (15 sessions × ~19 nodes = 290 nodes)
@@ -94,7 +94,7 @@ party_level_range: "[5-8]"
 
 ---
 
-### 2. constitution-d5e.md — Game Bible
+### 2. constitution-template.md — Game Bible
 
 **What it is:** Complete D&D 5e system rules & campaign-specific mechanics for THIS campaign
 
@@ -319,7 +319,7 @@ Investigation theme:
 **Contains:**
 - "Syndicate Conspiracy" example showing each step:
   - spec-d5e placeholder → concrete value
-  - constitution-d5e variables → campaign ratios
+  - constitution-template.md variables → campaign ratios
   - plan-d5e → session breakdown
   - variables-d5e → faction reputation progression
   - mechanics-d5e → quest items & flags
@@ -361,17 +361,15 @@ Investigation theme:
 
 ### speckit.constitution
 **Input:** spec-d5e.md (user pitch)
-**Output:** constitution-d5e.md (selected or created)
+**Output:** constitution-template.md (generated or updated)
 **Template selection:**
-- d5e (D&D 5e) → Loads constitution-d5e.md
-- pbta (PBTA-based) → Loads constitution-pbta.md (future)
-- fate (FATE RPG) → Loads constitution-fate.md (future)
+- d5e (D&D 5e) → Populates Section XIII (D&D 5e Campaign Configuration) in constitution-template.md
+- Generic → Leaves Section XIII blank
 
 ---
 
 ### speckit.plan
-**Input:** constitution-d5e.md
-**Output:** plan-d5e.md (or updates existing)
+**Input:** constitution-template.md
 **Uses:**
 - Party level range to scale encounters
 - Campaign goal/setting for session breakdown
@@ -382,7 +380,7 @@ Investigation theme:
 ### speckit.clarify
 **Input:** spec-d5e.md (OQ-NNN unresolved questions)
 **Output:** Updated spec-d5e.md with answers
-**Example:** OQ-001: "How do players meet first companion?" → Answer filled in → constitution-d5e updated
+**Example:** OQ-001: "How do players meet first companion?" → Answer filled in → constitution-template.md updated
 
 ---
 
@@ -403,7 +401,7 @@ Investigation theme:
 **Uses:**
 - Companion approval timeline from plan-d5e.md
 - Faction reputation progression from mechanics-d5e.md
-- Character tone from constitution-d5e.md
+- Character tone from constitution-template.md
 
 ---
 
@@ -433,13 +431,13 @@ Investigation theme:
 | Template | Reads | Writes | Used By |
 |---|---|---|---|
 | spec-d5e.md | — | (user creates) | clarify, constitution |
-| constitution-d5e.md | spec-d5e.md | (framework) | plan, outline, implement |
-| plan-d5e.md | constitution-d5e.md | session structure | outline, implement, validate |
+| constitution-template.md | spec-d5e.md | (framework) | plan, outline, implement |
+| plan-d5e.md | constitution-template.md | session structure | outline, implement, validate |
 | variables-d5e.md | plan-d5e.md | state registry | outline, implement, compile |
 | mechanics-d5e.md | variables-d5e.md | hook definitions | outline, consequences, compile |
 | endings-d5e.md | mechanics-d5e.md | ending gates | consequences, compile |
-| node-outline-d5e-ink.md | constitution-d5e.md | (reference) | implement (Ink target) |
-| node-outline-d5e-sugarcube.md | constitution-d5e.md | (reference) | implement (SugarCube target) |
+| node-outline-d5e-ink.md | constitution-template.md | (reference) | implement (Ink target) |
+| node-outline-d5e-sugarcube.md | constitution-template.md | (reference) | implement (SugarCube target) |
 
 ---
 
@@ -447,13 +445,13 @@ Investigation theme:
 
 ### Option 1: Use As-Is (D&D 5e Conspiracy)
 ```
-spec-d5e.md → fill placeholders → constitution-d5e.md
+spec-d5e.md → fill placeholders → constitution-template.md
 → plan-d5e.md (auto-generated) → outline → implement
 ```
 
 ### Option 2: Modify for D&D 5e Different Theme
 ```
-spec-d5e.md (Monster Hunt) → constitution-d5e.md (updated)
+spec-d5e.md (Monster Hunt) → constitution-template.md (updated)
 → plan-d5e.md (regenerated) → mechanics-d5e.md (customized)
 → outline → implement
 ```
@@ -471,7 +469,7 @@ constitution-pbta.md (Powered by the Apocalypse)
 
 - [ ] All 7 templates present in templates/ directory
 - [ ] spec-d5e.md filled with campaign pitch
-- [ ] constitution-d5e.md instantiated (or selected from template)
+- [ ] constitution-template.md generated (via `speckit constitution`)
 - [ ] plan-d5e.md contains 15 sessions with node ranges
 - [ ] variables-d5e.md lists 130+ variables
 - [ ] mechanics-d5e.md defines 40+ hooks

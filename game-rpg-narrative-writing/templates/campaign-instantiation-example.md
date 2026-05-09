@@ -33,7 +33,7 @@ FACTION_2_NAME: "Temple of Light" (spiritual authority, infiltrated)
 FACTION_3_NAME: "Syndicate" (hidden criminal empire, secretly running city)
 ```
 
-### Step 2: Constitution Applied (constitution-d5e.md → Concrete)
+### Step 2: Constitution Applied (constitution-template.md → Concrete)
 
 **Template variable:**
 ```

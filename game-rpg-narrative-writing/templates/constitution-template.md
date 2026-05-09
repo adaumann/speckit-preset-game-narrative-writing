@@ -24,6 +24,17 @@ pov_variable: [POV_VARIABLE]
 target_audience: [TARGET_AUDIENCE]
 series_position: [standalone]
 game_bible_version: [GAME_BIBLE_VERSION]
+# RPG RULESET CONFIGURATION
+ruleset: [RULESET]
+# RULESET: D&D 5e | Pathfinder 2e | Shadowrun 6e | Generic
+platform: [PLATFORM]
+# PLATFORM: Tabletop | Computer Game
+game_system: [GAME_SYSTEM]
+campaign_type: [CAMPAIGN_TYPE]
+# CAMPAIGN_TYPE: Political Intrigue | Exploration | Combat-Heavy | Mystery | Heist | Custom
+party_level_range: [LEVEL_START]-[LEVEL_END]
+session_count: [SESSION_COUNT]
+estimated_playtime: [PLAYTIME_HOURS] hours
 # RPG MAP CONFIGURATION (if applicable)
 map_format: [json | hex | asset | none]
 map_scale: [5ft | 10ft | custom]
@@ -36,6 +47,23 @@ map_directory: specs/maps/
 
 # [GAME_TITLE] Game Bible
 <!-- Your game's governing document. This overrides all writing prompts and templates. -->
+
+---
+
+## Campaign Overview
+<!-- Populated by speckit.constitution from spec.md and user prompts.
+     For non-RPG or generic projects, leave ruleset-specific fields as [N/A]. -->
+
+**Campaign Name:** [GAME_TITLE]
+**Game System:** [GAME_SYSTEM]
+**Ruleset:** [RULESET]
+**Platform:** [PLATFORM]
+**Campaign Type:** [CAMPAIGN_TYPE]
+**Party Level Range:** [LEVEL_START] to [LEVEL_END]
+**Sessions:** [SESSION_COUNT]
+**Estimated Playtime:** [PLAYTIME_HOURS] hours
+**Tone:** [TONE]
+**Dramatic Question:** [DRAMATIC_QUESTION]
 
 ---
 
@@ -463,3 +491,163 @@ search_index:
 | Field | Series Default | This Entry | Reason |
 |---|---|---|---|
 | | | | |
+
+---
+
+## XIII. D&D 5e Campaign Configuration
+<!-- Populated by speckit.constitution when ruleset: D&D 5e.
+     Leave blank or remove this section for other rulesets. -->
+
+### Party Composition
+
+```
+Character Slot 1: [CLASS_1] (Primary Ability: [ABILITY])
+  - Race: [RACE_1] | Background: [BACKGROUND_1]
+  - Hit Points: [HP] at level [LEVEL_START] | Key Skills: [SKILLS]
+
+Character Slot 2: [CLASS_2] (Primary Ability: [ABILITY])
+  - Race: [RACE_2] | Background: [BACKGROUND_2]
+  - Hit Points: [HP] at level [LEVEL_START] | Key Skills: [SKILLS]
+
+Character Slot 3: [CLASS_3] (Primary Ability: [ABILITY])
+  - Race: [RACE_3] | Background: [BACKGROUND_3]
+  - Hit Points: [HP] at level [LEVEL_START] | Key Skills: [SKILLS]
+
+Character Slot 4: [CLASS_4] (Primary Ability: [ABILITY])
+  - Race: [RACE_4] | Background: [BACKGROUND_4]
+  - Hit Points: [HP] at level [LEVEL_START] | Key Skills: [SKILLS]
+```
+
+**Party-Wide Mechanics**
+
+```
+Party Level:        [LEVEL_START]
+Proficiency Bonus:  +2 (scales +1 per 4 levels)
+Party Gold:         [STARTING_GOLD] gp
+```
+
+---
+
+### D&D 5e Ability & Skill System
+
+**Skill Check Formula**: `d20 + Ability Modifier + (Proficiency Bonus if trained)`
+
+**DC Scale**: DC 5 Very Easy · DC 10 Easy · DC 12 Medium · DC 15 Hard · DC 18 Very Hard · DC 20 Nearly Impossible
+
+**Advantage/Disadvantage**: roll 2d20, take highest (Advantage) or lowest (Disadvantage)
+
+---
+
+### Encounter System
+
+| Difficulty | CR Range | XP Range |
+|---|---|---|
+| Trivial | CR 0–1 | 25–75 XP |
+| Easy | CR 2–3 | 75–150 XP |
+| Medium | CR 4–5 | 150–300 XP |
+| Hard | CR 6–7 | 300–500 XP |
+| Very Hard | CR 8–9 | 500–1000 XP |
+| Deadly | CR 10+ | 1000+ XP |
+
+**Level-Up Thresholds**: L2 300 XP · L3 900 XP · L4 2,700 XP · L5 6,500 XP · L6 14,000 XP · L7 23,000 XP · L8 34,000 XP
+
+---
+
+### Monsters & Encounters
+
+| Encounter Type | Purpose | Typical CR | XP Reward |
+|---|---|---|---|
+| [MONSTER_TYPE_1] | [PURPOSE] | [CR] | [XP] |
+| [MONSTER_TYPE_2] | [PURPOSE] | [CR] | [XP] |
+| [MONSTER_TYPE_3] | [PURPOSE] | [CR] | [XP] |
+
+**Monster Stat Block Template**
+
+```
+[MONSTER_NAME] (CR [N])
+  Type: [humanoid/beast/undead/etc], [size], [alignment]
+  AC: [AC]  |  HP: [HP]  |  Speed: [SPEED]
+  Actions:
+    - [ACTION_NAME]: +[BONUS] to hit, [DAMAGE] damage
+  Loot: [GOLD] gp, [ITEMS]
+  Narrative Consequence:
+    [if defeated] → [STORY_IMPACT]
+    [if escaped]  → [ALTERNATE_IMPACT]
+```
+
+---
+
+### Loot & Treasure
+
+| CR Range | Gold | Magic Items |
+|---|---|---|
+| CR 1–2 | 25–75 gp | 1 common |
+| CR 3–4 | 75–150 gp | 1 uncommon |
+| CR 5–6 | 150–300 gp | 1 rare |
+| CR 7–8 | 300–500 gp | 1–2 rare |
+| CR 9+ | 500–2000 gp | 2–3 rare |
+
+**Quest-Critical Items**
+
+| Item | Found In | Effect | Narrative Gate |
+|---|---|---|---|
+| [ITEM_NAME] | NODE-[N] | [EFFECT] | [GATE_CONDITION] |
+
+---
+
+### Companion System
+
+```
+[COMPANION_NAME]
+  - Class: [CLASS] | Alignment: [ALIGNMENT]
+  - Approval: -100 to +100
+  - Romance Gate: +[N]  |  Leaves if: approval < -[N]
+  - Ending Locked: "[ENDING_NAME]"  |  Combat Role: [ROLE]
+```
+
+**Companion Variables**: `[COMPANION]_approval`, `[COMPANION]_recruited`, `[COMPANION]_alive`, `[COMPANION]_in_party`
+
+---
+
+### Faction System
+
+| Faction | Start Rep | Ending Gate | Conflict | Notes |
+|---|---|---|---|---|
+| [FACTION_1] | [N] | >[N] unlocks [ENDING] | [FACTION_2] | [NOTES] |
+| [FACTION_2] | [N] | >[N] unlocks [ENDING] | [FACTION_1] | [NOTES] |
+
+**Reputation Changes**: +/-5 to +/-25 per encounter. Announce changes to player ("City Guard approves +5").
+
+---
+
+### D&D 5e Craft Rules
+
+| Rule ID | Rule | Scope |
+|---|---|---|
+| NR-D1 | Every non-combat node must offer at least 2 skill check options | per node |
+| NR-D2 | Skill check DCs must be transparent to players | per node |
+| NR-D3 | No illusory choices — each dialogue option must have a distinct outcome | per node |
+| NR-D4 | Companion reactions must reference their approval state explicitly | per node |
+| NR-D5 | Faction reputation changes must be announced when they occur | per node |
+| NR-D6 | Combat rewards must be explicit (XP, loot, reputation) | per encounter |
+| NR-D7 | All endings must show which companions survived and which factions are allied | per ending |
+
+| Rule ID | NPC Voice Rule | Scope |
+|---|---|---|
+| VR-D1 | NPCs must have distinct speaking patterns (formal, casual, arcane, colloquial) | per NPC |
+| VR-D2 | Antagonists must have believable motivations — not pure evil | per NPC |
+| VR-D3 | Companion dialogue must reflect current approval state (cold, neutral, warm) | per companion |
+
+---
+
+### Quick Reference Checklist (D&D 5e)
+
+Before starting campaign design:
+
+- [ ] Party composition defined (classes, races, backgrounds, starting level)
+- [ ] Campaign tone and dramatic question clarified
+- [ ] Main antagonist(s) defined with motivations
+- [ ] 2–3 factions identified with starting reputations
+- [ ] 1–3 recruitable companions sketched with approval thresholds
+- [ ] Ending conditions defined (variable requirements per ending)
+- [ ] Export engine(s) confirmed (Ink, Sugarcube, generic)

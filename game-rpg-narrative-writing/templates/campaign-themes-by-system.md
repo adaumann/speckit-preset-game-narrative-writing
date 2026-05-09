@@ -304,7 +304,7 @@ When creating a new campaign:
 
 1. **Choose your rule system** (D&D 5e, PBTA, FATE, Blades)
 2. **Choose your theme** from the recommended list
-3. **Load the appropriate constitution** (e.g., constitution-d5e.md, constitution-pbta.md)
+3. **Load the appropriate constitution** — `speckit constitution` generates `constitution.md` automatically using `constitution-template.md` (Section XIII is populated for D&D 5e)
 4. **Customize theme sections** in constitution:
    - Session structure percentages
    - Emphasized mechanics

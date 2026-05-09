@@ -39,8 +39,10 @@ Optional flags:
 1. Does a `.specify/memory/constitution.md` already exist?
    - If yes: warn — "A game bible exists. Run `speckit.specify --update` to revise the story brief; avoid contradicting approved world rules."
    - **RPG-specific**: Read the constitution to extract `[PLATFORM]` (Tabletop/Computer Game) and `[RULESET]` (D&D 5e/Pathfinder/etc.). Store these for use in section 5.
-2. Does a `specs/` directory already contain a `spec.md` in any subdirectory?
-   - If yes and `--update` not set: ask user to confirm overwrite or use `--update`.
+2. Does a `specs/` directory already contain a `spec.md` anywhere?
+   - Check both `specs/spec.md` (flat — incorrect placement from a previous failed run) and `specs/*/spec.md` (correct subdirectory placement).
+   - If either exists and `--update` not set: ask user to confirm overwrite or use `--update`.
+   - If `specs/spec.md` exists (flat): warn — "spec.md is in the wrong location. It must be inside a named subdirectory (e.g. specs/001-hollow-crown/spec.md). This run will create the correct subdirectory and write there."
 
 ## Outline
 
@@ -49,17 +51,18 @@ Optional flags:
    - Preserve setting terms and genre keywords
    - Keep it short enough to serve as a directory reference
 
-2. **Create the spec directory**:
-   - Create directory `specs/` if it does not already exist
-   - Read `.speckit/init-options.json` if it exists and check the `numberingScheme` field
-   - **Default Naming**: Scan `specs/` for existing numbered directories (format `NNN-`) and use the next sequential number (zero-padded to 3 digits). Also check current git branches for the highest number used. Use the higher of the two + 1.
-   - **Timestamp Override**: Only use `YYYYMMDD-HHMMSS` as a prefix if `numberingScheme` is explicitly `"timestamp"` or `TIMESTAMP`.
+2. **Create the spec subdirectory** (REQUIRED — never write spec.md directly into `specs/`):
+   - Ensure `specs/` exists; create it if absent.
+   - Read `.speckit/init-options.json` if it exists and check the `branch_numbering` field.
+   - **Default Naming**: Scan `specs/` for existing numbered directories (format `NNN-`) and use the next sequential number (zero-padded to 3 digits). Also check current git branches for the highest number used. Use the higher of the two + 1. If `specs/` is empty and no git branches indicate a number, use `001`.
+   - **Timestamp Override**: Only use `YYYYMMDD-HHMMSS` as a prefix if `branch_numbering` is explicitly `"timestamp"` or `TIMESTAMP`.
    - **Series naming**: if `specs/series-bible.md` already exists and this game is non-standalone, incorporate the entry number into the directory name: `specs/<prefix>-game-<N>-<short-name>/` (e.g., `specs/002-game-2-iron-veil/`). Infer N from the next empty row in `## Games in Series`, or ask the user if the table is not yet populated.
-   - Otherwise: create directory `specs/<prefix>-<short-name>/` (e.g., `specs/001-hollow-crown/`)
+   - Create directory `specs/<prefix>-<short-name>/` (e.g., `specs/001-hollow-crown/`).
+   - **CRITICAL**: The spec file MUST be written to `specs/<prefix>-<short-name>/spec.md`. Writing to `specs/spec.md` (without a subdirectory) is WRONG and must never happen.
 
 3. **Copy the game story brief template**:
    - Locate `spec-template.md` using the preset template resolution order
-   - Copy it to `specs/<prefix>-<short-name>/spec.md`
+   - Copy it to `specs/<prefix>-<short-name>/spec.md` (inside the subdirectory created in step 2)
    - **Language Rule**: The game story brief MUST be generated in English (`en`) by default, regardless of any `[LANGUAGE]` setting in the constitution.
 
 4. **Parse the concept brief** from `$ARGUMENTS` or user input:

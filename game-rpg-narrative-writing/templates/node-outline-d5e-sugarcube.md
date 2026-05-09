@@ -446,11 +446,152 @@ You reach the ending: <<print $endingType>>.
 
 ---
 
-## SugarCube vs. Ink (Key Differences)
+## 6. D&D 5e Combat Engine (`sugarcube-d5e-combat.js`)
+
+The preset ships a full JavaScript combat engine that runs D&D 5e rules inside SugarCube — no game engine required.
+
+**File**: `scripts/sugarcube-d5e-combat.js`  
+**Install**: paste the file's contents into a Twee passage tagged `[script]`:
+
+```twee
+:: D5eCombatEngine [script]
+/* paste entire sugarcube-d5e-combat.js here */
+```
+
+### What the engine calculates
+
+| Rule | Implementation |
+|---|---|
+| Initiative | `d20 + DEX mod` for party and enemy; party wins ties |
+| Attack roll | `d20 + toHitBonus` vs target AC; natural 20 = crit, natural 1 = fumble |
+| Critical hit | Damage dice doubled (bonus unchanged) |
+| Damage | Parses expressions like `"2d8+3"`; applies resistance/immunity |
+| Multiattack | Configurable per enemy (`multiattack: 2`) |
+| Saving throws | `d20 + save mod` vs DC; on-hit effects (e.g. prone) |
+| Enemy features | Triggered by HP threshold (`"hp_below_half"`) or turn start; e.g. Second Wind |
+| Morale check | Wisdom save when enemy HP ≤ 25%; failure → surrender |
+| XP & loot | Written to `$partyXP`, `$lastCombatLoot` on victory |
+| Level-up | `D5e.checkLevelUp()` compares `$partyXP` to official thresholds |
+
+### Built-in enemies
+
+`thug` · `guard` · `guard_captain` · `bandit_leader` · `cult_fanatic`
+
+Register your own:
+
+```javascript
+D5e.registerEnemy("syndicate_enforcer", {
+    name: "Syndicate Enforcer", cr: 4, xp: 1100,
+    hp: 65, ac: 17,
+    str: 18, dex: 14, con: 16, int: 11, wis: 12, cha: 10,
+    profBonus: 2, multiattack: 2,
+    attacks: [
+        { name: "Shortsword", toHitBonus: 6, damage: "1d6+4", damageType: "piercing" },
+        { name: "Hand Crossbow", toHitBonus: 6, damage: "1d6+4", damageType: "piercing" }
+    ],
+    saves: { str: 6, dex: 4, con: 5, int: 1, wis: 1, cha: 0 },
+    resistances: [], immunities: [],
+    features: [],
+    morale: 13,
+    loot: ["30 gp", "Syndicate Medallion"]
+});
+```
+
+### `<<combat>>` macro
+
+Replace the old manual `$lastCombatOutcome` setup with a single macro call:
+
+```twee
+:: NODE_016_COMBAT_TRIGGER [scene]
+<p>Combat erupts. Guard Captain Aldric draws his longsword.</p>
+
+<<combat "guard_captain" "NODE_016_COMBAT_OUTCOME">>
+```
+
+The macro runs the full combat loop and navigates to `NODE_016_COMBAT_OUTCOME`.
+
+### `<<skillcheck>>` macro
+
+Replaces the verbose inline dice roll block:
+
+```twee
+/* Before (manual) */
+<<set $insightRoll to random(1, 20)>>
+<<set $insightTotal to $insightRoll + $playerInsightMod>>
+<<if $insightTotal gte 14>>...
+
+/* After (engine) */
+<<skillcheck "Insight" $playerInsightMod 14 true>>
+<<if $lastSkillCheckSuccess>>
+  <p>Insight Check: <<print $lastSkillCheckRoll>> + <<print $playerInsightMod>> = <<print $lastSkillCheckTotal>> ✓ (DC <<print $lastSkillCheckDC>>)</p>
+  ...success prose...
+<<else>>
+  <p>Insight Check: <<print $lastSkillCheckTotal>> ✗ (DC <<print $lastSkillCheckDC>>)</p>
+  ...failure prose...
+<</if>>
+```
+
+### Outcome passage pattern
+
+```twee
+:: NODE_016_COMBAT_OUTCOME [scene]
+
+<<combatlog>>
+
+<<if $lastCombatOutcome eq "player_won">>
+  <p><<print $lastEnemyName>> falls.</p>
+  
+  <<if $lastEnemySurrendered>>
+    <p><strong>Guard Captain (gasping):</strong> "Mercy... I yield!"</p>
+  <<else>>
+    <p><strong>Guard Captain (gasping):</strong> "Finish it..."</p>
+  <</if>>
+  
+  <<if $lastCombatXP gt 0>>
+    <p>+<<print $lastCombatXP>> XP | Loot: <<print $lastCombatLoot.join(", ")>></p>
+  <</if>>
+  
+  <<run D5e.checkLevelUp()>>
+  <<if $partyLeveledUp>><p>🎉 Level up! You are now level <<print $partyNewLevel>>.</p><</if>>
+  
+  <<set $guardCaptainDefeated to true>>
+  [[Show mercy|NODE_017_WOUNDED_CAPTAIN_MERCY]]
+  [[Execute him|NODE_017_CAPTAIN_EXECUTED]]
+  [[Interrogate while vulnerable|NODE_017_INTERROGATE_WOUNDED]]
+
+<<elseif $lastCombatOutcome eq "player_lost">>
+  <p>Darkness closes in...</p>
+  <<set $partyDefeated to true>>
+  [[Game Over|GAME_OVER]]
+
+<<elseif $lastCombatOutcome eq "player_retreated">>
+  <p>You escape, but enemies pursue.</p>
+  <<set $enemiesHunting to true>>
+  [[Continue on the run|NODE_018_PURSUIT]]
+
+<</if>>
+```
+
+### Story variables consumed by the engine
+
+| Variable | Type | Purpose |
+|---|---|---|
+| `$partyLevel` | number | Used to compute proficiency bonus |
+| `$partyCurrentHP` | number | Current HP; read and written each combat |
+| `$partyMaxHP` | number | Max HP ceiling |
+| `$partyAC` | number | Party armour class |
+| `$partyXP` | number | Cumulative XP; engine adds enemy XP on win |
+| `$partyWeaponDmg` | string | Damage expression e.g. `"1d8+3"` |
+| `$playerStrMod` / `$playerDexMod` | number | Attack modifier |
+| `$playerProfBonus` | number | Override proficiency (auto-computed if absent) |
+| `$playerInsightMod` etc. | number | Skill modifiers used by `<<skillcheck>>` |
+
+### SugarCube vs. Ink (Key Differences)
 
 | Feature | SugarCube | Ink |
 |---|---|---|
-| **Dice Rolling** | Direct: `random(1, 20)` | Must be done in game engine |
+| **Dice Rolling** | Direct: `random(1, 20)` or `<<skillcheck>>` | Must be done in game engine |
+| **Full combat** | `<<combat>>` macro runs D&D 5e loop in-browser | Game engine runs combat; Ink reads outcome |
 | **Math** | Full JavaScript support | Limited to conditional checks |
 | **Complexity** | Can handle intricate logic | Better for narrative focus |
 | **Performance** | Browser-based, fast | Requires compilation |

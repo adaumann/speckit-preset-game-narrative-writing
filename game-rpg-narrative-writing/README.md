@@ -192,7 +192,7 @@ game-rpg-narrative-writing/
 │   └── (other shared commands)
 ├── templates/
 │   ├── spec-d5e.md (campaign pitch)
-│   ├── constitution-d5e.md (game rules & mechanics)
+│   ├── constitution-template.md (unified game bible — all rulesets)
 │   ├── plan-d5e.md (15-session structure)
 │   ├── variables-d5e.md (150+ campaign variables)
 │   ├── mechanics-d5e.md (8 hook types with 40+ examples)
@@ -204,8 +204,7 @@ game-rpg-narrative-writing/
 │   ├── mechanics-customization-guide.md (how to customize hooks)
 │   └── d5e-template-system-overview.md (system architecture)
 ├── scripts/python/
-│   ├── compile.py (shared)
-│   ├── verify.py (shared)
+│   ├── map-export.py (RPG map data export)
 │   ├── validate_ending_gates.py (RPG-specific)
 │   ├── validate_reputation_arcs.py (RPG-specific)
 │   ├── validate_companion_timelines.py (RPG-specific)
@@ -285,7 +284,7 @@ See campaign-instantiation-example.md for step-by-step walkthrough of how concre
 1. Choose your system (D&D 5e, PBTA, FATE, or Blades)
 2. Read d5e-template-system-overview.md to understand architecture
 3. Start with spec-d5e.md to pitch your campaign concept
-4. Use constitution-d5e.md to define your rules and mechanics
+4. Run `speckit constitution` — it generates a single constitution.md covering all ruleset configuration
 5. Follow plan-d5e.md to structure your sessions
 6. Generate outlines with `speckit outline --mode rpg`
 7. Validate your campaign with `speckit verify --mode rpg --campaign`

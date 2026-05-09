@@ -195,14 +195,11 @@ Optional flags:
 3. **Configure constitution.md**:
 
    **MANDATORY � read the template first**:
-   - **Ruleset-specific template selection**: Based on `[RULESET]` value, select the appropriate template:
-     - If `[RULESET]` is "D&D 5e" → read `templates/constitution-d5e.md`
-     - If `[RULESET]` is "Pathfinder 2e" → read `templates/constitution-pf2e.md` (if available; fallback to generic)
-     - If `[RULESET]` is "Shadowrun 6e" → read `templates/constitution-shadowrun.md` (if available; fallback to generic)
-     - If `[RULESET]` is "Other/Generic" → read `templates/constitution-template.md`
-   - The output MUST reproduce every section heading, table, and placeholder from the selected template – populated with the values gathered above.
-   - Do **NOT** use `.specify/templates/constitution-template.md` – that is the generic software-development template and is wrong for this project.
-   - Do **NOT** invent a structure from memory or training data. Use only the structure from the file you just selected.
+   - Always read `templates/constitution-template.md` — this is the single unified template for all rulesets.
+   - The template contains generic narrative sections and a `## XIII. D&D 5e Campaign Configuration` section at the end for D&D 5e campaigns. For other rulesets, omit or leave Section XIII blank.
+   - The output MUST reproduce every section heading, table, and placeholder from the template — populated with the values gathered above.
+   - Do **NOT** use `.specify/templates/constitution-template.md` — that is the generic software-development template and is wrong for this project.
+   - Do **NOT** invent a structure from memory or training data. Use only the structure from `templates/constitution-template.md`.
 
    **YAML frontmatter updates**:
    - Add new fields before all existing fields:

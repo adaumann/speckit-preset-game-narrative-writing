@@ -39,6 +39,27 @@
 
   /* Transitions */
   --transition-speed: 0.25s;
+
+  /* Structural tokens required by game component UIs */
+  --color-bg-sidebar:    #f5f5f5;   /* ability score card background */
+  --color-bg-overlay:    #ebebeb;   /* subtle overlay / divider fill */
+  --color-text-sidebar:  #555555;
+
+  /* HP bar colours (character-sheet-template) */
+  --color-hp-full:       #3d7a3d;
+  --color-hp-mid:        #b8880a;
+  --color-hp-low:        #b03030;
+
+  /* Error / destructive state */
+  --color-error:         #b03030;
+
+  /* Faction tier palette (faction-reputation-template) */
+  --faction-hostile:     #8b1a1a;
+  --faction-unfriendly:  #8b4513;
+  --faction-neutral:     #555555;
+  --faction-friendly:    #2a6e3a;
+  --faction-allied:      #1a5a8b;
+  --faction-exalted:     #7b5ea7;
 }
 
 /* ---------------------------------------------------------------------------
@@ -232,3 +253,164 @@ code {
   padding: 0.1em 0.35em;
   border-radius: 2px;
 }
+
+/* ---------------------------------------------------------------------------
+   INVENTORY SCREEN (sugarcube-equipment-ui-template.twee — full-page only)
+   Sidebar equip components are omitted; minimal has no sidebar.
+   --------------------------------------------------------------------------- */
+.slot-empty { color: var(--color-text-muted); font-style: italic; font-size: 0.85em; }
+.inventory-screen { max-width: var(--prose-max-width); margin: 0 auto; }
+.equip-table { width: 100%; border-collapse: collapse; font-size: 0.9em; margin-bottom: 1rem; }
+.equip-table th { text-align: left; border-bottom: 1px solid var(--color-accent-dim); padding: 0.25rem 0; color: var(--color-text-muted); font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.06em; }
+.equip-table td { padding: 0.3rem 0; border-bottom: 1px solid var(--color-accent-dim); }
+
+/* ---------------------------------------------------------------------------
+   SHOP (sugarcube-shop-template.twee)
+   --------------------------------------------------------------------------- */
+.shop-screen         { max-width: var(--prose-max-width); margin: 0 auto; }
+.shop-greeting       { font-style: italic; color: var(--color-text-muted); margin-bottom: 1rem; }
+.shop-balance        { display: flex; gap: 0.5rem; align-items: baseline; margin-bottom: 1rem; }
+.shop-balance-label  { color: var(--color-text-muted); font-size: 0.85em; }
+.shop-balance-value  { font-weight: bold; }
+.shop-section        { margin-bottom: 1.5rem; }
+.shop-section h3     { margin: 0.75rem 0 0.5rem; font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-muted); border-bottom: 1px solid var(--color-accent-dim); padding-bottom: 0.2rem; }
+.shop-item-row       { display: flex; justify-content: space-between; align-items: baseline; padding: 0.35rem 0; border-bottom: 1px solid var(--color-accent-dim); gap: 0.5rem; }
+.shop-item-soldout   { opacity: 0.4; }
+.shop-item-owned     { opacity: 0.55; }
+.shop-item-info      { flex: 1; }
+.shop-item-name      { font-weight: bold; }
+.shop-item-desc      { display: block; font-size: 0.8em; color: var(--color-text-muted); margin-top: 0.1rem; }
+.shop-item-meta      { display: flex; align-items: baseline; gap: 0.75rem; white-space: nowrap; }
+.shop-item-price     { font-size: 0.9em; }
+.shop-item-stock     { color: var(--color-text-muted); font-size: 0.8em; }
+.shop-item-flag      { font-size: 0.8em; color: var(--color-text-muted); font-style: italic; }
+.shop-item-cant-afford { color: var(--color-error); }
+.shop-error          { color: var(--color-error); font-style: italic; }
+
+/* ---------------------------------------------------------------------------
+   CHARACTER SHEET (sugarcube-character-sheet-template.twee)
+   --------------------------------------------------------------------------- */
+.hp-bar-wrap,
+.xp-bar-wrap { height: 4px; background: var(--color-accent-dim); border-radius: 2px; overflow: hidden; margin-bottom: 2px; }
+.hp-bar-fill,
+.xp-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+.xp-bar-fill { background: var(--color-text-muted); }
+.hp-label, .xp-label { font-size: 0.75em; color: var(--color-text-muted); margin-bottom: 0.3rem; }
+.char-sheet { max-width: var(--prose-max-width); margin: 0 auto; }
+.cs-header h2 { margin-bottom: 0.1rem; font-style: normal; }
+.cs-meta { color: var(--color-text-muted); font-size: 0.85em; margin-bottom: 1rem; }
+.cs-section { margin-bottom: 1.5rem; }
+.cs-section h3 { border-bottom: 1px solid var(--color-accent-dim); padding-bottom: 0.25rem; font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-muted); font-style: normal; font-weight: 400; }
+.cs-stat-row { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; margin-top: 0.5rem; }
+.cs-stat { display: flex; flex-direction: column; min-width: 80px; }
+.cs-label { font-size: 0.72em; text-transform: uppercase; color: var(--color-text-muted); letter-spacing: 0.08em; }
+.cs-value { font-size: 1.05em; font-weight: bold; }
+.cs-ability-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+.cs-ability { display: flex; flex-direction: column; align-items: center; background: var(--color-bg-sidebar); border: 1px solid var(--color-accent); border-radius: 2px; padding: 0.4rem 0.6rem; min-width: 68px; }
+.cs-ability-name  { font-size: 0.7em; text-transform: uppercase; color: var(--color-text-muted); letter-spacing: 0.08em; }
+.cs-ability-score { font-size: 1.35em; font-weight: bold; line-height: 1.1; }
+.cs-ability-mod   { font-size: 0.88em; color: var(--color-text-muted); }
+.cs-save-badge    { font-size: 0.65em; color: var(--color-text-muted); margin-top: 0.2rem; }
+.save-prof        { color: var(--color-text); font-weight: bold; }
+.cs-skill-table { width: 100%; border-collapse: collapse; font-size: 0.82em; }
+.cs-skill-table th { text-align: left; border-bottom: 1px solid var(--color-accent-dim); padding: 0.2rem 0; color: var(--color-text-muted); font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.06em; }
+.cs-skill-table td { padding: 0.18rem 0; border-bottom: 1px solid var(--color-bg-overlay); }
+.skill-prof td { font-weight: bold; }
+.cs-conditions ul { margin: 0.4rem 0 0 1rem; font-size: 0.88em; color: var(--color-error); }
+
+/* ---------------------------------------------------------------------------
+   FACTION SCREEN (sugarcube-faction-reputation-template.twee — full-page only)
+   Sidebar faction strip omitted; minimal has no sidebar.
+   --------------------------------------------------------------------------- */
+.faction-screen { max-width: var(--prose-max-width); margin: 0 auto; }
+.faction-card { border-top: 1px solid var(--color-accent-dim); padding: 0.75rem 0; margin-bottom: 0.25rem; }
+.faction-card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+.faction-icon-lg { font-size: 1.3em; }
+.faction-card-title { flex: 1; display: flex; flex-direction: column; }
+.faction-card-name { font-weight: bold; font-size: 1em; }
+.faction-tier-label { font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); }
+.faction-rep-score { font-size: 1em; color: var(--color-text-muted); min-width: 3rem; text-align: right; }
+.faction-rep-bar-wrap { height: 3px; background: var(--color-bg-overlay); margin: 0.4rem 0; position: relative; overflow: hidden; }
+.faction-rep-midpoint { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--color-accent); }
+.faction-rep-fill { height: 100%; }
+.faction-rep-pos { background: var(--color-text-muted); }
+.faction-rep-neg { background: var(--color-text-muted); }
+.faction-tier-markers { display: flex; justify-content: space-between; font-size: 0.58em; color: var(--color-accent); margin-top: 0.1rem; }
+.faction-tier-badge { font-size: 0.65em; text-transform: uppercase; letter-spacing: 0.06em; border: 1px solid var(--color-accent); padding: 0.1rem 0.3rem; border-radius: 2px; }
+.faction-notifications { margin-bottom: 1rem; }
+.faction-notif { font-size: 0.82em; padding: 0.2rem 0; border-bottom: 1px solid var(--color-accent-dim); margin-bottom: 0.1rem; }
+.faction-hidden-note { font-size: 0.8em; color: var(--color-text-muted); font-style: italic; }
+
+/* ---------------------------------------------------------------------------
+   QUEST JOURNAL (sugarcube-quest-journal-template.twee — full-page only)
+   Sidebar quest strip omitted; minimal has no sidebar.
+   --------------------------------------------------------------------------- */
+.quest-journal { max-width: var(--prose-max-width); margin: 0 auto; }
+.quest-tabs { margin-bottom: 1.5rem; font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.08em; }
+.quest-tabs a { color: var(--color-link); }
+.quest-list { display: flex; flex-direction: column; gap: 1.5rem; }
+.quest-entry { border-left: 2px solid var(--color-accent); padding-left: 1rem; }
+.quest-entry.quest-complete { opacity: 0.55; }
+.quest-entry.quest-failed   { opacity: 0.4; }
+.quest-header { display: flex; align-items: baseline; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.25rem; }
+.quest-title  { font-weight: bold; }
+.quest-status-badge { font-size: 0.68em; color: var(--color-text-muted); margin-left: auto; text-transform: uppercase; letter-spacing: 0.06em; }
+.quest-hook   { font-size: 0.88em; color: var(--color-text-muted); margin: 0 0 0.5rem; font-style: italic; }
+.quest-stages { list-style: none; margin: 0; padding: 0; font-size: 0.85em; display: flex; flex-direction: column; gap: 0.2rem; }
+.stage-done    { color: var(--color-text-muted); text-decoration: line-through; }
+.stage-current { font-weight: bold; }
+.stage-future  { color: var(--color-text-muted); opacity: 0.4; }
+.quest-tier-badge { font-size: 0.65em; text-transform: uppercase; letter-spacing: 0.06em; border: 1px solid var(--color-accent); border-radius: 2px; padding: 0.1em 0.35em; margin-right: 0.3em; }
+
+/* ---------------------------------------------------------------------------
+   COMBAT (sugarcube-combat-template.twee — full-page only, no sidebar)
+   --------------------------------------------------------------------------- */
+.combat-screen { max-width: var(--prose-max-width); margin: 0 auto; }
+.combat-enemies { margin-bottom: 1rem; }
+.combat-enemy-row { padding: 0.5rem 0; border-bottom: 1px solid var(--color-accent-dim); }
+.combat-enemy-row.combat-enemy-targeted { border-left: 2px solid var(--color-accent); padding-left: 0.5rem; }
+.combat-enemy-row.combat-enemy-dead { opacity: 0.3; }
+.combat-enemy-header { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.25rem; }
+.combat-enemy-name { font-weight: bold; flex: 1; }
+.combat-enemy-hp { font-size: 0.82em; color: var(--color-text-muted); }
+.combat-enemy-dead-label { font-size: 0.72em; color: var(--color-error); }
+.combat-hp-bar-wrap { height: 3px; background: var(--color-accent-dim); overflow: hidden; margin-bottom: 4px; }
+.combat-hp-bar-fill { height: 100%; transition: width 0.25s; background: var(--color-text-muted); }
+.combat-conditions { font-size: 0.78em; color: var(--color-text-muted); font-style: italic; margin-top: 0.2rem; }
+.combat-player-status { border-top: 2px solid var(--color-accent); border-bottom: 1px solid var(--color-accent-dim); padding: 0.4rem 0; margin-bottom: 1rem; }
+.combat-player-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.2rem; }
+.combat-player-hp-label { font-weight: bold; }
+.combat-player-ac { font-size: 0.85em; color: var(--color-text-muted); }
+.combat-concentration { font-size: 0.78em; color: var(--color-text-muted); font-style: italic; margin-top: 0.15rem; }
+.combat-actions { margin-bottom: 1rem; }
+.combat-round-label { font-size: 0.68em; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-text-muted); margin-bottom: 0.5rem; }
+.combat-action-group { margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; font-size: 0.9em; }
+.combat-action-used { color: var(--color-text-muted); }
+.combat-action-unused { color: var(--color-text-muted); font-style: italic; }
+.combat-death { border: 1px solid var(--color-error); padding: 0.75rem; }
+.combat-death-label { color: var(--color-error); font-weight: bold; margin: 0 0 0.25rem; }
+.combat-death-counts { font-size: 0.85em; color: var(--color-text-muted); margin: 0 0 0.5rem; }
+.combat-log { margin-top: 1rem; border-top: 1px solid var(--color-accent-dim); padding-top: 0.5rem; }
+.combat-log-entry { font-size: 0.8em; color: var(--color-text-muted); padding: 0.1rem 0; }
+.combat-log-entry:last-child { color: var(--color-text); }
+.economy-avail { font-size: 0.78em; }
+.economy-used  { font-size: 0.78em; color: var(--color-text-muted); text-decoration: line-through; }
+
+/* ---------------------------------------------------------------------------
+   SPELLS (sugarcube-spells-template.twee — full-page only)
+   --------------------------------------------------------------------------- */
+.spells-screen { max-width: var(--prose-max-width); margin: 0 auto; }
+.spell-stat-row { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; margin-top: 0.5rem; }
+.spell-concentration { display: flex; align-items: baseline; gap: 0.4rem; border: 1px solid var(--color-accent); padding: 0.3rem 0.5rem; margin-bottom: 0.75rem; }
+.spell-conc-label { font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); }
+.spell-conc-name { font-weight: bold; }
+.spell-conc-dur { font-size: 0.78em; color: var(--color-text-muted); }
+.spell-slots-grid { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 0.5rem; }
+.spell-slot-level { display: flex; flex-direction: column; min-width: 72px; }
+.spell-slot-label { font-size: 0.68em; text-transform: uppercase; color: var(--color-text-muted); letter-spacing: 0.08em; }
+.spell-slot-pips { font-weight: bold; }
+.spell-effect-row { display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px solid var(--color-accent-dim); font-size: 0.85em; }
+.spell-known-entry { display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px solid var(--color-accent-dim); font-size: 0.85em; }
+.spell-known-name { font-weight: bold; }
+.spell-known-type { color: var(--color-text-muted); font-size: 0.82em; }
+.spell-known-placeholder { font-style: italic; color: var(--color-text-muted); font-size: 0.85em; }
