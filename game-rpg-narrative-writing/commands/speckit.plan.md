@@ -78,7 +78,7 @@ Optional flags:
 **Phase 0 ï¿½ Supporting Documents**:
 
 > **Pre-fill rule**: Every supporting document MUST be written with actual game-specific content inferred from `spec.md` and `constitution.md`. Replace every `[placeholder]` marker with real content. Only write `[NEEDS CLARIFICATION: reason]` when a field genuinely cannot be inferred.
-> **Language Rule**: All supporting documents (plan.md, variables.md, mechanics.md, character profiles, endings.md, glossary.md, world-building.md, items.md, bestiary.md, quests.md, locations.md, themes.md) MUST be generated in English (`en`) by default, regardless of any `[LANGUAGE]` setting in the constitution.
+> **Language Rule**: All supporting documents (plan.md, variables.md, mechanics.md, character profiles, endings.md, glossary.md, world-building.md, items.md, bestiary.md, quests.md, locations.md, themes.md, world-map.md) MUST be generated in English (`en`) by default, regardless of any `[LANGUAGE]` setting in the constitution.
 
 - Generate `specs/[FEATURE_DIR]/variables.md`: register every state variable identified across the narrative design doc and game bible ï¿½ variable name, type, default value, description, which nodes read/write it, which endings gate on it. Group by category: trust, flags, inventory, attributes, counters.   - **For Tabletop RPGs**: Add section for **Faction Reputation Variables** (one entry per faction: faction name, variable name, range, starting value, usage nodes). Add section for **Companion Approval Variables** (one entry per companion: companion name, variable name, range, starting value, recruitment threshold, ending-lock thresholds).
    - **For Computer Game RPGs**: Add section for **Character Progression Variables** (protagonist/party member name, level, experience points, ability unlock gates).
@@ -130,7 +130,15 @@ Optional flags:
   - Final node ID that leads to it
   - Emotional register of the final scene
 
-- Generate `specs/[FEATURE_DIR]/world-building.md`: world rules, internal logic constraints, location entries (one block per named location with atmosphere, sensory anchors, nodes where it appears), and any faction or social system rules.
+- **Generate `specs/[FEATURE_DIR]/world-map.md`** (RPG-specific, always generated): the spatial registry for the entire game world. Use `world-map-template.md` as the base.
+   - **Spatial Model**: Identify from spec.md the model type — `Linear` (fixed-sequence Regions), `Hub-and-Spoke` (central hub with radiating Regions), or `Open-World` (content-gated access).
+   - **Region Registry**: One row per Region — Region ID (`REGION-{ShortName}`), name, theme, unlock condition, acts present, area count.
+   - **Area → Location → Scene Index**: Build the full spatial hierarchy tree showing which Areas belong to which Region, which Locations belong to which Area, and which NODE-xxx scenes belong to which Location.
+   - **Travel Connections table**: All inter-Region and inter-Area connections — From, To, Via, direction (two-way / one-way), travel scene NODE-ID.
+   - **World State Variables table**: All `$world_*`, `$region_*`, `$area_*`, `$loc_*` variables — infer from spec.md progression gates and unlock conditions.
+   - CRITICAL: This document is the spatial source of truth. All downstream `locations.md` entries must reference Parent Region and Parent Area from this document.
+
+- Generate `specs/[FEATURE_DIR]/world-building.md`: world rules, internal logic constraints, location entries (one block per named location with atmosphere, sensory anchors, Scene IDs where it appears), and any faction or social system rules.
    - **For Tabletop RPGs**: Add dedicated section for **Factions**:
      - One entry per faction: name, scope (regional/national/personal), NPC leaders/members, starting reputation (per spec), reputation ranges and ending gates (which endings require which faction rep thresholds), how reputation changes (quest completion, choice consequences, combat results)
    - **For Tabletop RPGs**: Add dedicated section for **Companion System**:
@@ -226,15 +234,17 @@ Optional flags:
      - Playstyle routing (can be completed via combat / dialogue / exploration)
      - Level requirement for quest acceptance
 
-- **Generate `specs/[FEATURE_DIR]/locations.md`** (RPG-specific): detailed location registry and spatial layout.
+- **Generate `specs/[FEATURE_DIR]/locations.md`** (RPG-specific): detailed location registry and spatial layout. Use `locations-template.md` per Location entry.
    - **For all RPGs**: One entry per named location with:
-     - Location name, location type (dungeon / city / wilderness / building / landmark)
+     - **Location ID** (`LOC-{ShortName}`), location name, location type (dungeon / city / wilderness / building / landmark)
+     - **Parent Region** (`REGION-{ShortName}`) and **Parent Area** (`AREA-{ShortName}`) — must match `world-map.md`
+     - **Hub Passage**: the `LOC-xxx` passage ID that serves as the navigation hub for this location
+     - **Scene IDs**: list of all NODE-xxx scenes that take place in this location (replaces "Nodes where location appears")
      - Atmosphere, sensory anchors (sounds, smells, visuals), scale (single room / multi-level / region)
-     - Encounters occurring here (combat, social, exploration)
+     - Scenes occurring here by scene type (travel / exploration / dialogue / combat / rest / shop / quest_event / cutscene)
      - NPCs typically present, faction control (if applicable)
-     - Connections to other locations (doors, portals, fast travel, roads)
+     - Connections to other locations (doors, portals, fast travel, roads) — must match Travel Connections in `world-map.md`
      - Notable features (treasure, traps, puzzle, interaction points)
-     - Nodes where location appears
      - Environmental hazards or special rules (darkness, difficult terrain, magical aura)
    - **For Tabletop RPGs**: Add columns:
      - Dimensions (in 5-ft. squares if small location)
@@ -388,9 +398,11 @@ Optional flags:
    **Node ID format**: `NODE-{act}{sequential_3digit}_{ShortName}` ï¿½ e.g., `NODE-1001_Awakening`, `NODE-2003_BetrayalRevealed`. Endings use `END-{letter}_{ShortName}` ï¿½ e.g., `END-A_TrueReconciliation`. Insertion nodes use letter suffix: `NODE-2003b` between `NODE-2003` and `NODE-2004`.
 
    For each node:
-   - Assign a Node ID and short name (2ï¿½4 words, PascalCase)
-   - Fill all fields: estimated word count, act, branch type (choice / converge / gate / terminal), player perspective (if switching), location, variables read, variables written
-   - Write: opening hook (sensory, not summary), key beats (3ï¿½5 micro-events in causal order), choice architecture (each choice: text, condition, target node), NPC presence and emotional state, thematic work (how theme is carried without being stated), closing beat (what has changed, what the player now knows)   - **RPG-specific node fields**:
+   - Assign a Node ID and short name (2–4 words, PascalCase)
+   - Fill all fields: estimated word count, act, branch type (choice / converge / gate / terminal), player perspective (if switching), **scene_type** (travel / exploration / dialogue / combat / rest / shop / quest_event / cutscene / hub), **parent_location** (`LOC-{ShortName}` — must exist in `world-map.md`), variables read, variables written
+   - CRITICAL: `parent_location` is MANDATORY on every node. If a node cannot be assigned to a Location, halt and add the Location to `world-map.md` and `locations.md` first.
+   - For `scene_type: travel` nodes: also set `origin_location` and `destination_location` fields; verify both Locations exist in `world-map.md` Travel Connections table.
+   - Write: opening hook (sensory, not summary), key beats (3–5 micro-events in causal order), choice architecture (each choice: text, condition, target node), NPC presence and emotional state, thematic work (how theme is carried without being stated), closing beat (what has changed, what the player now knows)   - **RPG-specific node fields**:
      - **For Encounters** `[ENCOUNTER]`: enemy types and count, expected party level, CR rating, treasure on victory (coin amount, magic items), XP award, special mechanics (lair actions, legendary actions, etc.). Include a stat block reference for each enemy type.
      - **For Skill Checks** `[SKILL-CHECK]`: ability required, DC, success outcome, failure outcome (does player get retries? does failure close a branch?), alternative abilities (can Intimidation replace Perception?)
      - **For Faction Mechanics** `[FACTION]`: faction name, reputation change (Â±N), node branches visible only if rep >= threshold (for faction-gated content)
@@ -438,11 +450,14 @@ Optional flags:
 - Check that no quest is permanently locked with no way to access (unless hidden/secret quest)
 
 **Locations Integration Check**:
-- Verify all unique locations in `specs/[FEATURE_DIR]/locations.md` appear in at least one node
+- Verify all unique locations in `specs/[FEATURE_DIR]/locations.md` appear in at least one node (as `parent_location`)
+- Verify all `parent_location` values in node outlines exist in `locations.md` — CRITICAL if missing
+- Verify all `parent_region` and `parent_area` values in `locations.md` exist in `world-map.md` — CRITICAL if missing
 - **For Tabletop**: Verify map references exist or are marked `[NEEDS MAP]`
-- Check that location connections match node connectivity (if location A leads to location B, do nodes reflect this?)
-- Verify encounter density per location is reasonable (not every room is combat)
-- **For Computer Game**: Verify level design gating is consistent (no unintended soft-locks due to location inaccessibility)
+- Check that location connections match node connectivity (if LOC-A leads to LOC-B, there must be a `scene_type: travel` node with `origin_location: LOC-A` and `destination_location: LOC-B`)
+- Verify encounter density per location is reasonable (not every room is combat; every Area needs at least one rest scene)
+- Verify every Area has at least one entry travel node (a scene that brings the player into the Area)
+- **For Computer Game**: Verify level design gating is consistent (no unintended soft-locks due to location inaccessibility; check `$region_*_unlocked` and `$area_*_cleared` variable chains)
 
 **NPC Roster Integration Check**:
 - Verify all NPCs in `specs/[FEATURE_DIR]/npc-roster.md` have corresponding character profile file in `characters/`

@@ -66,6 +66,21 @@
 
 ---
 
+## World Structure (RPG)
+
+<!-- Spatial hierarchy summary. Full detail in specs/world-map.md and specs/locations.md.
+     Spatial model: Linear | Hub-and-Spoke | Open-World -->
+
+**Spatial model**: [Linear / Hub-and-Spoke / Open-World]
+
+| Region | Areas | Locations | Unlock Condition |
+|---|---|---|---|
+| REGION-[Name] | [N] | [N] | [start / after event] |
+
+<!-- Full hierarchy tree in world-map.md -->
+
+---
+
 ## Act Structure
 
 <!-- Node counts and dramatic purpose per act.
@@ -171,8 +186,8 @@ NODE-3[N]: [CLIMAX]
 | `specs/endings.md` | Endings registry: gate conditions, thematic statements, final node IDs | [NEEDS CLARIFICATION] |
 | `characters.md` | Character index: NPC roster, trust variable registry, relationship map | [NEEDS CLARIFICATION] |
 | `characters/[name].md` | Full NPC profile: arc, voice, relationship arc with player, scene guidance | [NEEDS CLARIFICATION] |
-| `specs/world-building.md` | Locations, world rules, faction logic, sensory anchors | [NEEDS CLARIFICATION] |
-| `glossary.md` | Invented terms, proper nouns, variable name register | [NEEDS CLARIFICATION] |
+| `specs/world-building.md` | Locations, world rules, faction logic, sensory anchors | [NEEDS CLARIFICATION] || `specs/world-map.md` | Spatial hierarchy: World → Region → Area → Location → Scene; travel connections; spatial variables | [NEEDS CLARIFICATION] |
+| `specs/locations.md` | Location registry with LOC-IDs, parent Area/Region, Scene IDs, hub passages | [NEEDS CLARIFICATION] || `glossary.md` | Invented terms, proper nouns, variable name register | [NEEDS CLARIFICATION] |
 | `specs/series-bible.md` | Carry-over variable registry, series continuity | [exists / N/A if standalone] |
 
 ---

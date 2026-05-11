@@ -1,0 +1,108 @@
+/*
+  shrine-ui.twee
+  Shrine sample: UI chrome and character display
+*/
+
+:: StoryCaption
+<div id="sc-header">
+  <span class="sc-gold">💰 Gold: <<= $character.gold>> gp</span>
+  <span class="sc-inventory">🎒 <<= $inventory.length>> items</span>
+</div>
+
+:: StoryMenu
+<<link "📋 Character" "CharacterSheet">><</link>>
+<<link "🎒 Inventory" "InventoryUI">><</link>>
+<<link "🏠 Home" "Start">><</link>>
+
+:: CharacterSheet
+<h2>Character Profile</h2>
+<<charProfile>>
+<<link "Back" previous()>><</link>>
+
+:: InventoryUI
+<h2>Inventory</h2>
+<<inventory>>
+<<link "Back" previous()>><</link>>
+
+:: StoryStylesheet [stylesheet]
+body { 
+  background: #2a2a2a; 
+  color: #e0e0e0; 
+  font-family: Georgia, serif; 
+  max-width: 800px; 
+  margin: 0 auto; 
+  padding: 2em; 
+}
+
+a, a:visited { color: #8eb4d4; text-decoration: none; }
+a:hover { color: #a8cae8; text-decoration: underline; }
+
+#sc-header { 
+  display: flex; 
+  gap: 2em; 
+  margin-bottom: 1em; 
+  font-size: 0.95em; 
+  color: #b0b0b0; 
+}
+
+.char-profile { 
+  background: #333; 
+  padding: 1.5em; 
+  border-left: 4px solid #8eb4d4; 
+  margin: 1em 0; 
+}
+
+.char-profile h3 { 
+  margin-top: 0; 
+  color: #a8cae8; 
+}
+
+.char-stats { 
+  width: 100%; 
+  border-collapse: collapse; 
+}
+
+.char-stats td { 
+  padding: 0.5em; 
+  border-bottom: 1px solid #444; 
+}
+
+.stat-value { 
+  text-align: right; 
+  color: #8eb4d4; 
+  font-weight: bold; 
+}
+
+.inventory-list { 
+  background: #333; 
+  padding: 1.5em; 
+  margin: 1em 0; 
+  border-left: 4px solid #8eb4d4; 
+}
+
+.inventory-list h4 { 
+  margin-top: 0; 
+  color: #a8cae8; 
+}
+
+.inventory-list ul { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0.5em 0; 
+}
+
+.inventory-list li { 
+  padding: 0.4em 0; 
+  color: #d0d0d0; 
+}
+
+.inventory-empty { 
+  color: #909090; 
+  font-style: italic; 
+}
+
+.pickup { 
+  color: #7fb854; 
+  font-weight: bold; 
+  margin: 0.5em 0; 
+}

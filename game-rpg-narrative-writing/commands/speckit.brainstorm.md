@@ -33,9 +33,10 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
 - A topic name (e.g. `branches`, `characters`, `endings`) � skip the topic prompt
 - `node NODE-003` � pre-fill node ID as the brainstorm target
 - `npc [name]` � pre-fill NPC name as the brainstorm target
-- `challenge` � activate Challenge Mode: questions stress-test existing file decisions
-- A session length flag: `quick`, `standard`, or `deep` � skip the session length prompt
-- Any combination (e.g. `endings challenge quick`)
+- `world-map` â€“ pre-fill topic as world map spatial design (RPG only)
+- `challenge` ï¿½ activate Challenge Mode: questions stress-test existing file decisions
+- A session length flag: `quick`, `standard`, or `deep` ï¿½ skip the session length prompt
+- Any combination (e.g. `endings challenge quick`, `world-map challenge deep`)
 
 ## Pre-Execution Checks
 
@@ -80,6 +81,7 @@ If no topic was provided as an argument, display the topic menu:
   14  companion-arcs – Companion recruitment, approval gates, romance, fates
   15  difficulty-curve – Difficulty scaling progression, accessibility options
   16  mechanics-rpg  – RPG-specific mechanics, house rules, custom hooks
+  17  world-map      – Spatial layout, Region/Area/Location design, travel connections
   Type a number, a topic name, or a custom topic.
   Type  q  to quit without doing anything.
 ---------------------------------------------
@@ -88,7 +90,7 @@ If no topic was provided as an argument, display the topic menu:
 - Accept both number and name as valid input.
 - If the user types `4` or `npc`, immediately ask: `Which NPC? (name or ID)` and store as `NPC_NAME`.
 - If the user types `node NODE-NNN`, store the node ID as the brainstorm target.
-- If the user types a number from RPG topics (12-16) while `SESSION.is_rpg = false`: display `? RPG topics only available for RPG presets.` and return to topic menu.
+- If the user types a number from RPG topics (12-17) while `SESSION.is_rpg = false`: display `? RPG topics only available for RPG presets.` and return to topic menu.
 - Free-form topics not on the list are accepted as custom topics.
 - `q` exits with: `Brainstorm cancelled. No files were changed.`
 
@@ -110,6 +112,7 @@ Resolve the **canonical file path** for the selected topic:
 | `endings` | `specs/endings.md` |
 | `mechanics` | `specs/mechanics.md` |
 | `world-building` | `specs/world-building.md` |
+| `world-map` | `specs/world-map.md` (create from `templates/world-map-template.md` if absent) |
 | `variables` | `specs/variables.md` |
 | `series` | `series/series-bible.md` |
 | `glossary` | `specs/glossary.md` |
@@ -389,6 +392,44 @@ Select the most valuable questions based on what is already known � do not ask
 - How do you handle skill checks where multiple party members could attempt (do all roll, or one per character)?
 - What variables track system-specific resources (Karma in Shadowrun, Hero Points in Pathfinder 2e, Spell Slots in D&D 5e)?
 - Are there mechanics that feel forced or gamey – can they be cut or simplified?
+
+### `world-map` (RPG-specific topic)
+
+**Spatial model & structure**:
+- What is the top-level spatial model — Linear (fixed Region sequence), Hub-and-Spoke (central hub with radiating Regions), or Open-World (all Regions accessible from start)?
+- How many Regions does the world have — and does the number create variety without becoming overwhelming?
+- Do Regions unlock by act, quest completion, faction alignment, or player decision?
+- Is there a Region the player can permanently miss or be locked out of — is that intentional?
+
+**Region & Area design**:
+- What distinct atmosphere or theme makes each Region feel different from the others (terrain, faction, tone)?
+- How many Areas does each Region contain — do Areas feel like meaningful sub-divisions or are they arbitrary?
+- What Area types exist (dungeon, wilderness, urban, sea, underground) — is there enough variety?
+- Does any Area feel too large or too combat-dense — where might players get fatigued?
+
+**Location & hub design**:
+- What Locations serve as rest points in each Area — is there always a safe place the player can reach without forced combat?
+- How many scenes does each Location contain — is the scene count consistent with the Location's narrative weight?
+- Do hub passages (LOC-xxx) offer at least 3 meaningful navigation choices (scenes + travel exits)?
+- Are there Locations that exist in the design but have no scenes yet — what's blocking them?
+
+**Travel & connections**:
+- Which travel connections are one-way — and does the player have enough warning before crossing a point of no return?
+- Are travel scenes (scene_type: travel) interesting in themselves, or are they pure corridor transitions?
+- Do fast-travel options undermine exploration — should fast travel be gated behind discovery?
+- Are there any "orphan" Locations with no travel entry scene — how does the player first reach them?
+
+**Spatial variables & state**:
+- What `$region_*` variables track per-Region progression (unlocked, faction dominant, quest stage)?
+- What `$area_*` variables track per-Area state (explored, cleared, unlocked, closed)?
+- What `$loc_*` variables track per-Location state (visited, intact/damaged/destroyed, NPC roster)?
+- Are there campaign-wide (`$world_*`) flags driven by spatial events (e.g., a Region falls, a war zone expands)?
+
+**Challenge mode additions** *(asked if `challenge` flag set)*:
+- Pick the Region that would hurt most to cut — now justify why it can't be merged with an adjacent Region.
+- Which Area currently has no rest Location — is that a gap or a design choice?
+- Which travel connection is the most story-critical — what breaks if that path is removed or blocked?
+- Do all Regions have at least one moment where the player feels the Region's theme — or does any feel like filler?
 
 ---
 ## Step 5 � Session End

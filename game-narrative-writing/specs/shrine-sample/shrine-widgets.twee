@@ -1,0 +1,83 @@
+/*
+  shrine-widgets.twee
+  Simplified widget pattern for narrative-focused design
+  
+  Mechanics:
+  - Character Profile: Read-only display (name, attributes only)
+  - Inventory: View list, pickup items, check if has item
+  
+  NOTE: No character actions, no stats modifications. Pure narrative mechanics.
+*/
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CHARACTER PROFILE WIDGETS (Display Only)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* <<charProfile>> — displays character sheet (read-only) */
+<<widget "charProfile">>
+<div class="char-profile">
+  <h3><<= $character.name>></h3>
+  <table class="char-stats">
+    <tr><td>Intelligence:</td><td class="stat-value"><<= $character.intelligence>>/10</td></tr>
+    <tr><td>Wisdom:</td><td class="stat-value"><<= $character.wisdom>>/10</td></tr>
+    <tr><td>Power:</td><td class="stat-value"><<= $character.power>>/10</td></tr>
+    <tr><td>Gold:</td><td class="stat-value"><<= $character.gold>> gp</td></tr>
+  </table>
+</div>
+<</widget>>
+
+/* <<charAttr "attr_name">> — shows single attribute value */
+<<widget "charAttr">>
+  <<= $character[$args[0]] || 0>>
+<</widget>>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   INVENTORY WIDGETS (Simplified)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* <<pickupItem "item_key" "Display Name">> — add item to inventory */
+<<widget "pickupItem">>
+  <<set _key  to $args[0]>>
+  <<set _name to $args[1]>>
+  <<set _existing to $inventory.find(function(i){ return i.item === _key; })>>
+  <<if _existing>>
+    <<run _existing.qty += 1>>
+  <<else>>
+    <<run $inventory.push({item:_key, name:_name, qty:1})>>
+  <</if>>
+  <p class="pickup">📦 Picked up: <strong><<= _name>></strong></p>
+<</widget>>
+
+/* <<hasItem "item_key">> — check if inventory contains item (sets _hasItem) */
+<<widget "hasItem">>
+  <<set _hasItem to $inventory.some(function(i){ return i.item === $args[0] and i.qty gt 0; })>>
+<</widget>>
+
+/* <<inventory>> — display all inventory items */
+<<widget "inventory">>
+  <<if $inventory.length gt 0>>
+    <div class="inventory-list">
+      <h4>Inventory (<<= $inventory.length>> items)</h4>
+      <ul>
+        <<for _i = 0; _i lt $inventory.length; _i++>>
+          <<set _item to $inventory[_i]>>
+          <li><<= _item.name>> <<if _item.qty gt 1>>(x<<= _item.qty>>)<</if>></li>
+        <</for>>
+      </ul>
+    </div>
+  <<else>>
+    <p class="inventory-empty"><em>No items in inventory.</em></p>
+  <</if>>
+<</widget>>
+
+/* <<hasItemCheck "item_key">> — conditional: if player has item, show optional link */
+<<widget "hasItemCheck">>
+  <<set _key to $args[0]>>
+  <<hasItem _key>>
+  <<if _hasItem>>
+    <<if $args[1]>>
+      <<link $args[1] $args[2]>><</link>>
+    <</if>>
+  <</if>>
+<</widget>>

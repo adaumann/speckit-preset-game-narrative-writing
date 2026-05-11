@@ -341,6 +341,127 @@ currency:
 
 ---
 
+## VI-B. Randomness & Economy Model
+<!-- Configured by speckit.constitution. Read by speckit.compile, speckit.implement,
+     and speckit.checklist to validate loot, enemy, and container authoring.
+     All fields have defaults — only override when the project departs from them. -->
+
+```yaml
+randomness_model:
+
+  # ── Loot drops ────────────────────────────────────────────────────────────
+  # How item drops from enemies and containers are resolved at runtime.
+  #
+  #   fixed         — every item in a container's pool is always granted (weight ignored).
+  #                   Use for handcrafted narrative loot (key items, story rewards).
+  #   weighted      — each item has an independent % chance (weight 1–100).
+  #                   Default model for combat drops and explorable containers.
+  #   d100_table    — one roll picks a row from an ordered CR/tier table.
+  #                   Use when you want classic TTRPG-style "roll on the treasure table" feel.
+  #
+  loot_model: weighted          # fixed | weighted | d100_table
+
+  # ── Gold scale ────────────────────────────────────────────────────────────
+  # Multiplier applied to the baseline CR→gold range in the Loot & Treasure table.
+  # 1.0 = default 5e table values. 0.5 = half gold (grittier). 2.0 = generous.
+  gold_scale: 1.0
+
+  # ── Currency tiers ────────────────────────────────────────────────────────
+  # Which denominations are active. Inactive tiers are not tracked as variables.
+  # speckit.compile only emits StoryInit lines for active tiers.
+  currency_tiers:
+    copper: false               # 1 cp = 0.01 gp
+    silver: false               # 1 sp = 0.1 gp
+    gold: true                  # primary currency
+    platinum: false             # 1 pp = 10 gp
+
+  # ── Enemy spawns ──────────────────────────────────────────────────────────
+  # Whether enemy groups in combat encounters are fixed or can vary in count.
+  #
+  #   scripted      — exact enemy list is always set by the author in the node.
+  #                   speckit.checklist flags any combat node with no $combat_enemies <<set>>.
+  #   variant_range — author declares min/max; runtime picks count in that range.
+  #                   Format in node: <<set $combat_enemies to _spawnGroup("goblin_patrol", 2, 4)>>
+  #                   _spawnGroup is emitted by speckit.compile from the encounter definition.
+  #
+  enemy_spawn_model: scripted   # scripted | variant_range
+
+  # ── Container respawn ─────────────────────────────────────────────────────
+  # When (if ever) a looted container refills. Applies to <<lootContainer>> containers.
+  # "never" is strongly recommended for story-driven games to preserve consequence.
+  #
+  #   never         — $loot_opened_[id] stays true forever. Container shows "Empty."
+  #   long_rest     — container refills after the party takes a long rest
+  #                   ($rest_count increments; speckit.compile emits the reset hook).
+  #   in_game_day   — refills each new in-game day ($day_counter changes).
+  #
+  container_respawn: never      # never | long_rest | in_game_day
+
+  # ── Quest rewards ─────────────────────────────────────────────────────────
+  # Whether quest completion payouts (XP, gold, items) are fixed or scaled.
+  #
+  #   fixed         — reward values are authored verbatim in quests-template.md.
+  #   level_scaled  — base reward × (party_level / design_level) clamped to [0.5, 2.0].
+  #                   Useful for open-world games where quest order varies.
+  #
+  quest_reward_model: fixed     # fixed | level_scaled
+
+  # ── Quest availability ────────────────────────────────────────────────────
+  # Whether optional/side quests all appear in every playthrough or are culled.
+  #
+  #   all           — all quests declared in quests-template.md are always available
+  #                   (subject to their own trigger conditions).
+  #   random_pool   — side/optional quests are drawn from a pool each playthrough.
+  #                   Set pool_size to how many are offered per act.
+  #                   speckit.compile emits a StoryInit pool-draw block.
+  #   faction_gated — only quests whose faction matches the player's highest-rep
+  #                   faction at quest-unlock time are shown (no random element).
+  #
+  quest_availability: all       # all | random_pool | faction_gated
+  quest_pool_size: 3            # used only when quest_availability: random_pool
+                                # number of side quests drawn per act
+
+  # ── World map travel encounters ───────────────────────────────────────────
+  # Whether moving between Areas/Regions on the world map can trigger random events.
+  #
+  #   none          — travel is always safe; only scripted travel scenes fire.
+  #   encounter_table — each travel link may trigger an encounter drawn from a
+  #                     per-region table (see world-map.md ## Travel Encounter Tables).
+  #                     Roll: d20 + $region_[name]_danger vs. encounter_dc.
+  #                     speckit.compile emits the <<travelRoll>> call in travel nodes.
+  #   scripted_only — same as none but makes the intent explicit.
+  #
+  travel_encounters: none       # none | encounter_table | scripted_only
+  travel_encounter_dc: 12       # DC for d20+danger roll; used only when encounter_table
+
+  # ── World map fog of war ──────────────────────────────────────────────────
+  # Whether Locations on the world map are hidden until the player discovers them.
+  #
+  #   none          — all Locations visible from the start (classic hub map).
+  #   visited       — Location appears on map only after the player has been there.
+  #   region_unlock — Location appears when its parent Region is unlocked
+  #                   (via <<regionUnlock>> from sugarcube-spatial-init-template.twee).
+  #
+  world_map_fog: none           # none | visited | region_unlock
+```
+
+> **speckit.compile reads this block** to:
+> - Set `loot_model` on the generated `$loot_table_registry` comment header
+> - Emit `StoryInit` lines only for active `currency_tiers`
+> - Emit `_spawnGroup()` JS helper when `enemy_spawn_model: variant_range`
+> - Emit `$rest_count` / `$day_counter` reset hooks when `container_respawn` is not `never`
+> - Apply `gold_scale` multiplier when populating container `gold_min` / `gold_max` from CR tables
+> - Emit a `$quest_pool` StoryInit draw block when `quest_availability: random_pool`
+> - Emit `<<travelRoll>>` calls in travel nodes when `travel_encounters: encounter_table`
+> - Set `<<wmLoc>>` widget visibility mode in `sugarcube-world-map-template.twee` based on `world_map_fog`
+>
+> **speckit.checklist validates**:
+> - `loot_model: fixed` → warns if any item in a loot table has weight < 100
+> - `enemy_spawn_model: scripted` → CRITICAL if a combat node has no `$combat_enemies` set
+> - `container_respawn: never` → warns if a node resets `$loot_opened_*` manually
+
+---
+
 ## VII. Prose Style Mode
 
 <!-- Configured by speckit.constitution. Referenced by speckit.implement and speckit.checklist

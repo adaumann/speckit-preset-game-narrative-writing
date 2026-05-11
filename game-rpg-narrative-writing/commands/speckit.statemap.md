@@ -53,9 +53,27 @@ Optional flags:
 
 1. Load `specs/variables.md`: All game variables, types, ranges, initial values
 2. Load `specs/plan.md`: Branch structure, node sequence, merge points
-3. Load all `draft/[ENGINE]/NODE-*.md` files
-4. Extract all variable mutations (assignments, increments, flag sets)
-5. Identify branch divergence and convergence points
+3. Load `specs/world-map.md` if present: Spatial variable registry (`$world_*`, `$region_*`, `$area_*`, `$loc_*`)
+4. Load all `draft/[ENGINE]/NODE-*.md` files
+5. Extract all variable mutations (assignments, increments, flag sets)
+6. Identify branch divergence and convergence points
+
+## Spatial Variable Naming Convention (RPG)
+
+> When `specs/world-map.md` is present, enforce the following naming convention for all spatial state variables.
+> Violations are flagged as **SPATIAL NAMING** warnings in the state map output.
+
+| Prefix | Scope | Examples | Set When |
+|---|---|---|---|
+| `$world_*` | Campaign-wide | `$world_artifact_found`, `$world_act` | Major campaign events, act transitions |
+| `$region_*` | Per-Region | `$region_thornwood_unlocked`, `$region_harbor_faction` | Region unlock, dominant faction change |
+| `$area_*` | Per-Area | `$area_vault_explored`, `$area_mines_cleared` | Area completion, exploration percentage |
+| `$loc_*` | Per-Location | `$loc_tavern_visited`, `$loc_tavern_state` | First visit, location state changes (intact/damaged/destroyed) |
+| (no prefix) | Scene-local / transient | `$combat_result`, `$check_passed` | Scene-scoped; cleared after scene or discarded |
+
+**Lint check — spatial variable scoping**:
+- If a `$loc_` variable is *written* in a node whose `parent_location` does not match the variable's Location, flag as: `SPATIAL NAMING: $loc_tavern_state written in NODE-NNN (parent_location: LOC-Dungeon) — expected LOC-Tavern`
+- If a `$region_` variable is written in a node but the node's parent Location is not in that Region (per `world-map.md`), flag as: `SPATIAL NAMING: $region_thornwood_unlocked written outside REGION-Thornwood context`
 
 ## Execution Steps
 

@@ -140,6 +140,33 @@ Then:
    - Flag any route with >3× imbalance vs. others as WARNING (e.g., Stealth 100 points, Combat 25 points)
    - **Variable Naming**: Verify route-exclusive variables use route-prefixed naming (e.g., `$stealth_discovered_tunnel` not `$discovered_tunnel`)
    - Flag unprefixed route-exclusive variables as WARNING (risk of accidental cross-route access)
+
+3b. **Spatial Alignment (Section E)** *(skip if `specs/world-map.md` absent)*
+
+   Load `specs/world-map.md`, `specs/locations.md`, and all node frontmatter. Run the following checks:
+
+   - **E1 — NODE → LOC chain**: Every node must have `parent_location: LOC-xxx` in frontmatter. Flag missing `parent_location` as WARNING (cannot verify spatial placement).
+   - **E2 — LOC reference integrity**: Every `parent_location` value referenced in any node must exist as a Location entry in `specs/locations.md`. Flag unregistered LOC-IDs as CRITICAL.
+   - **E3 — Location → Area chain**: Every Location entry in `specs/locations.md` must have `parent_area: AREA-xxx`. Flag missing `parent_area` as WARNING.
+   - **E4 — Location → Region chain**: Every Location entry in `specs/locations.md` must have `parent_region: REGION-xxx` matching the Area's parent Region in `world-map.md`. Flag mismatch as WARNING.
+   - **E5 — Area coverage**: Every Area in `world-map.md` must have ≥1 Location registered in `locations.md`. Flag Areas with zero Locations as CRITICAL (Area is a spatial dead end).
+   - **E6 — Region coverage**: Every Region in `world-map.md` must have ≥1 Area. Flag Regions with zero Areas as WARNING.
+   - **E7 — Hub passage IDs**: Every Location registered in `locations.md` that has scenes must have a Hub Passage ID in the format `LOC-{ShortName}`. Flag Locations without a Hub Passage ID as WARNING.
+   - **E8 — Orphan Locations**: Every Location in `locations.md` must appear in `world-map.md` under some Area and Region. Flag Locations not appearing in `world-map.md` as WARNING.
+
+   Report additions:
+   ```
+   ### Spatial Alignment (Section E)
+   E1 — NODEs missing parent_location: [N]
+   E2 — Invalid parent_location references: [N]  (CRITICAL)
+   E3 — Locations missing parent_area: [N]
+   E4 — Location-Region chain mismatches: [N]
+   E5 — Areas with no Locations: [N]  (CRITICAL)
+   E6 — Regions with no Areas: [N]
+   E7 — Locations missing Hub Passage ID: [N]
+   E8 — Orphan Locations (not in world-map): [N]
+   ```
+
 4. **Output structured report**:
 
    ```
@@ -165,7 +192,7 @@ Then:
 
    ### Summary
    CRITICAL: N | WARNINGS: N | PASS: N
-   Nodes analyzed: N | Flowmap nodes: N | Endings checked: N | Variables checked: N | Relationships checked: N | Timeline constraints: [N checked / skipped]
+   Nodes analyzed: N | Flowmap nodes: N | Endings checked: N | Variables checked: N | Relationships checked: N | Timeline constraints: [N checked / skipped] | Spatial checks: [N checked / skipped]
    **[For RPG]** Companions: [N companions with loyalty tracking] | Factions: [N factions with reputation tracking] | Sessions: [Session range] | Routes: [N routes, imbalance ratio]
    Recommended action: [clear to QA / fix criticals first / run speckit.revise on flagged nodes]
    ```

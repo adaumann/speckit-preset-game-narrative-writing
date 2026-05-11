@@ -167,87 +167,78 @@ game_bible_version: [GAME_BIBLE_VERSION]
 
 ---
 
-## II. Active Mechanics
+## II. Mechanics Configuration
 
-<!-- List all mechanic hooks used in this project.
-     Hooks not declared here will trigger a validation error in speckit.checklist.
-     Tier 1 hooks are fully exported. Tier 2 hooks export with a warning comment. -->
+<!-- NARRATIVE DESIGN FOCUS
+     Enable only the mechanics your narrative requires.
+     All enabled mechanics export to SugarCube for rapid prototyping.
+     See mechanics-template.md for hook syntax and export behavior. -->
 
-### Tier 1 Hooks (v1.0 — fully exported)
+### Enabled Mechanics (Checkboxes)
 
-| Hook | Enabled | Notes |
-|---|---|---|
-| `flag` | [yes/no] | |
-| `counter` | [yes/no] | |
-| `visited` | [yes/no] | |
-| `inventory` | [yes/no] | |
-| `timer` | [yes/no] | |
-| `trust` | [yes/no] | |
-| `currency` | [yes/no] | |
-| `npc_state` | [yes/no] | |
-| `ending_condition` | [yes/no] | |
+Check which mechanics your narrative uses. Unchecked mechanics will not export.
 
-### Tier 2 Hooks (v1.x — stubs, export with warning)
+**Core State Mechanics:**
+- [ ] `flag` — Boolean state (quests, puzzles, dialogue seen)
+- [ ] `counter` — Integer tracking (reputation, day counter, encounter count)
+- [ ] `visited` — First-visit detection (intro dialogue, tutorial)
+- [ ] `inventory` — Item management (keys, tools, collectibles)
+- [ ] `attribute` — Player stats (intelligence, wisdom, power, gold, custom)
 
-| Hook | Enabled | Notes |
-|---|---|---|
-| `knowledge` | [yes/no] | |
-| `faction` | [yes/no] | |
-| `location_state` | [yes/no] | |
-| `object_state` | [yes/no] | |
-| `choice_memory` | [yes/no] | |
-| `clue` | [yes/no] | |
+### Attribute Configuration
 
-### Tier 3 Hooks (v2.x — point-and-click / high-fidelity)
+Only fill if `attribute` mechanics are enabled.
 
-| Hook | Enabled | Notes |
-|---|---|---|
-| `verb` | [yes/no] | Examine/Interact/Talk modes |
-| `move` | [yes/no] | Character navigation/walking |
-| `hotspot` | [yes/no] | UI visibility tracking |
-| `audio` | [yes/no] | Scripted SFX triggers |
-| `inventory_combine` | [yes/no] | Item crafting/merging |
-| `gated_choice` | [yes/no] | Timed decisions |
+Define the player character's stats. These gate dialogue choices and modify outcomes.
 
----
+| Attribute | Variable Name | Type | Range | Default | Use Case |
+|---|---|---|---|---|---|
+| Intelligence | `$character.intelligence` | int | 1–10 | [value] | Logical/puzzle dialogue choices |
+| Wisdom | `$character.wisdom` | int | 1–10 | [value] | Moral/spiritual dialogue choices |
+| Power | `$character.power` | int | 1–10 | [value] | Combat/intimidation outcomes |
+| Gold | `$character.gold` | int | 0–[max] | [value] | Currency; purchase/bribe gating |
+| **Custom:** | `$character.[name]` | int\|string | [min–max] | [value] | User-defined attribute |
+| **Custom:** | `$character.[name]` | int\|string | [min–max] | [value] | User-defined attribute |
 
-## III. Inventory Configuration
-<!-- Only fill when Hook: inventory is enabled -->
+**Example:**
+```yaml
+attributes:
+  intelligence:
+    variable: $character.intelligence
+    range: [1, 10]
+    default: 5
+  wisdom:
+    variable: $character.wisdom
+    range: [1, 10]
+    default: 5
+  power:
+    variable: $character.power
+    range: [1, 10]
+    default: 5
+  gold:
+    variable: $character.gold
+    range: [0, 1000]
+    default: 50
+  charisma:           # custom
+    variable: $character.charisma
+    range: [1, 10]
+    default: 5
+```
+
+### Inventory Configuration
+
+Only fill if `inventory` mechanics are enabled.
 
 ```yaml
 inventory:
-  type: array          # array | slots
-  capacity: [N]        # max items; 0 = unlimited
-  persistence: save    # save | session (session = resets on load)
-  weight_system: false # true = items have weight values in glossary.md
+  type: simple         # simple | equipped
+  capacity: unlimited  # unlimited | N items
+  display_widget: true # Show inventory UI in SugarCube
+  starting_items:
+    - rusty_key
+    - journal
+    - travel_pack
 ```
-
----
-
-## IV. Timer Configuration
-<!-- Only fill when Hook: timer is enabled -->
-
-```yaml
-timer:
-  type: turns          # turns | countdown
-  unit: turns          # turns | seconds (seconds: Sugarcube JS only)
-  failure_node: [NODE_ID]   # node reached when timer expires
-  warning_threshold: [N]    # turns remaining when warning fires
-```
-
----
-
-## V. Attribute Configuration
-<!-- Fill for RPG-style numeric attributes tracked as counters or trust hooks -->
-
-| Attribute | Variable Name | Range | Default | Hook Type |
-|---|---|---|---|---|
-| [NAME] | [VAR_NAME] | [MIN–MAX] | [DEFAULT] | counter / trust |
-| [NAME] | [VAR_NAME] | [MIN–MAX] | [DEFAULT] | counter / trust |
-
----
-
-## VI. Currency Configuration
 <!-- Only fill when Hook: currency is enabled -->
 
 ```yaml

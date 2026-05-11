@@ -126,7 +126,7 @@ ACHIEVEMENTS:
 
 HIDDEN CONTENT (scenes):
   HID-001: "Victor's Letter"
-    Unlock: Ending A + check specific location (NODE-030 secret passage)
+    Unlock: Ending A + check specific location (LOC-Safehouse / secret passage, NODE-030)
     Reward: Additional scene (1,000 words)
     Description: "Discover a letter Victor left for you"
     Gating: Optional; doesn't affect main ending
@@ -190,7 +190,7 @@ ACH-001 (Redeemed Victor):
   Expected finder rate: 70%+ of players
 
 HID-001 (Victor's Letter):
-  Location: NODE-030 secret passage (not labeled)
+  Location: LOC-Safehouse / secret passage (NODE-030, not labeled)
   Hint: Marcus mentions "checking the old safehouse"
   Discoverability: 3 (MODERATE)
   Expected finder rate: 30–40% of attentive players

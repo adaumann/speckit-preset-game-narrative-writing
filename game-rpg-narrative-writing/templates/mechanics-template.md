@@ -527,6 +527,326 @@
 
 ---
 
+### loot — Container & Drop Table
+
+<!-- Declares loot tables for containers (chests, corpses, post-combat drops) and
+     quest completion payouts. The loot model (fixed / weighted / d100_table) is set
+     in constitution.md ## VI-B. Randomness & Economy Model.
+
+     Three modes:
+       container=[container_id]   — declares a browsable or one-shot drop container
+       drop=[container_id]        — same schema; marks this table as a post-combat drop
+                                    (enemy body, not a placed chest)
+       quest=[quest_name]         — quest completion payout (XP + items; gold via currency=)
+
+     container_id must match a $loot_opened_[container_id] StoryInit variable.
+     All item_variable values must be declared in variables.md ## Inventory.
+     gold_min / gold_max are scaled by constitution.md gold_scale at compile time.
+     weight: 1–100 = % chance to include the item (weighted model only).
+             weight: 100 always includes the item. weight: 0 never includes it.
+     qty: how many copies of the item to grant (default 1).
+
+     speckit.compile generates:
+       - $loot_table_registry entry in StoryInit
+       - $loot_opened_[container_id] = false in StoryInit
+       - $quest_[quest_name]_state / _stage init lines (quest mode)
+     speckit.checklist validates all item_variable and container_id references. -->
+
+```
+[MECHANIC:LOOT container=[container_id] label="[Display Name]" gold_min=N gold_max=N]
+  [item_variable] weight=[W] qty=[Q]  [Display Name of this item]
+  [item_variable] weight=[W] qty=[Q]  [Display Name of this item]
+[/MECHANIC]
+```
+
+```
+[MECHANIC:LOOT drop=[container_id] label="[Enemy/Corpse Name]" gold_min=N gold_max=N]
+  [item_variable] weight=[W] qty=[Q]  [Display Name]
+[/MECHANIC]
+```
+
+```
+[MECHANIC:LOOT quest=[quest_name] xp=N gold=N]
+  [item_variable]  [Key item awarded on quest completion]
+[/MECHANIC]
+```
+
+| Parameter | SugarCube Export | Tabletop Output | Notes |
+|---|---|---|-|
+| container | `$loot_table_registry[id]` StoryInit entry + `$loot_opened_id = false` | GM callout: container contents list | Player browses; items taken individually |
+| drop | Same as container + flagged as combat drop | GM callout: loot line under monster stat block | Auto-granted on `<<combatEnd "won">>` |
+| quest | `<<questReward>>` call in node + StoryInit quest vars | GM callout: rewards block at quest completion | Gold issued via `<<lootGold>>`; items via `<<lootFixed>>` |
+| weight | Drop probability 1–100 (weighted model) | Listed with % likelihood | Ignored when `loot_model: fixed` |
+| qty | Number of copies granted | Quantity shown in list | Default 1 |
+| gold_min / gold_max | `random(min, max)` gp (or flat if equal) | GP range shown | Scaled by `gold_scale` from constitution |
+
+<!-- Validation rules (speckit.checklist LT checks):
+     - Every container_id must have a matching $loot_opened_[id] variable
+     - Every item_variable must be declared in variables.md ## Inventory
+     - Nodes with scene_type: combat must have a MECHANIC:LOOT drop= or explicit no-loot comment
+     - Quest payout blocks must match quests-template.md Rewards section for that quest -->
+
+---
+
+---
+
+### rest — Short Rest, Long Rest & Time Advance
+
+<!-- Declares a rest event in the node. Drives HP recovery, spell slot restoration,
+     time tracking, and resets for containers / quests per constitution.md ## VI-B.
+
+     Three rest types:
+       type=short       — 1 hour; spend hit dice, no spell slot recovery
+       type=long        — 8 hours; full HP + all spell slots + half hit dice returned
+       type=milestone   — no mechanical recovery; narrative only (dream, revelation)
+
+     location: flavour tag shown in RestUI header.
+       Values: inn | camp | cave | safe_house | any string
+     return: NODE-ID or passage name to navigate to after rest completes.
+       Required for type=long. Omit for type=short (stays in scene).
+     interruption: set to true if the rest can be cut short by a story trigger.
+       When true, speckit.implement adds a branch for the interruption outcome.
+
+     speckit.compile generates:
+       - <<shortRestScene>> / <<longRestScene>> / prose-only block per type
+       - <<restReset "long">> container and quest resets per constitution config
+       - <<recoverSpellSlots N MAX>> lines inside longRestScene per variables.md
+     speckit.checklist validates:
+       - Every Area has ≥1 rest node (SP-005 already covers this)
+       - Long rest nodes have a return= target (RT-002)
+       - Milestone rest nodes have no widget calls (RT-003) -->
+
+```
+[MECHANIC:REST type=short location=camp]
+[prose describing the party resting — sensation, atmosphere, NPC reactions]
+[/MECHANIC]
+```
+
+```
+[MECHANIC:REST type=long location=inn return=NODE-050_Morning]
+[prose describing settling in for the night — what the party says, the environment]
+[/MECHANIC]
+```
+
+```
+[MECHANIC:REST type=milestone location=camp]
+[prose — a dream, a vision, a revelation; no HP/slot recovery]
+[/MECHANIC]
+```
+
+```
+[MECHANIC:REST type=long location=camp return=NODE-060_Dawn interruption=true]
+[prose describing the night — then interrupted by an event]
+[prose describing the interruption trigger]
+[/MECHANIC]
+```
+
+| Parameter | SugarCube Export | Tabletop Output | Notes |
+|---|---|---|---|
+| type=short | `<<shortRestScene>>` + HP recovery prose | GM callout: hit die roll, HP gained | No spell slot recovery; `$rest_type_last = "short"` |
+| type=long | `<<longRestScene location return>>` | GM callout: full recovery summary | Advances `$day_counter`, calls `<<restReset "long">>` |
+| type=milestone | Prose only + `/* milestone rest */` comment | Narrative block only | No mechanical effect |
+| location | Stored as `$rest_type_last_location`; shown in RestUI header | Listed in GM callout | Default: "camp" |
+| return | ReturnPassage arg to `<<longRestScene>>` | Next node reference | Required for type=long |
+| interruption=true | Generates `$rest_interruption = true` branch | Adds interruption note in GM callout | Rest is cut short; HP/slot recovery partial (50%) |
+
+<!-- Validation rules (speckit.checklist RT checks):
+     - Every scene_type: rest node must declare a MECHANIC:REST block
+     - type=long nodes must have return= set
+     - type=milestone nodes must NOT call <<shortRestScene>> or <<longRestScene>>
+     - Long rest recovery must not be manually coded — always use <<longRestScene>>
+     - Container and quest resets must not be written manually when speckit.compile
+       is responsible for generating them via <<restReset>> -->
+
+---
+
+### craft — Recipe-Based Item Crafting
+
+<!-- Declares a crafting interaction in the node. Drives ingredient consumption,
+     optional skill checks, result item grants, and station access.
+
+     Two modes:
+       station=[station_id]   — opens the CraftUI menu for the player to choose a recipe
+                                (player-driven; station must be unlocked)
+       recipe=[recipe_id]     — scripted craft attempt (author-controlled; inline)
+
+     station_id: must match a $craft_station_[id]_unlocked variable in StoryInit.
+                 Declare stations in world-building-template.md ## Crafting Stations.
+     recipe_id:  must match an entry in $craft_registry.
+                 Declare recipes in world-building-template.md ## Recipes.
+     return:     NODE-ID to navigate to when CraftUI closes (station mode only).
+
+     speckit.compile generates:
+       - $craft_registry StoryInit block from world-building-template.md ## Recipes
+       - $craft_station_[id]_unlocked = false StoryInit lines per station
+     speckit.checklist validates:
+       - station_id and recipe_id exist in $craft_registry / StoryInit
+       - ingredient item vars are declared in variables.md ## Inventory
+       - result_item is declared in variables.md ## Inventory -->
+
+```
+[MECHANIC:CRAFT station=alchemy_bench return=NODE-040_AfterCraft]
+[prose describing the player approaching the station — sight, smell, NPC comment]
+[/MECHANIC]
+```
+
+```
+[MECHANIC:CRAFT recipe=bandage_kit]
+[prose describing the scripted craft attempt — the action, the result]
+[/MECHANIC]
+```
+
+```
+[MECHANIC:CRAFT unlock_station=forge]
+[prose describing when the player gains access — the smith nods, the gate opens]
+[/MECHANIC]
+```
+
+| Parameter | SugarCube Export | Tabletop Output | Notes |
+|---|---|---|---|
+| station | `<<craftStation "id" "return">>` navigates to CraftUI | GM table: available recipes at this station | Player browses and selects; skill checks rolled on click |
+| recipe | `<<craftAttempt "id">>` + success/fail prose | GM callout: ingredient check, roll if skill_check | Scripted; author branches on `$last_craft_success` |
+| unlock_station | `<<craftUnlockStation "id">>` | GM note: station now available | Sets `$craft_station_[id]_unlocked = true` |
+
+<!-- Validation rules (speckit.checklist CF checks):
+     - station_id must have a matching $craft_station_[id]_unlocked variable
+     - recipe_id must exist in $craft_registry
+     - All ingredient item vars must be declared in variables.md ## Inventory
+     - result_item must be declared in variables.md ## Inventory
+     - Scripted craft nodes must branch on $last_craft_success in prose -->
+
+---
+
+### travel_encounter — Random Encounter on Region Travel
+
+<!-- Marks a travel node as an encounter-eligible crossing.
+     Only active when constitution.md travel_encounters: encounter_table.
+     If disabled (travel_encounters: none or scripted_only), this hook is a no-op
+     and speckit.compile strips it from output.
+
+     region=[REGION-ID]   — which region’s encounter table to roll against
+     return=[NODE-ID]     — passage to navigate to if no encounter triggers (safe passage)
+
+     The hook MUST be the last mechanic in the node, immediately before or instead of
+     the exit link. <<travelRoll>> handles navigation for both outcomes; do NOT add
+     a [[link]] or <<goto>> after it.
+
+     Encounter roll: d20 + $region_[ShortName]_danger vs. travel_encounter_dc (constitution.md)
+     On trigger: navigates to TravelEncounterTransition → resolves by type (combat/event/
+     discovery/hazard) → returns to ReturnPassage.
+     On safe: navigates directly to ReturnPassage.
+
+     speckit.compile generates:
+       - <<travelRoll "REGION-ID" "ReturnPassage">> in the travel node passage
+       - $travel_encounter_registry from world-map-template.md ## Travel Encounter Tables
+       - $region_[ShortName]_danger initialisers in StoryInit
+       - $travel_encounter_dc initialiser from constitution.md travel_encounter_dc
+     speckit.checklist validates:
+       - Every region referenced here has a table entry in world-map-template.md
+       - No exit [[link]] or <<goto>> exists after this hook in the same node
+       - combat-type encounters reference valid enemy keys (cross-check encounters-d5e.md) -->
+
+```
+[MECHANIC:TRAVEL_ENCOUNTER region=REGION-Thornwood return=NODE-050_ArriveVillage]
+[prose describing the journey — terrain, mood, the passage of time]
+[Do NOT add an exit link after this block — <<travelRoll>> navigates automatically]
+[/MECHANIC]
+```
+
+| Parameter | SugarCube Export | Tabletop Output | Notes |
+|---|---|---|---|
+| region | `<<travelRoll "REGION-ID" "ReturnPassage">>` | GM note: roll d20+danger vs. DC; see table | Must be the last statement in the node |
+| return | ReturnPassage arg to `<<travelRoll>>` | Next node if safe passage | Required |
+
+<!-- Validation rules (speckit.checklist TE checks):
+     - region= must be a valid REGION-ID registered in world-map-template.md
+     - The region must have an entry in world-map-template.md ## Travel Encounter Tables
+     - No [[link]] or <<goto>> may follow this hook in the same passage
+     - combat-type encounter enemies must be cross-referenced with encounters-d5e.md
+     - If travel_encounters: none in constitution, this hook should not appear in any node -->
+
+---
+
+### companion — Companion Approval, Recruitment, and Reactions
+
+<!-- Controls a companion's approval rating and party membership.
+     Companions are defined in constitution.md ## Companion System and
+     characters-template.md (one companion per file or one section per companion).
+     All companion IDs must match variables.md ## Companion Approval Tracking.
+
+     Hook variants:
+
+       MECHANIC:COMPANION id=[NAME] approval=[+/-N]
+         — Adjusts approval at this narrative moment. Display to player via prose.
+         — Sign is mandatory: +10 or -15, not just 10 or 15.
+
+       MECHANIC:COMPANION id=[NAME] action=recruit
+         — Companion formally joins the party here. Call exactly once per companion.
+         — Usually placed immediately after the recruit dialogue exchange.
+
+       MECHANIC:COMPANION id=[NAME] action=leave reason=[reason]
+         — Companion leaves the active party (still recruited; may rejoin).
+         — reason: betrayal | story_event | low_approval | death
+         — If reason=death: companion is permanently removed.
+
+       MECHANIC:COMPANION id=[NAME] react threshold=[N] approve="[prose]" reject="[prose]"
+         — Outputs approval_prose if approval >= N, reject_prose otherwise.
+         — Use for short inline reactions (1–2 sentences).
+         — Use <<if $[id]_tier is "warm">> blocks in .twee for multi-line branching.
+
+     speckit.compile generates:
+       — <<companionApproval "id" delta>> for approval changes
+       — <<companionRecruit "id">> for recruit
+       — <<companionLeave "id" "reason">> for leave
+       — <<companionReact "id" N "approve" "reject">> for react
+     speckit.checklist validates:
+       — All companion IDs exist in constitution.md ## Companion System
+       — Approval delta is a signed integer
+       — recruit is called before any approval adjustment for that companion
+       — leave reason=death matches a death-scene node context (scene_type: combat or cutscene)
+       — react threshold is within [-100, 100] -->
+
+```
+[MECHANIC:COMPANION id=thorne approval=+10]
+Thorne glances sideways at you, and for the first time allows himself a thin smile.
+[/MECHANIC]
+```
+
+```
+[MECHANIC:COMPANION id=thorne action=recruit]
+"Then we're agreed," Thorne says, shouldering his pack. "Lead on."
+[/MECHANIC]
+```
+
+```
+[MECHANIC:COMPANION id=mira action=leave reason=betrayal]
+Mira slams the door behind her. You hear her footsteps on the stairs and then nothing.
+[/MECHANIC]
+```
+
+```
+[MECHANIC:COMPANION id=mira react threshold=50
+  approve="Mira nods, impressed by your candour."
+  reject="Mira's jaw tightens. She says nothing."]
+[/MECHANIC]
+```
+
+| Variant | SugarCube Export | Tabletop Output | Notes |
+|---|---|---|---|
+| approval | `<<companionApproval "id" ±N>>` | GM note: +/-N approval for [Name] | Sign required |
+| recruit | `<<companionRecruit "id">>` | GM note: [Name] joins party | Once per companion |
+| leave | `<<companionLeave "id" "reason">>` | GM note: [Name] leaves; reason | death = permanent |
+| react | `<<companionReact "id" N "…" "…">>` | Conditional flavour text | Short prose only |
+
+<!-- Validation rules (speckit.checklist CM checks):
+     - companion id must be registered in constitution.md ## Companion System
+     - approval delta must be a signed integer (never bare number)
+     - recruit must precede all approval deltas for that companion across the full outline
+     - leave reason=death may only appear in combat or cutscene scene_type nodes
+     - react threshold must be numeric, within -100 to 100 -->
+
+---
+
 ## Tier 3 Hooks — Point-and-Click / High-Fidelity
 
 ### move — Actor Navigation

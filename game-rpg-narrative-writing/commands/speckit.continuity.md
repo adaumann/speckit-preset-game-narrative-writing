@@ -19,7 +19,7 @@ Provide one of:
 - A scope: `--act [N]` to scope to one act
 
 Optional flags:
-- `--check [types]` — run only specific checks (comma-separated: variables, pov, npc, dialogue, glossary, locations, relationships, series, timeline, thematic)
+- `--check [types]` — run only specific checks (comma-separated: variables, pov, npc, dialogue, glossary, locations, relationships, series, timeline, thematic, spatial)
 - `--act [N]` — scope to a single act
 - `--report` — write output to `continuity-report.md`
 - `--strict` — require all nodes to have `polished: [date]` before continuity check (default: optional)
@@ -41,10 +41,11 @@ Optional flags:
 6. If `--strict`: verify all node files have `polished: [date]` in frontmatter; warn if not found and continue.
 7. If `specs/glossary.md` exists: load for terminology consistency checks.
 8. If `specs/locations.md` exists: load for location state consistency checks.
-9. If `--check series` or `series-bible.md` exists: load `series-bible.md`.
-10. If `specs/themes.md` exists: load it for thematic drift and motif checks.
-11. If `specs/relationships.md` exists: load it for NPC dynamic consistency checks.
-12. If `specs/timeline.md` exists: load it for continuity constraint checks.
+9. If `specs/world-map.md` exists: load for spatial transition consistency checks (`--check spatial`).
+10. If `--check series` or `series-bible.md` exists: load `series-bible.md`.
+11. If `specs/themes.md` exists: load it for thematic drift and motif checks.
+12. If `specs/relationships.md` exists: load it for NPC dynamic consistency checks.
+13. If `specs/timeline.md` exists: load it for continuity constraint checks.
 
 ## Outline
 
@@ -117,6 +118,14 @@ Optional flags:
    - Flag contradictions: "Sanctuary Station described as 'sterile white' in NODE-005 but 'overgrown with moss' in NODE-012 — timeline unclear"
    - Append issues to `specs/locations.md` State Change Log
 
+11b. **Spatial transition consistency check** (`--check spatial`) *(skip if `specs/world-map.md` is absent)*
+   - For each node with `scene_type: travel`: verify both `origin_location` and `destination_location` fields are set and exist in `locations.md` — flag missing as CRITICAL
+   - For each travel connection in `world-map.md` marked as one-way: verify no scene in the destination Location links back to the origin Location without a return travel node — flag if violated as CRITICAL
+   - For each Area in `world-map.md`: verify at least one node with `scene_type: travel` and `destination_location` = a Location in this Area exists — flag missing entry scene as WARNING
+   - For each Area in `world-map.md`: verify at least one node with `scene_type: rest` exists in at least one Location of this Area — flag missing rest scene as WARNING
+   - Verify `$loc_*` variables in node prose match the node's `parent_location` — flag cross-location state writes as WARNING (see statemap `--check spatial-naming`)
+   - Report: "Spatial errors: [N] | Missing travel nodes: [N] | One-way violations: [N] | Areas without entry: [N] | Areas without rest: [N]"
+
 12. **Multi-party dialogue consistency check** *(skip if fewer than 2 NPCs in project)*
    - For each pair of NPCs (NPC-A, NPC-B) that interact in multiple nodes:
      - Verify their dialogue and interaction patterns are consistent with their relationship arc (from `specs/relationships.md` if present or inferred from trust state delta)
@@ -147,7 +156,7 @@ Optional flags:
    - If some nodes not polished: halt and report which nodes need polish before continuity can be validated in strict mode
 
 15. **Output**
-   - Report summary: "Variable errors: [N] | POV drift: [N] | NPC errors: [N] | Dialogue continuity: [N] | Glossary errors: [N] | Location state errors: [N] | Multi-party dialogue: [N] | Series errors: [N] | Thematic drift: [N] | Relationship errors: [N] | Timeline violations: [N]"
+   - Report summary: "Variable errors: [N] | POV drift: [N] | NPC errors: [N] | Dialogue continuity: [N] | Glossary errors: [N] | Location state errors: [N] | Spatial errors: [N] | Multi-party dialogue: [N] | Series errors: [N] | Thematic drift: [N] | Relationship errors: [N] | Timeline violations: [N]"
    - If RPG campaign: Add to summary: "Companion loyalty: [N] | Faction reputation: [N] | Route isolation: [N] | Accessibility consistency: [N] | Session carry-over: [N]"
    - If `--report`: write full details to `continuity-report.md` with sections per check type
    - Suggest: "Run `speckit.revise NODE-NNN` to fix flagged nodes. Run `speckit.polish NODE-NNN` to complete polish stage gate."

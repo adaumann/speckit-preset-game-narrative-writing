@@ -2,11 +2,41 @@
 node_id: [NODE_ID]
 title: [NODE_TITLE]
 act: [ACT_NUMBER]
+scene_type: [SCENE_TYPE]
+# scene_type: travel | exploration | dialogue | combat | rest | shop | quest_event | cutscene | hub
+#   travel      — player moves between Locations; references origin_location and destination_location
+#   exploration — player discovers points of interest within a Location or Area
+#   dialogue    — primary interaction is conversation / NPC decision
+#   combat      — primary interaction is a combat encounter
+#   rest        — safe zone; short or long rest; shop/crafting optional
+#   shop        — merchant transaction scene
+#   quest_event — quest stage trigger (receive, update, or complete a quest)
+#   cutscene    — narrative delivery, no player input
+#   hub         — Location hub passage (use LOC-xxx ID, not NODE-xxx)
+parent_location: [LOC_ID]
+# parent_location: the LOC-xxx this scene belongs to (e.g. LOC-DrunkGriffin)
+# For scene_type: travel, also set:
+# origin_location: [LOC_ID]
+# destination_location: [LOC_ID]
+parent_area: [AREA_ID]
+# parent_area: the AREA-xxx this Location belongs to (e.g. AREA-LowerCity)
+parent_region: [REGION_ID]
+# parent_region: the REGION-xxx this Area belongs to (e.g. REGION-Thornwood)
+# Full chain: REGION-xxx → AREA-xxx → LOC-xxx → this node
+# speckit.checklist SP-009 validates that parent_area is registered under parent_region
+# in specs/world-map.md, and parent_location is registered under parent_area.
+passage_name: [PASSAGE_NAME]
+# passage_name: the EXACT Twine passage title speckit.compile emits for this node.
+#   Used by <<wmLoc>>, hub [[links]], and <<travelRoll return=>> to navigate here.
+#   Convention: [NODE_ID]_[ShortTitle]  →  NODE-012_ArriveVillage
+#   For hub passages (scene_type: hub): use the LOC-xxx ID directly  →  LOC-DrunkGriffin
+#   For location-entry scenes: must match the destination_location in the referring travel node.
+#   speckit.checklist SP-008 validates all <<wmLoc passage=...>> and hub [[links]] against this field.
 status: DRAFT
 # status: DRAFT | APPROVED | SKIP
-# DRAFT    ? speckit.implement gates — will not draft until changed to APPROVED
-# APPROVED ? speckit.implement will draft prose for this node
-# SKIP     ? speckit.implement skips this node entirely
+# DRAFT    — speckit.implement gates — will not draft until changed to APPROVED
+# APPROVED — speckit.implement will draft prose for this node
+# SKIP     — speckit.implement skips this node entirely
 ---
 
 # Node Outline: [NODE_TITLE]
@@ -22,6 +52,10 @@ status: DRAFT
      What narrative or mechanical purpose does this node serve? -->
 
 **Narrative purpose**: [decision / consequence / revelation / setup / hub / transition / climax / ending]
+**Scene type**: [travel / exploration / dialogue / combat / rest / shop / quest_event / cutscene / hub]
+**Parent location**: [LOC-xxx — the Location hub this scene belongs to]
+**Location chain**: [REGION-xxx] → [AREA-xxx] → [LOC-xxx] → this node
+**Passage name**: [NODE_ID_ShortTitle — exact Twine passage anchor; must match `passage_name:` in frontmatter]
 **Tension level**: [1–10]
 **POV override**: [blank = use constitution.md default / or: second-person | third-person | first-person | character_name]
 **Thematic work**: [blank = none / or: motif MO-NNN appears | symbol [name] state changes | counter-theme voice present | theme-question advanced]

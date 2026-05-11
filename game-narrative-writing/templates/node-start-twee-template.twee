@@ -41,11 +41,11 @@ Test Tier Mechanics - Start
 	
 	Everything is labeled with numbers and codes. This isn't a place for comfort.
 	
-	[[Continue -> NODE-002]] or [[Return -> Start]]
+	[[Continue -> NODE-002]] or <<back "Return">>
 
 :: Check the Equipment  
 	You approach the equipment on the far wall. Rows of lights blink in sequence - red, amber, green. They seem to follow a pattern.
 	
 	You notice readouts for various parameters: health, status, conditions. Some of them seem to update as you watch.
 	
-	[[Continue -> NODE-002]] or [[Return -> Start]]
+	[[Continue -> NODE-002]] or <<back "Return">>

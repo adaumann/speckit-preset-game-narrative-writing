@@ -1,0 +1,907 @@
+/*
+  witchhunter-ui.twee
+  speckit sample project � Phase 0 output (generated UI passages)
+  StoryMenu, StoryCaption, StoryStylesheet, and all system UI passages.
+*/
+
+/* ══════════════════════════════════════════════════════════════════════════
+   STORY CHROME
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: StoryMenu
+<<link "⚔ Character" "CharacterSheet">><</link>>
+<<link "📜 Quests" "QuestJournal">><</link>>
+<<link "👥 Party" "PartyRoster">><</link>>
+<<link "✨ Spells" "SpellsUI">><</link>>
+<<link "⚔ Factions" "FactionUI">><</link>>
+<<link "🗺 World Map" "WorldMap">><</link>>
+<<link "🎒 Inventory" "InventoryUI">><</link>>
+
+:: StoryCaption
+/* HP bar */
+<div id="sc-hp">
+  <span class="sc-label">HP</span>
+  <<= '<meter value="' + $partyCurrentHP + '" max="' + $partyMaxHP + '" low="8" optimum="' + $partyMaxHP + '"></meter>'>>
+  <<= $partyCurrentHP>>/<<= $partyMaxHP>>
+</div>
+
+/* Gold */
+<div id="sc-gold">💰 <<= $gold>> gp</div>
+
+/* Active quest */
+<<set _aq to $quest_registry.find(function(q){ return State.variables["quest_"+q.id+"_state"] === "active"; })>>
+<<if _aq>>
+<div id="sc-quest">
+  📜 <<= _aq.display>><br>
+  <em><<= _aq.stages[State.variables["quest_"+_aq.id+"_stage"]] || "">></em>
+</div>
+<</if>>
+
+/* Party members */
+<<set _partyList to $companion_registry.filter(function(c){ return State.variables[c.id+"_in_party"] and State.variables[c.id+"_alive"] !== false; })>>
+<<if _partyList.length gt 0>>
+<div id="sc-party">
+  <<for _pi = 0; _pi lt _partyList.length; _pi++>>
+    <<set _pe to _partyList[_pi]>>
+    👤 <<= _pe.display>> <em class="tier-<<= State.variables[_pe.id+"_tier"]>>">(<<= State.variables[_pe.id+"_tier"]>>)</em><br>
+  <</for>>
+</div>
+<</if>>
+
+/* Faction tier-change notifications (shown for one turn) */
+<<if $faction_tier_notifications.length gt 0>>
+<div class="faction-notifications">
+  <<for _ni, _notif range $faction_tier_notifications>>
+    <div class="faction-notif faction-notif-<<= _notif.to>>">
+      ★ <<= _notif.display>>: <<= _notif.from>> → <<= _notif.to>>
+    </div>
+  <</for>>
+</div>
+<<set $faction_tier_notifications to []>>
+<</if>>
+
+/* Faction standings (summary) */
+<<set _visibleFactions to $faction_registry.filter(function(f) { return !f.hidden; })>>
+<<if _visibleFactions.length gt 0>>
+<div id="sc-factions">
+  <<for _fi, _fac range _visibleFactions>>
+    <<set _tier to State.variables["faction_" + _fac.id + "_tier"] || "neutral">>
+    <<= _fac.icon>> <<= _fac.display>>: <<= _tier>><br>
+  <</for>>
+</div>
+<</if>>
+
+/* Day counter */
+<div id="sc-day">Day <<= $day_counter>></div>
+
+/* Navigation */
+<div id="sc-nav">
+  <<link "🎒 Inv" "InventoryUI">><</link>> �
+  <<link "⚔ Char" "CharacterSheet">><</link>> �
+  <<link "📜 Quests" "QuestJournal">><</link>> �
+  <<link "🗺 Map" "WorldMap">><</link>>
+</div>
+
+:: StoryStylesheet [stylesheet]
+/* ── Global ─────────────────────────────────────────── */
+body { background: #1a1614; color: #d4c9b8; font-family: Georgia, serif; }
+#story { max-width: 780px; margin: 0 auto; padding: 1.5em; }
+#sidebar { background: #211e1b; border-right: 1px solid #3a342e; padding: 1em; }
+a, a:visited { color: #c4a862; text-decoration: none; }
+a:hover { color: #e8c87a; text-decoration: underline; }
+
+/* ── Sidebar chrome ──────────────────────────────────── */
+#sc-hp { margin-bottom: .6em; }
+#sc-hp meter { width: 100%; }
+#sc-gold { color: #c4a862; margin-bottom: .4em; }
+#sc-quest { font-size: .85em; background: #2a2520; padding: .4em .6em; border-left: 3px solid #7a5c2e; margin-bottom: .5em; }
+#sc-party { font-size: .85em; margin-bottom: .4em; }
+#sc-day { font-size: .8em; color: #7a6e60; }
+#sc-nav { margin-top: .8em; font-size: .85em; line-height: 2; }
+#sc-nav a { color: #c4a862; }
+#sc-nav a:hover { color: #e8c87a; }
+.tier-warm { color: #7ec87e; }
+.tier-devoted { color: #a0e0a0; font-weight: bold; }
+.tier-cold { color: #a0a0c0; }
+.tier-hostile { color: #e07070; }
+
+/* ── Hub passages ────────────────────────────────────── */
+.hub-scene, .hub-travel { padding: .35em 0; }
+.hub-locked { color: #6a5e50; font-style: italic; }
+.hub-guard { color: #7a5c2e; font-size: .85em; }
+.loc-breadcrumb { font-size: .8em; color: #7a6e60; margin-bottom: 1em; }
+.loc-breadcrumb-current { color: #c4a862; }
+.loc-desc { color: #b8aa98; font-style: italic; border-left: 2px solid #3a342e; padding-left: .8em; margin: .8em 0; }
+
+/* ── Combat ──────────────────────────────────────────── */
+.combat-log { background: #1e1b18; border: 1px solid #3a342e; padding: .6em; height: 9em; overflow-y: auto; font-size: .82em; font-family: monospace; }
+.combat-enemy { border: 1px solid #3a342e; padding: .4em .7em; margin: .3em 0; }
+.combat-enemy .enemy-hp { color: #e07070; }
+.combat-warn { color: #c47040; font-style: italic; }
+.combat-actions button, .combat-actions a { display: inline-block; margin: .2em .4em .2em 0; padding: .3em .8em; background: #3a2e20; border: 1px solid #6a5e40; color: #d4c9b8; border-radius: 3px; }
+.combat-actions a:hover { background: #504030; }
+
+/* ── Quest / loot / craft / level-up toasts ─────────── */
+.quest-accept  { color: #7ec87e; font-weight: bold; }
+.quest-complete{ color: #a0e0a0; font-weight: bold; }
+.xp-gain       { color: #c4a862; font-style: italic; }
+.loot-gold     { color: #c4a862; }
+.pickup        { color: #88b8e0; }
+.loot-empty    { color: #6a5e50; font-style: italic; }
+.level-up      { color: #e8c87a; font-weight: bold; border: 1px solid #c4a862; padding: .4em; margin: .6em 0; }
+.rest-heal     { color: #7ec87e; font-style: italic; }
+
+/* ── World map ───────────────────────────────────────── */
+.wm-region     { font-weight: bold; color: #c4a862; margin-top: 1em; }
+.wm-loc        { margin-left: 1.2em; padding: .2em 0; }
+.wm-unknown    { color: #4a4238; font-style: italic; }
+.wm-visited    { }
+
+/* ── UI passages ─────────────────────────────────────── */
+.sheet-section { border-top: 1px solid #3a342e; margin-top: 1em; padding-top: .6em; }
+.sheet-ability { display: inline-block; text-align: center; width: 5em; margin: .3em; background: #2a2520; padding: .4em; border: 1px solid #3a342e; }
+.sheet-ability .mod { font-size: 1.2em; font-weight: bold; color: #c4a862; }
+.craft-recipe  { border: 1px solid #3a342e; padding: .5em; margin: .5em 0; }
+.craft-missing { color: #e07070; }
+.craft-ok      { color: #7ec87e; }
+.inv-item      { display: flex; justify-content: space-between; padding: .2em 0; border-bottom: 1px solid #2a2520; }
+.inv-action    { display: inline-block; padding: .2em .4em; margin-left: .3em; background: #3a2e20; border: 1px solid #6a5e40; border-radius: 2px; font-size: .85em; }
+
+/* ── Endings ─────────────────────────────────────────── */
+.ending-slide { background: #2a2520; border: 2px solid #3a342e; padding: 1.5em; margin: 1em 0; text-align: center; }
+.ending-title { font-size: 1.8em; color: #e8c87a; margin: 0 0 .4em 0; }
+.ending-type { font-size: .95em; font-weight: bold; margin: 0 0 .8em 0; }
+.ending-theme { font-size: 1.05em; color: #c4a862; margin: .8em 0; }
+.ending-description { color: #b8aa98; line-height: 1.6; margin: 1.2em 0; }
+.perception-success { color: #7ec87e; font-weight: bold; }
+.perception-fail { color: #7a6e60; font-style: italic; }
+
+/* ── Dialogue System ─────────────────────────────────── */
+.dialogue-npc { background: #2a2520; border: 2px solid #3a342e; padding: 1.2em; margin: 1em 0; border-radius: 4px; }
+.dialogue-npc h3 { color: #e8c87a; margin-top: 0; }
+.dialogue-npc p { color: #b8aa98; line-height: 1.8; font-style: italic; margin: 1em 0; }
+.dialogue-choices { margin: 1.5em 0; }
+.dialogue-choices button { display: block; width: 100%; text-align: left; padding: .8em; margin: .6em 0; background: #2a2520; border: 1px solid #3a342e; color: #d4c9b8; border-radius: 3px; cursor: pointer; }
+.dialogue-choices button:hover { background: #3a342e; border-color: #5a5240; color: #e8c87a; }
+
+/* ── Spell System ─────────────────────────────────── */
+.spell-cantrip { color: #88b8e0; }
+.spell-leveled { color: #c4a862; }
+.spell-slot-info { color: #7a6e60; font-size: .85em; }
+.spellbook-entry { margin: .5em 0; padding: .4em; background: #1e1b18; border-left: 2px solid #c4a862; }
+.spellbook-entry strong { color: #e8c87a; }
+.spellbook-entry em { color: #b8aa98; }
+
+/* ── Faction System ──────────────────────────────────── */
+.faction-card { background: #2a2520; border: 1px solid #3a342e; border-radius: 4px; padding: 1em; margin: 1em 0; }
+.faction-card-header { display: flex; align-items: center; margin-bottom: .8em; gap: .8em; }
+.faction-icon-lg { font-size: 1.8em; flex-shrink: 0; }
+.faction-card-title { flex-grow: 1; }
+.faction-card-name { color: #e8c87a; font-weight: bold; display: block; }
+.faction-tier-label { color: #7a6e60; font-size: .85em; }
+.faction-rep-score { color: #d4c9b8; font-weight: bold; font-size: 1.1em; }
+
+.faction-rep-bar-wrap { position: relative; height: 1.5em; background: #1e1b18; border: 1px solid #3a342e; border-radius: 3px; margin: .5em 0; overflow: hidden; }
+.faction-rep-midpoint { position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: #3a342e; z-index: 1; }
+.faction-rep-fill { background: #4a8240; opacity: 0.6; }
+.faction-rep-neg { background: #8b4a4a; }
+.faction-rep-pos { background: #4a8240; }
+
+.faction-tier-markers { display: flex; justify-content: space-between; align-items: center; height: .8em; margin-top: .3em; font-size: .7em; color: #3a342e; }
+.tier-mark { flex: 1; text-align: center; }
+
+.faction-tier-hostile { border-left: 3px solid #8b4a4a; }
+.faction-tier-unfriendly { border-left: 3px solid #a87050; }
+.faction-tier-neutral { border-left: 3px solid #5a5240; }
+.faction-tier-friendly { border-left: 3px solid #5a8250; }
+.faction-tier-allied { border-left: 3px solid #4a9a40; }
+.faction-tier-exalted { border-left: 3px solid #2aaa20; }
+
+.faction-notifications { margin: .5em 0; }
+.faction-notif { padding: .4em .6em; margin: .2em 0; border-radius: 2px; font-size: .85em; color: #2a2520; }
+.faction-notif-exalted { background: #2aaa20; }
+.faction-notif-allied { background: #4a9a40; }
+.faction-notif-friendly { background: #5a8250; }
+.faction-notif-neutral { background: #5a5240; }
+.faction-notif-unfriendly { background: #a87050; }
+.faction-notif-hostile { background: #8b4a4a; }
+
+/* ── Tactical Combat ─────────────────────────────────── */
+.tactical-enemy { background: #2a2520; border: 1px solid #3a342e; padding: .5em; margin: .3em 0; display: flex; justify-content: space-between; align-items: center; }
+.tactical-log { background: #1e1b18; border: 1px solid #3a342e; padding: .8em; height: 6em; overflow-y: auto; font-size: .85em; line-height: 1.4; }
+.tactical-action { display: inline-block; padding: .4em .8em; margin: .3em .2em .3em 0; background: #3a2e20; border: 1px solid #6a5e40; border-radius: 2px; cursor: pointer; }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CHARACTER SHEET
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: CharacterSheet
+<h2><<= $playerName>></h2>
+<p><<= $playerRace>> <<= $playerClass>> � Level <<= $partyLevel>> � <<= $playerBackground>></p>
+<p>XP: <<= $partyXP>> / <<= (window._xpTable[$partyLevel+1] ? window._xpTable[$partyLevel+1].xp : "MAX")>></p>
+
+<div class="sheet-section">
+<strong>Hit Points</strong><br>
+<<= $partyCurrentHP>> / <<= $partyMaxHP>>
+<<if $playerTempHP gt 0>> (+<<= $playerTempHP>> temp)<</if>>
+<br>
+<strong>AC</strong> <<= $partyAC>> &nbsp; <strong>Prof</strong> +<<= $playerProfBonus>> &nbsp;
+<strong>Hit Dice</strong> <<= $playerCurrentHitDice>>/<<= $playerMaxHitDice>><<= $playerHitDiceType>>
+</div>
+
+<div class="sheet-section">
+<strong>Ability Scores</strong><br>
+<<for _ab, _data range [{name:"STR",score:$playerStrScore,mod:$playerStrMod},{name:"DEX",score:$playerDexScore,mod:$playerDexMod},{name:"CON",score:$playerConScore,mod:$playerConMod},{name:"INT",score:$playerIntScore,mod:$playerIntMod},{name:"WIS",score:$playerWisScore,mod:$playerWisMod},{name:"CHA",score:$playerChaScore,mod:$playerChaMod}]>>
+  <div class="sheet-ability">
+    <div class="mod"><<= (_data.mod gte 0 ? "+" : "") + _data.mod>></div>
+    <div><<= _data.name>></div>
+    <div><small><<= _data.score>></small></div>
+  </div>
+<</for>>
+</div>
+
+<div class="sheet-section">
+<strong>Class Features</strong><br>
+Action Surge: <<if $action_surge_used>>Used (recover on short rest)<<else>>Available<</if>><br>
+Second Wind: <<if $second_wind_used>>Used<<else>>Available (bonus action, 1d10+<<= $partyLevel>> HP)<</if>><br>
+Potions: <<= $playerPotions>>
+</div>
+
+<div class="sheet-section">
+<strong>Saving Throws</strong><br>
+STR <<if $playerProfSaveStr>>+<<= $playerStrMod + $playerProfBonus>>✓<<else>>+<<= $playerStrMod>><</if>> &nbsp;
+DEX <<if $playerProfSaveDex>>+<<= $playerDexMod + $playerProfBonus>>✓<<else>>+<<= $playerDexMod>><</if>> &nbsp;
+CON <<if $playerProfSaveCon>>+<<= $playerConMod + $playerProfBonus>>✓<<else>>+<<= $playerConMod>><</if>> &nbsp;
+INT <<if $playerProfSaveInt>>+<<= $playerIntMod + $playerProfBonus>>✓<<else>>+<<= $playerIntMod>><</if>> &nbsp;
+WIS <<if $playerProfSaveWis>>+<<= $playerWisMod + $playerProfBonus>>✓<<else>>+<<= $playerWisMod>><</if>> &nbsp;
+CHA <<if $playerProfSaveCha>>+<<= $playerChaMod + $playerProfBonus>>✓<<else>>+<<= $playerChaMod>><</if>>
+</div>
+
+<p><<back "Back">></p>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   INVENTORY UI
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: InventoryUI
+<h2>Inventory</h2>
+<p>Gold: <strong><<= $gold>> gp</strong></p>
+
+<h3>Equipped</h3>
+<div style="background:#2a2520;border:1px solid #3a342e;padding:.6em;margin:.5em 0;">
+  <p><strong>Weapon:</strong> 
+    <<if $equipped_weapon>>
+      <<= $equipped_weapon>>
+      [[Unequip|InventoryUI][$equipped_weapon to ""]]
+    <<else>>
+      <em>none</em>
+    <</if>>
+  </p>
+  <p><strong>Armor:</strong> 
+    <<if $equipped_armor>>
+      <<= $equipped_armor>>
+      [[Unequip|InventoryUI][$equipped_armor to ""]]
+    <<else>>
+      <em>none</em>
+    <</if>>
+  </p>
+</div>
+
+<h3>Items in Pack</h3>
+<<if $inventory.length eq 0>>
+  <p><em>Nothing in your pack.</em></p>
+<<else>>
+  <<for _ii = 0; _ii lt $inventory.length; _ii++>>
+    <<set _ie to $inventory[_ii]>>
+    <div class="inv-item" style="border:1px solid #3a342e;padding:.5em;margin:.3em 0;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <strong><<= _ie.name>></strong>
+        <br>
+        <small style="color:#7a6e60"><<= _ie.qty>>× · <<= _ie.type>></small>
+      </div>
+      <div style="text-align:right;">
+        <<if _ie.type is "weapon">>
+          [[Equip|InventoryUI][$equipped_weapon to _ie.item]]
+        <<elseif _ie.type is "armor">>
+          [[Equip|InventoryUI][$equipped_armor to _ie.item]]
+        <<elseif _ie.type is "consumable">>
+          [[Use|InventoryUI][$gold to $gold + 1; $inventory[_ii].qty -= 1]]
+        <</if>>
+        [[Drop|InventoryUI][$inventory.splice(_ii, 1)]]
+      </div>
+    </div>
+  <</for>>
+<</if>>
+
+<p><<back "Back">></p>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   QUEST JOURNAL
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: QuestJournal
+<h2>Quest Journal</h2>
+<p>
+  <<link "Active" "QuestJournal">><<set $quest_active_tab to "active">><</link>> |
+  <<link "Complete" "QuestJournal">><<set $quest_active_tab to "complete">><</link>> |
+  <<link "Failed" "QuestJournal">><<set $quest_active_tab to "failed">><</link>>
+</p>
+
+<<set _tabState to $quest_active_tab>>
+<<set _shown to 0>>
+<<for _qi = 0; _qi lt $quest_registry.length; _qi++>>
+  <<set _qe to $quest_registry[_qi]>>
+  <<set _qstate to State.variables["quest_" + _qe.id + "_state"]>>
+  <<set _qstage to (State.variables["quest_" + _qe.id + "_stage"] || 0)>>
+  <<if (_tabState is "active" and _qstate is "active") or (_tabState is "complete" and _qstate is "complete") or (_tabState is "failed" and _qstate is "failed")>>
+    <<set _shown to _shown + 1>>
+    <div style="border:1px solid #3a342e;padding:.6em;margin:.5em 0;">
+      <strong><<= _qe.display>></strong>
+      <span style="color:#7a6e60;float:right"><<= _qe.tier>></span><br>
+      <em style="font-size:.85em"><<= _qe.hook>></em>
+      <<if _qstate is "active" and _qstage gt 0>>
+        <p style="margin:.4em 0 0">▸ <<= _qe.stages[_qstage] || "">></p>
+      <</if>>
+    </div>
+  <</if>>
+<</for>>
+<<if _shown eq 0>><p><em>Nothing here.</em></p><</if>>
+
+<p><<back "Back">></p>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PARTY ROSTER
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: PartyRoster
+<h2>Party</h2>
+
+<<set _anyRecruited to false>>
+<<for _ci = 0; _ci lt $companion_registry.length; _ci++>>
+  <<set _ce to $companion_registry[_ci]>>
+  <<set _rid to _ce.id>>
+  <<if State.variables[_rid + "_recruited"]>>
+    <<set _anyRecruited to true>>
+    <<set _tier to (State.variables[_rid + "_tier"] || "neutral")>>
+    <<set _app  to (State.variables[_rid + "_approval"] || 0)>>
+    <<set _alive to (State.variables[_rid + "_alive"] !== false)>>
+    <<set _inParty to (State.variables[_rid + "_in_party"] || false)>>
+    <div style="border:1px solid #3a342e;padding:.6em;margin:.5em 0" class="tier-<<= _tier>>">
+      <strong><<= _ce.display>></strong>
+      <small style="float:right"><<= _ce.class>> � <<= _ce.role>></small><br>
+      Approval: <<= _app>> (<em><<= _tier>></em>)
+      <<if State.variables[_rid + "_romance_active"]>> � Romance unlocked<</if>><br>
+      Status: <<if not _alive>>Fallen<<elseif not _inParty>>Not in party<<else>>Active<</if>>
+    </div>
+  <</if>>
+<</for>>
+<<if not _anyRecruited>><p><em>No companions recruited yet.</em></p><</if>>
+
+<p><<back "Back">></p>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DIALOGUE SYSTEM
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: DialogueUI
+<div class="dialogue-npc">
+  <h3><<= $current_dialogue.npcName>></h3>
+  <p><<= $current_dialogue.npcLine>></p>
+</div>
+
+<<if $current_dialogue.choices and $current_dialogue.choices.length gt 0>>
+  <div class="dialogue-choices">
+    <<for _ci = 0; _ci lt $current_dialogue.choices.length; _ci++>>
+      <<set _choice to $current_dialogue.choices[_ci]>>
+      <<if _choice.condition()>>
+        <<button _choice.text>>
+          /* Execute choice effects */
+          <<run _choice.effects()>>
+          
+          /* Move to next node or return */
+          <<if _choice.next>>
+            <<dialogue $current_dialogue.npc _choice.next>>
+          <<else>>
+            <<previous>>
+          <</if>>
+        <</button>>
+      <</if>>
+    <</for>>
+  </div>
+<<else>>
+  <p><<back "Close conversation">></p>
+<</if>>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SPELL SYSTEM UI
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: MiraSpellSelect
+<h3>✨ Mira's Spellbook</h3>
+<p>Mira mutters an incantation. Which spell should she cast?</p>
+
+<div style="margin:1.5em 0;">
+  <<for _si = 0; _si lt $mira_available_spells.length; _si++>>
+    <<set _spell_id to $mira_available_spells[_si].id>>
+    <<set _spell to $spell_registry[_spell_id]>>
+    <<set _slot_info to (_spell.level gt 0 ? " (" + $mira_spell_slots[_spell.level].current + " slots)" : " (cantrip)")>>
+    
+    <<button _spell.name + _slot_info>>
+      <<castSpell _spell_id>>
+      <<if not $tactical_fight_end>>
+        <<goto "TacticalCombatUI">>
+      <<else>>
+        <<goto "CombatOutcome">>
+      <</if>>
+    <</button>>
+  <</for>>
+  
+  <<button "Cancel">>
+    <<goto "TacticalCombatUI">>
+  <</button>>
+</div>
+
+:: SpellsUI
+<h2>✨ Spellbook</h2>
+
+<<if $mira_in_party>>
+  <div style="background:#2a2520;border:1px solid #3a342e;padding:1em;margin:1em 0;">
+    <h3>Mira Ashveil — Wizard</h3>
+    
+    <h4 style="color:#e8c87a;margin-top:0;">Cantrips (at will)</h4>
+    <<for _si = 0; _si lt $mira_spells_known.length; _si++>>
+      <<set _spell_id to $mira_spells_known[_si]>>
+      <<set _spell to $spell_registry[_spell_id]>>
+      <<if _spell.level is 0>>
+        <div class="spellbook-entry">
+          <strong><<= _spell.name>></strong> <em><<= _spell.school>></em><br>
+          <small><<= _spell.description>></small>
+        </div>
+      <</if>>
+    <</for>>
+    
+    <<for _level = 1; _level lte 2; _level++>>
+      <<set _levelSpells to []>>
+      <<for _si = 0; _si lt $mira_spells_known.length; _si++>>
+        <<set _spell_id to $mira_spells_known[_si]>>
+        <<set _spell to $spell_registry[_spell_id]>>
+        <<if _spell.level is _level>>
+          <<run _levelSpells.push({id: _spell_id, spell: _spell})>>
+        <</if>>
+      <</for>>
+      
+      <<if _levelSpells.length gt 0>>
+        <h4 style="color:#e8c87a;margin-top:1em;">Level <<= _level>> Spells <span class="spell-slot-info">(<<= $mira_spell_slots[_level].current>>/<<= $mira_spell_slots[_level].max>> slots)</span></h4>
+        <<for _spell_info of _levelSpells>>
+          <div class="spellbook-entry">
+            <strong><<= _spell_info.spell.name>></strong> <em><<= _spell_info.spell.school>></em><br>
+            <small><<= _spell_info.spell.description>></small>
+          </div>
+        <</for>>
+      <</if>>
+    <</for>>
+  </div>
+<<else>>
+  <p><em>No spellcasters in the party yet.</em></p>
+<</if>>
+
+<p><<back "Back">></p>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FACTION & REPUTATION UI
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: FactionUI
+<h2>⚔ Factions & Reputation</h2>
+
+<<for _fi, _fac range $faction_registry>>
+  <<if not _fac.hidden>>
+    <<set _rep   to State.variables["faction_" + _fac.id + "_rep"]  || 0>>
+    <<set _tier  to State.variables["faction_" + _fac.id + "_tier"] || "neutral">>
+    <<set _min   to _fac.minRep>>
+    <<set _max   to _fac.maxRep>>
+
+    <div class="faction-card faction-tier-<<= _tier>>">
+      <div class="faction-card-header">
+        <span class="faction-icon-lg"><<= _fac.icon>></span>
+        <div class="faction-card-title">
+          <span class="faction-card-name"><<= _fac.display>></span>
+          <span class="faction-tier-label"><<= _tier.charAt(0).toUpperCase() + _tier.slice(1)>></span>
+        </div>
+        <span class="faction-rep-score"><<if _rep gte 0>>+<</if>><<= _rep>></span>
+      </div>
+
+      <div class="faction-rep-bar-wrap">
+        <div class="faction-rep-midpoint"></div>
+        <<if _rep lt 0>>
+          <<set _negPct to Math.round((Math.abs(_rep) / Math.abs(_min)) * 50)>>
+          <div class="faction-rep-fill faction-rep-neg" style="width:<<= _negPct>>%; right:50%; position:absolute; top:0; bottom:0;"></div>
+        <<elseif _rep gt 0>>
+          <<set _posPct to Math.round((_rep / _max) * 50)>>
+          <div class="faction-rep-fill faction-rep-pos" style="width:<<= _posPct>>%; left:50%; position:absolute; top:0; bottom:0;"></div>
+        <</if>>
+      </div>
+
+      <div class="faction-tier-markers">
+        <span class="tier-mark tier-hostile"    title="Hostile">    ✦</span>
+        <span class="tier-mark tier-unfriendly" title="Unfriendly"> ✦</span>
+        <span class="tier-mark tier-neutral"    title="Neutral">    ✦</span>
+        <span class="tier-mark tier-friendly"   title="Friendly">   ✦</span>
+        <span class="tier-mark tier-allied"     title="Allied">     ✦</span>
+        <span class="tier-mark tier-exalted"    title="Exalted">    ✦</span>
+      </div>
+    </div>
+  <</if>>
+<</for>>
+
+<p><<back "Back">></p>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   WORLD MAP
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: WorldMap
+<h2>World Map</h2>
+<p style="color:#7a6e60;font-size:.85em">Locations you have visited are shown. Unknown locations are hidden.</p>
+
+<<wmRegion "REGION-Thornwood" "The Thornwood">>
+<div style="margin-left:1em">
+  <em>Area: Riverside</em><br>
+  <<wmLoc "LOC-Thorngate"    "Thorngate Village"    "LOC-Thorngate">>
+  <<wmLoc "LOC-DrunkGriffin" "The Drunk Griffin Inn" "LOC-DrunkGriffin">>
+</div>
+
+<p><<back "Back">></p>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COMBAT OUTCOME (D5e resolved combat � D5e.combat.start() navigates here)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Template pattern:
+   1. Call <<combat "enemy_id" "CombatOutcome">> from any button/passage
+   2. Set $combat_return_passage before calling
+   3. Set $travel_pending_loot if loot should drop on win
+   Results: $lastCombatOutcome ("player_won"|"player_lost"|"player_retreated")
+            $lastCombatXP, $lastCombatLoot, $lastCombatLog, $lastEnemyName
+*/
+
+:: CombatOutcome
+<h2>Combat � <<= $lastEnemyName>></h2>
+
+<<if $combat_mode is "tactical">>
+  <!-- Tactical Combat Result -->
+  <<if $tactical_player_won>>
+    <p style="color:#7ec87e"><strong>⚔️ Victory!</strong></p>
+    <p>You have defeated all your enemies.</p>
+    
+    <!-- Calculate XP from defeated enemies (use D5e.xp field) -->
+    <<set _totalXP to 0>>
+    <<for _ei = 0; _ei lt $tactical_enemies.length; _ei++>>
+      <<set _totalXP += ($tactical_enemies[_ei].xp || 50)>>
+    <</for>>
+    
+    <<if _totalXP gt 0>>
+      <p class="xp-gain">+<<= _totalXP>> XP</p>
+      <<xpGain _totalXP>>
+    <</if>>
+    
+    <!-- Loot drop if applicable -->
+    <<if $travel_pending_loot isnot "">>
+      <p>You search the bodies.</p>
+      <<lootDrop $travel_pending_loot $combat_return_passage>>
+      <<set $travel_pending_loot to "">>
+    <<else>>
+      <<link "Continue" $combat_return_passage>><</link>>
+    <</if>>
+  <<elseif $lastCombatOutcome is "player_fled">>
+    <p style="color:#c4a862">You managed to escape from combat.</p>
+    <<link "Continue" $combat_return_passage>><</link>>
+  <<else>>
+    <p style="color:#e07070"><strong>You have been defeated.</strong></p>
+    <<link "↩ Restart" "Start">><</link>>
+  <</if>>
+<<else>>
+  <!-- Automatic Combat Result (D5e.combat.start) -->
+  <<set $lastEnemyName to "Goblins">>
+  
+  <<if $lastCombatOutcome is "player_won">>
+    <p style="color:#7ec87e"><strong>Victory!</strong></p>
+    <<if $lastEnemySurrendered>>
+      <p><em>Your enemy throws down their weapon and yields.</em></p>
+    <</if>>
+    <<if $lastCombatXP gt 0>>
+      <p class="xp-gain">+<<= $lastCombatXP>> XP</p>
+      <<run D5e.checkLevelUp()>>
+      <<if $partyLeveledUp>>
+        <p style="color:#c4a862"><strong>⬆ Level Up!</strong> You are now level <<= $partyNewLevel>>.</p>
+      <</if>>
+    <</if>>
+    <<if $lastCombatLoot.length gt 0>>
+      <p>Loot found: <<= $lastCombatLoot.join(", ")>></p>
+    <</if>>
+    <<if $travel_pending_loot isnot "">>
+      <p>You search the bodies.</p>
+      <<lootDrop $travel_pending_loot $combat_return_passage>>
+      <<set $travel_pending_loot to "">>
+    <<else>>
+      <<link "Continue" $combat_return_passage>><</link>>
+    <</if>>
+  <<elseif $lastCombatOutcome is "player_lost">>
+    <p style="color:#e07070"><strong>You have fallen.</strong></p>
+    <<link "↩ Restart" "Start">><</link>>
+  <<else>>
+    <p style="color:#c4a862">You escaped.</p>
+    <<link "Continue" $combat_return_passage>><</link>>
+  <</if>>
+<</if>>
+
+<<combatlog>>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COMBAT MODE SELECTOR (hybrid automatic/tactical)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: CombatModeSelect
+<h2>Combat Approach</h2>
+<p>How do you want to handle this fight?</p>
+
+<div style="background:#2a2520;border:2px solid #3a342e;padding:1.5em;margin:1.5em 0;">
+  <h3>Automatic Combat</h3>
+  <p style="color:#b8aa98">The fight plays out according to D&D 5e rules. Fast-paced and narratively focused. You'll see the outcome without choosing each action.</p>
+  <p><<button "Fight Automatically">>
+    <<set $combat_mode to "automatic">>
+    <<goto "CombatOutcome">>
+  <</button>></p>
+</div>
+
+<div style="background:#2a2520;border:2px solid #3a342e;padding:1.5em;margin:1.5em 0;">
+  <h3>Tactical Combat (Turn-Based)</h3>
+  <p style="color:#b8aa98">You choose your action each round: Attack, Defend, Use a Skill, or Flee. Slow and strategic.</p>
+  <p><<button "Fight Tactically">>
+    <<set $combat_mode to "tactical">>
+    <<set $tactical_round to 0>>
+    <<set $tactical_log to []>>
+    <<set $tactical_fight_end to false>>
+    <<set $tactical_player_won to false>>
+    <<goto "TacticalCombatUI">>
+  <</button>></p>
+</div>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TACTICAL COMBAT UI — turn-by-turn interface
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: TacticalCombatUI
+<h2>Tactical Combat</h2>
+<p><strong><<= $playerName>></strong> vs 
+<<for _ei = 0; _ei lt $tactical_enemies.length; _ei++>>
+  <<if _ei gt 0>>, <</if>><<= $tactical_enemies[_ei].name>>
+<</for>></p>
+
+<div style="background:#1e1b18;border:1px solid #3a342e;padding:1em;margin:1em 0;">
+  <h3>Enemy Status</h3>
+  <<tacticalEnemyStatus>>
+  
+  <p style="margin-top:1em;color:#7a6e60">
+    <strong>Your HP:</strong> <<= $partyCurrentHP>>/<<= $partyMaxHP>> · 
+    <strong>AC:</strong> <<= $partyAC>> · 
+    <strong>Round:</strong> <<= ($tactical_round + 1)>>
+  </p>
+</div>
+
+<<if not $tactical_fight_end>>
+  <h3>Your Action</h3>
+  <p>What do you do?</p>
+  
+  <div style="margin:1em 0;">
+    <<button "⚔️ Attack">>
+      <<set $tactical_player_action to "attack">>
+      <<set $tactical_selected_enemy to 0>>
+      <<tacticalRound>>
+      <<if not $tactical_fight_end>>
+        <<goto "TacticalCombatUI">>
+      <<else>>
+        <<goto "CombatOutcome">>
+      <</if>>
+    <</button>>
+    
+    <<button "🛡️ Defend">>
+      <<set $tactical_player_action to "defend">>
+      <<tacticalRound>>
+      <<if not $tactical_fight_end>>
+        <<goto "TacticalCombatUI">>
+      <<else>>
+        <<goto "CombatOutcome">>
+      <</if>>
+    <</button>>
+    
+    <<button "🧪 Use Potion">>
+      <<usePotionTactical>>
+      <<if not $tactical_fight_end>>
+        <<goto "TacticalCombatUI">>
+      <<else>>
+        <<goto "CombatOutcome">>
+      <</if>>
+    <</button>>
+    
+    <<if $mira_in_party>>
+      <<button "✨ Mira Casts Spell">>
+        <<getMiraAvailableSpells>>
+        <<if $mira_available_spells and $mira_available_spells.length gt 0>>
+          <<goto "MiraSpellSelect">>
+        <<else>>
+          <p style="color:#e07070"><em>Mira has no spells available!</em></p>
+        <</if>>
+      <</button>>
+    <</if>>
+    
+    <<button "💨 Flee">>
+      <<set $tactical_player_action to "flee">>
+      <<tacticalRound>>
+      <<goto "CombatOutcome">>
+    <</button>>
+  </div>
+<<else>>
+  <div style="background:#2a2520;border:2px solid #3a342e;padding:1em;margin:1em 0;">
+    <h3><<if $tactical_player_won>>⚔️ Victory!<<else>>💀 Defeated<</if>></h3>
+    <<if $tactical_player_won>>
+      <p>The last enemy falls. Combat is over.</p>
+    <<else>>
+      <p>You have been vanquished. The fight is lost.</p>
+    <</if>>
+  </div>
+  
+  <p style="margin-top:1em"><<link "Continue" $combat_return_passage>><</link>></p>
+<</if>>
+
+<h3>Combat Log</h3>
+<div style="background:#1e1b18;border:1px solid #3a342e;padding:.8em;height:6em;overflow-y:auto;font-size:.85em;line-height:1.4;">
+  <<for _li = $tactical_log.length - 1; _li gte Math.max(0, $tactical_log.length - 6); _li-->>
+    <<if _li lt $tactical_log.length>>
+      <div><<= $tactical_log[_li]>></div>
+    <</if>>
+  <</for>>
+</div>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LOOT CONTAINER UI
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: LootContainer
+<<if $loot_active_container>>
+  <<set _table to $loot_table_registry[$loot_active_container]>>
+  <<if _table>>
+    <<goto "LootContainerUI">>
+  <</if>>
+<</if>>
+
+:: LootContainerUI
+<h2><<= $loot_table_registry[$loot_active_container].label>></h2>
+
+<<set _openKey to "loot_opened_" + $loot_active_container>>
+<<if State.variables[_openKey]>>
+  <p><em>The container is empty.</em></p>
+<<else>>
+  <<set _table to $loot_table_registry[$loot_active_container]>>
+  <<if _table.gold_min gt 0 or _table.gold_max gt 0>>
+    <p>Coins glint in the bottom. Take the gold?
+    <<button "[Take all gold]">>
+      <<if not State.variables[_openKey]>>
+        <<set _g to Math.floor(Math.random() * (_table.gold_max - _table.gold_min + 1)) + _table.gold_min>>
+        <<lootGold _g>>
+        <<run State.variables[_openKey] = true>>
+      <</if>>
+      <<run Engine.play("LootContainerUI", true);>>
+    <</button>></p>
+  <</if>>
+  <<for _li = 0; _li lt _table.items.length; _li++>>
+    <<set _le to _table.items[_li]>>
+    <p><<= _le.name>>
+    <<button "[Take]">>
+      <<if not State.variables[_openKey]>><<pickupItem _le.item _le.name>><<run State.variables[_openKey] = true>><</if>>
+      <<run Engine.play("LootContainerUI", true);>>
+    <</button>></p>
+  <</for>>
+<</if>>
+
+<<link "← Leave" $loot_container_return>><</link>>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CRAFT UI
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: CraftUI
+<h2>Crafting � <<= $craft_active_station>></h2>
+
+<<for _ri = 0; _ri lt $craft_registry.length; _ri++>>
+  <<set _re to $craft_registry[_ri]>>
+  <<if _re.station is $craft_active_station or _re.station is "any">>
+    <div class="craft-recipe">
+      <strong><<= _re.display>></strong><br>
+      <em style="font-size:.85em"><<= _re.notes>></em><br>
+      <small>Ingredients:
+        <<craftCheck _re.id>>
+        <<for _ii = 0; _ii lt _re.ingredients.length; _ii++>>
+          <<set _ie to _re.ingredients[_ii]>>
+          <<set _inv to $inventory.find(function(i){ return i.item === _ie.item; })>>
+          <span class="<<if _inv and _inv.qty gte _ie.qty>>craft-ok<<else>>craft-missing<</if>>">
+            <<= _ie.name>> �<<= _ie.qty>> (have <<= (_inv ? _inv.qty : 0)>>)
+          </span>
+        <</for>>
+      </small><br>
+      <<if $craft_can_make>>
+        <<link "[Craft]" "CraftResultUI">><<craftAttempt _re.id>><<set $craft_last_recipe to _re.id>><</link>>
+      <<else>>
+        <span class="craft-missing">Missing: <<= $craft_missing_items.join(", ")>></span>
+      <</if>>
+    </div>
+  <</if>>
+<</for>>
+
+<<link "← Leave" $craft_station_return>><</link>>
+
+:: CraftResultUI
+<h2>Crafting Result</h2>
+
+<<set _rec to $craft_registry.find(function(r){ return r.id === $craft_last_recipe; })>>
+<<if $last_craft_success>>
+  <p style="color:#7ec87e">✓ You craft <strong><<= _rec.result_name>></strong>.</p>
+  <<if _rec.result_heal and _rec.result_heal gt 0>>
+    <p class="rest-heal">You apply the poultice immediately. +<<= _rec.result_heal>> HP.</p>
+  <</if>>
+<<else>>
+  <p style="color:#e07070">✗ The attempt fails.</p>
+<</if>>
+
+<<link "Continue" $craft_station_return>><</link>> &nbsp;
+<<link "Craft another" "CraftUI">><</link>>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   REST UI
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: RestUI
+<h2>Long Rest</h2>
+<p>You spend the night at <<= $rest_type_last is "long" ? "the inn" : "camp">>. The fire dies to embers.</p>
+<p style="color:#7ec87e">HP fully restored: <<= $partyMaxHP>>/<<= $partyMaxHP>><br>
+Hit dice recovered: <<= $playerMaxHitDice>>/<<= $playerMaxHitDice>><<= $playerHitDiceType>><br>
+Action Surge and Second Wind available.</p>
+<p style="color:#7a6e60;font-size:.85em">Day <<= $day_counter - 1>> ends. Day <<= $day_counter>> begins.</p>
+
+<<link "Wake up →" $rest_return_passage>><<set $inn_paid to false>><</link>>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TRAVEL ENCOUNTER TRANSITION
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:: TravelEncounterTransition
+<<set _enc to $travel_active_encounter>>
+<div style="background:#211e1b;border:1px solid #6a3a2e;padding:1em;margin:1em 0">
+  <strong>⚠ <<= _enc.display>></strong><br>
+  <em><<= _enc.intro>></em>
+</div>
+
+<<if _enc.type is "combat">>
+  <p><<button "Fight">><<travelEncounterResult>><</button>></p>
+<<elseif _enc.type is "discovery">>
+  <p><<button "Investigate">><<travelEncounterResult>><</button>></p>
+<<elseif _enc.type is "hazard">>
+  <p><<button "Take the hit">><<travelEncounterResult>><</button>></p>
+<<else>>
+  <p><<button "Investigate">><<travelEncounterResult>><</button>></p>
+<</if>>

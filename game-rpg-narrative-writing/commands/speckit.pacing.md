@@ -739,6 +739,61 @@ Accessibility: Minimal time impact ✅
 Assessment: ✅ WELL-PACED Game feels balanced across all playstyles
 ```
 
+### Area Exploration Density (if `specs/world-map.md` present)
+
+**Key Metric**: Scene-type balance per Area. No Area should be all-combat or all-exposition.
+
+**Area Density Analysis** *(skip if `world-map.md` absent)*:
+
+For each Area in `world-map.md`:
+1. Collect all nodes whose `parent_location` is a Location belonging to this Area.
+2. Group by `scene_type` (travel / exploration / dialogue / combat / rest / shop / quest_event / cutscene).
+3. Check baseline requirements and flag violations:
+
+| Flag | Condition | Severity |
+|---|---|---|
+| No entry scene | Area has no `scene_type: travel` node as first node | CRITICAL |
+| No rest scene | Area has zero `scene_type: rest` nodes in any of its Locations | CRITICAL |
+| Combat saturation | >50% of scenes are `combat` | WARNING |
+| Exposition overload | >60% of scenes are `dialogue` + `cutscene` | WARNING |
+| Optional content ratio | <20% of scenes are `exploration` or `quest_event` | NOTE (low discovery incentive) |
+| Critical path isolation | Critical path visits <30% of the Area's scenes | NOTE (Computer Game only) |
+
+4. Compute **area-level pacing curve**: For each Area, map scene types in story-order to show the combat/dialogue/rest rhythm. A healthy rhythm alternates: travel → exploration/dialogue → combat → rest → exploration/quest_event.
+
+**Area Density Report format**:
+```
+AREA EXPLORATION DENSITY REPORT
+
+AREA-KingsVault (dungeon)
+  Scenes: 9 total (1 travel, 2 exploration, 1 dialogue, 4 combat, 1 rest)
+  Combat ratio: 44% — ✅ OK
+  Rest scenes: 1 — ✅ OK
+  Entry scene: NODE-1010_VaultEntry (travel) — ✅ OK
+  Scene rhythm: travel → exploration → combat → combat → dialogue → combat → exploration → combat → rest
+  Pacing: ⚠️ Three consecutive combats (NODE-1013–1015) — suggest adding exploration or short rest between them
+
+AREA-TownSquare (urban)
+  Scenes: 6 total (1 travel, 0 exploration, 5 dialogue, 0 combat, 0 rest)
+  Combat ratio: 0% — OK for urban hub
+  Rest scenes: 0 — ⚠️ WARNING: No rest location in area (inn or safe house needed)
+  Entry scene: NODE-1001_CityGate (travel) — ✅ OK
+  Action: Add LOC-Inn with rest scene to AREA-TownSquare
+```
+
+**Pacing Problems — Area Density**:
+
+🔴 **CRITICAL: No entry scene** — Area has no travel-typed entry node
+- Fix: Add a `scene_type: travel` node as the first scene in one of this Area's Locations
+
+🔴 **CRITICAL: No rest location** — Area has zero rest scenes; players cannot recover between combats
+- Fix: Designate one Location in the Area as a rest point; add a `scene_type: rest` node
+
+🟡 **WARNING: Combat saturation** — >50% of scenes are combat; player fatigue risk
+- Fix: Replace 1–2 combat scenes with exploration or social scenes; or move some combat to adjacent Areas
+
+---
+
 ### Ruleset-Specific Pacing (if `SESSION.ruleset = "D&D 5e" / "Pathfinder 2e" / "Shadowrun 6e"`)
 
 **D&D 5e Session Pacing**:

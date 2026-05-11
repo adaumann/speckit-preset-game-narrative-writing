@@ -1,0 +1,38 @@
+/*
+  shrine-init.twee
+  Shrine sample: Story initialization and character setup
+  
+  Defines:
+  - Character object with narrative attributes (intelligence, wisdom, power, gold)
+  - Empty inventory array
+  - Story metadata
+*/
+
+:: StoryTitle
+The Shrine: A Narrative Design Sample
+
+:: StoryData
+{
+  "ifid": "3D87B4F2-94A7-4B8E-9C2A-5F8E6D2B1A9C",
+  "format": "SugarCube",
+  "format-version": "2.30.0"
+}
+
+:: StoryInit
+
+/* ── CHARACTER PROFILE ────────────────────────────────────────────────── */
+<<set $character to {
+  name: "The Wanderer",
+  intelligence: 5,
+  wisdom: 6,
+  power: 4,
+  gold: 10
+}>>
+
+/* ── INVENTORY ───────────────────────────────────────────────────────── */
+<<set $inventory to []>>
+
+/* ── FLAGS ───────────────────────────────────────────────────────────── */
+<<set $visited_shrine to false>>
+<<set $spoke_priestess to false>>
+<<set $received_blessing to false>>

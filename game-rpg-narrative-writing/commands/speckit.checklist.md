@@ -145,6 +145,95 @@ For each node, evaluate all items in the four sections below using `templates/ch
 - GB-002: Any NPC appearing in this node is consistent with their character profile (voice, state, goal)
 - GB-003: World-rule constraints (from `world-building.md`) are not violated in prose or choice outcomes
 - GB-004: Engine target constraints are respected (no unsupported syntax for the declared export target)
+
+### SP – Spatial Integrity Checks *(skip if `specs/world-map.md` absent)*
+
+- SP-001: Node frontmatter includes `parent_location: LOC-{ShortName}` — flag missing as WARNING
+- SP-002: The `parent_location` value is registered in `specs/locations.md` — flag unknown LOC-ID as CRITICAL
+- SP-003: If `scene_type: travel`, node has both `origin_location` and `destination_location` — flag missing as CRITICAL
+- SP-004: If node is a hub passage (`LOC-xxx` ID): provides ≥3 navigation destinations (scenes + travel links combined) — flag fewer as WARNING
+- SP-005: Every Area in `world-map.md` has ≥1 Location with a `scene_type: rest` node — flag missing as CRITICAL
+- SP-006: Every Area in `world-map.md` has ≥1 `scene_type: travel` node as its entry point — flag missing as CRITICAL
+- SP-007: Hub passages use `LOC-{ShortName}` ID format (not `NODE-NNN`) — flag wrong format as WARNING
+- SP-008: Every `<<wmLoc passage=...>>` call and hub `[[link|PassageName]]` must resolve to a `passage_name:` field in the corresponding node outline — flag unresolved passage name as CRITICAL (broken Twine navigation)
+- SP-009: `parent_area` in node frontmatter must be registered as a child of `parent_region` in `specs/world-map.md`, and `parent_location` must be registered as a child of `parent_area` — flag chain mismatch as CRITICAL (node placed in wrong part of hierarchy)
+
+### LT – Loot & Economy Checks *(skip if `loot` hook is not in `constitution.md ## II. Active Mechanics`)*
+
+Read `constitution.md ## VI-B. Randomness & Economy Model` for the active model. Apply the matching rules:
+
+- LT-001: Every combat node with `scene_type: combat` has a post-combat loot resolution — a `<<lootDrop>>`, `<<lootFixed>>`, or explicit "no loot" comment — flag absent as WARNING
+- LT-002: Every `container_id` referenced by `<<lootDrop>>` or `<<lootContainer>>` exists in `$loot_table_registry` (StoryInit) — flag unknown ID as CRITICAL
+- LT-003: Every item `item_variable` in any loot table entry is declared in `variables.md ## Inventory` — flag undeclared items as CRITICAL
+- LT-004: If `loot_model: fixed` — flag any loot table item with `weight < 100` as WARNING (weight is ignored but inconsistent)
+- LT-005: If `loot_model: weighted` — flag any container whose entire item pool has `weight: 100` on every item as NOTE (effectively fixed; consider `loot_model: fixed`)
+- LT-006: Quest completion nodes (`scene_type: quest_event` + final stage) must call `<<questReward>>` or `<<lootGold>>` — flag absent payout as WARNING
+- LT-007: `<<lootGold>>` and `<<lootFixed>>` must NOT be called inside an already-handled `<<questReward>>` call (double-grant risk) — flag as WARNING
+- LT-008: If `container_respawn: never` — flag any node that manually sets `$loot_opened_[id]` to `false` as WARNING (breaks one-shot guarantee)
+- LT-009: If `enemy_spawn_model: scripted` — flag any combat node with no `<<set $combat_enemies to [...]>>` before `<<combatStart>>` as CRITICAL
+- LT-010: Currency mutations must use `<<lootGold>>`, `<<shopBuy>>`, or `<<questReward>>` — flag direct `<<set $gold to ...>>` writes in node passages as WARNING (bypasses economy tracking)
+- LT-011: If `quest_availability: random_pool` — flag any side/optional quest trigger that assumes the quest is always present (no `<<if $quest_pool.includes("quest_name")>>` guard) as WARNING
+- LT-012: If `travel_encounters: encounter_table` — flag any `scene_type: travel` node with no `<<travelRoll>>` call as WARNING; verify a `## Travel Encounter Tables` section exists in `specs/world-map.md`
+- LT-013: If `world_map_fog: visited` — flag any `<<wmLoc>>` call that doesn't check `_visited` before rendering the link as WARNING; if `region_unlock` — flag Locations whose region has no `<<regionUnlock>>` call in any reachable node as CRITICAL
+
+---
+
+### RT – Rest System Checks *(skip if `rest` hook is not in `constitution.md ## II. Active Mechanics`)*
+
+- RT-001: Every `scene_type: rest` node must contain a `MECHANIC:REST` block or a `/* milestone rest */` comment — flag absent as WARNING
+- RT-002: `MECHANIC:REST type=long` must include `return=[NODE-ID]` — flag absent as CRITICAL (long rest has no exit)
+- RT-003: `MECHANIC:REST type=milestone` must NOT contain `<<shortRestScene>>` or `<<longRestScene>>` calls — flag as WARNING (milestone has no mechanical recovery)
+- RT-004: Do NOT use `<<shortRest>>` or `<<longRest>>` directly in node passages — always use `<<shortRestScene>>` or `<<longRestScene>>` — flag bare calls as WARNING
+- RT-005: `<<longRestScene>>` must be the last statement before a passage boundary — flag any `[[link]]` or `<<goto>>` after it as WARNING (it handles navigation itself)
+- RT-006: If `container_respawn: long_rest` in constitution — verify `<<restReset "long">>` is called inside `<<longRestScene>>` (it is by template; flag if manually removed) as CRITICAL
+- RT-007: If `container_respawn: in_game_day` — verify `<<restReset "day">>` is called at every day-boundary node (nodes with `$day_counter` increment) as WARNING
+- RT-008: Long rest nodes must have matching narrative prose for the waking moment in their `return=` passage — flag absent wake-up prose as NOTE
+- RT-009: `$rest_count` must not be written manually — it is incremented by `<<longRestScene>>` — flag direct `<<set $rest_count ...>>` writes as WARNING
+
+---
+
+### CF – Crafting System Checks *(skip if `inventory_combine` is not `yes` in `constitution.md ## II`)*
+
+- CF-001: Every `MECHANIC:CRAFT station=` reference must match a `$craft_station_[id]_unlocked` variable in StoryInit — flag unknown station_id as CRITICAL
+- CF-002: Every `MECHANIC:CRAFT recipe=` reference must match a recipe `id` in `$craft_registry` — flag unknown recipe_id as CRITICAL
+- CF-003: Every ingredient `item` in `$craft_registry` must be declared in `variables.md ## Inventory` — flag undeclared item as CRITICAL
+- CF-004: Every `result_item` in `$craft_registry` must be declared in `variables.md ## Inventory` — flag undeclared item as CRITICAL
+- CF-005: Scripted craft nodes (`MECHANIC:CRAFT recipe=`) must branch on `$last_craft_success` in prose — flag absent branch as WARNING (silent failure)
+- CF-006: `<<craftStation>>` must be the last statement in a node before a passage boundary — flag any link or `<<goto>>` after it as WARNING
+- CF-007: A station can only be used if `$craft_station_[id]_unlocked` is set — flag `<<craftStation>>` calls with no preceding `<<craftUnlockStation>>` anywhere in the node graph as CRITICAL
+- CF-008: If a recipe has `skill_check` set — verify `sugarcube-skill-checks-template.twee` is loaded in the project (CF checks `SkillWidgets` passage exists) — flag absent as WARNING
+- CF-009: Recipes with `on_fail_consume: true` must have matching failure prose after `<<craftAttempt>>` — flag absent failure branch as WARNING (player loses ingredients silently)
+
+---
+
+### TE – Travel Encounter Checks *(skip if `travel_encounters` is not `encounter_table` in `constitution.md ## VI-B`)*
+
+- TE-001: Every `scene_type: travel` node must contain a `MECHANIC:TRAVEL_ENCOUNTER` block — flag absent as WARNING (travel node has no encounter roll)
+- TE-002: `MECHANIC:TRAVEL_ENCOUNTER` must be the last mechanic in its node — flag any `[[link]]` or `<<goto>>` after `<<travelRoll>>` as CRITICAL (navigation conflict)
+- TE-003: Every `region=` value must be a valid REGION-ID registered in `specs/world-map.md ## Region Registry` — flag unknown ID as CRITICAL
+- TE-004: Every region referenced by `MECHANIC:TRAVEL_ENCOUNTER` must have a corresponding table entry in `specs/world-map.md ## Travel Encounter Tables` — flag missing table as WARNING
+- TE-005: Every REGION-ID listed in `world-map-template.md ## Travel Encounter Tables` must have at least one encounter entry (non-empty table) — flag empty table as NOTE
+- TE-006: Encounter entries of `type: combat` must cross-reference valid enemy definitions in `encounters-d5e.md` — flag unrecognised enemy key as WARNING
+- TE-007: Encounter entries of `type: event` must reference a passage that exists in the project (authored as a `NODE-xxx` or named passage) — flag missing passage as CRITICAL
+- TE-008: Encounter entries with `loot_id` set must have a matching entry in `$loot_table_registry` (from `world-map-template.md ## Loot Tables` or `mechanics-template.md`) — flag unknown loot_id as WARNING
+- TE-009: `$region_[ShortName]_danger` must be initialised in StoryInit for every region with an encounter table — flag uninitialised as CRITICAL
+- TE-010: If `travel_encounters: none` in constitution — flag any node containing `MECHANIC:TRAVEL_ENCOUNTER` or `<<travelRoll>>` as WARNING (hook active without config)
+
+---
+
+### CM – Companion Management Checks
+
+- CM-001: Every companion `id=` value in `MECHANIC:COMPANION` must be registered in `constitution.md ## Companion System` — flag unknown ID as CRITICAL
+- CM-002: Approval deltas must be signed integers (`+10` or `-15`) — flag bare unsigned numbers as WARNING (ambiguity; assumed positive)
+- CM-003: `action=recruit` must appear before any `approval=` delta for the same companion across the full outline — flag out-of-order as WARNING (approval on unrecruited companion)
+- CM-004: `action=recruit` must appear exactly once per companion — flag duplicate recruits as WARNING (double-join)
+- CM-005: `action=leave reason=death` may only appear in a node with `scene_type: combat` or `scene_type: cutscene` — flag in other scene types as NOTE (narrative plausibility)
+- CM-006: `react threshold=` must be a numeric value between -100 and 100 — flag out-of-range as CRITICAL
+- CM-007: `react` blocks must have both `approve=` and `reject=` strings — flag missing branch as CRITICAL (widget crashes)
+- CM-008: Companion approval changes must have at least one sentence of prose immediately before `<<companionApproval>>` — flag bare widget call as WARNING (player has no narrative context)
+- CM-009: Companions with `ending_locked` in constitution must have `$[id]_alive` checked in the relevant ending node — flag absent check as WARNING (ending may trigger incorrectly)
+- CM-010: Every companion listed in constitution.md must have `$[id]_recruited`, `$[id]_approval`, and `$[id]_alive` initialised in StoryInit — flag missing init as CRITICAL
+
 ---
 
 ## RPG-Specific Check Sections

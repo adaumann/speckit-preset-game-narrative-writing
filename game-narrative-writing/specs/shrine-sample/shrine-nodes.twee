@@ -1,0 +1,89 @@
+/*
+  shrine-nodes.twee
+  Shrine sample: Core narrative passages (examples)
+  
+  Demonstrates:
+  - Dialogue choices gated by character attributes
+  - Inventory pickup and hasItem checks
+  - Character profile display
+*/
+
+:: Start [entry]
+You stand before an ancient shrine, its stone walls weathered by centuries.
+A priestess emerges from the shadows within.
+
+"Greetings, wanderer. You've come seeking the shrine's blessing?"
+
+What do you do?
+
+[[Ask her about the shrine's history|AskHistory]]
+[[Offer a donation to the shrine|Donate]]
+[[Search the shrine for treasure|Search]]
+
+:: AskHistory
+"Ah, seeking knowledge?" the priestess says, studying you with keen eyes.
+
+<<if $character.intelligence gte 6>>
+  You recognize the architectural style—this shrine predates the kingdom by centuries.
+  "The stonework is pre-imperial," you observe.
+  
+  The priestess nods approvingly. "Few recognize that. You are perceptive."
+  <<set $character.wisdom += 1>>
+  
+  [[Continue|AfterHistory]]
+<<else>>
+  The priestess speaks of the shrine's history, but much of it is lost to you.
+  You nod along, understanding little.
+  
+  [[Continue|AfterHistory]]
+<</if>>
+
+:: AfterHistory
+"Is there anything else?" the priestess asks.
+
+[[Return to the shrine entrance|Start]]
+
+:: Donate
+"A generous offering," the priestess says.
+
+What would you like to donate?
+
+<<if $character.gold gte 5>>
+  [[Donate 5 gold|Donate5]]
+<</if>>
+
+[[Donate 1 gold|Donate1]]
+[[Donate nothing and leave|Start]]
+
+:: Donate5
+<<set $character.gold -= 5>>
+The priestess accepts your donation graciously.
+
+"This will help maintain the shrine. May you be blessed."
+
+You feel a warmth settle over you—your wisdom grows.
+<<set $character.wisdom = Math.min($character.wisdom + 2, 10)>>
+
+[[Return to the shrine|Start]]
+
+:: Donate1
+<<set $character.gold -= 1>>
+The priestess accepts your small donation with a knowing smile.
+
+"Every offering, no matter how small, is valued."
+
+[[Return to the shrine|Start]]
+
+:: Search
+You search the shrine carefully.
+
+In a stone alcove, you find an old book bound in leather.
+
+<<pickupItem "old_book" "Old Book">>
+
+"Ah, the shrine's grimoire," the priestess says. "It was thought lost. You should have it."
+
+[[Return to the shrine|Start]]
+
+:: End
+[Final passage - to be expanded]

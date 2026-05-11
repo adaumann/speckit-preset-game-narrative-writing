@@ -122,8 +122,12 @@ Then:
 - Research gaps and open questions (OQ-NNN) from spec.md
 - Character profile completion for all Key NPCs
 - World-building documentation (glossary, locations, timeline if applicable)
+- **Spatial documentation** (RPG-specific — always required before Phase 1):
+  - `world-map.md`: Region registry, Area list, travel connections, spatial variable registry — verify all Regions/Areas in spec.md World Structure section are registered
+  - `locations.md`: One entry per Location with LOC-ID, parent Region, parent Area, Hub Passage, Scene IDs — verify every Location listed in spec.md has an entry with `parent_area:` and `parent_region:` filled
+  - Spatial checkpoint: All Locations registered; every Area has at least one rest Location and one entry travel scene planned; no Location is in `locations.md` without a parent Area in `world-map.md`
 - Mechanic schema verification from constitution.md
-- Checkpoint: All OQ-NNN items resolved or explicitly deferred; profiles, glossary, locations complete
+- Checkpoint: All OQ-NNN items resolved or explicitly deferred; profiles, glossary, locations complete; spatial hierarchy registered
 
 **Phases 1�5: Narrative Structure** (per act)
 - Phase 1: Outline all nodes in Act 1

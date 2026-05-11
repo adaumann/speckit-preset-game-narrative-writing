@@ -249,6 +249,34 @@
 |---|---|---|---|
 | [LOCATION] | [Sensory anchors, mood, significance] | Act [N] | NODE-[N] |
 
+### World Structure (RPG)
+
+<!-- Spatial hierarchy seed. Expanded into world-map.md and locations.md by speckit.plan.
+     Spatial model: Linear | Hub-and-Spoke | Open-World -->
+
+**Spatial model**: [Linear / Hub-and-Spoke / Open-World]
+
+**Regions**:
+
+| Region ID | Region Name | Theme | Acts Present | Unlock Condition | Area Count |
+|---|---|---|---|---|---|
+| REGION-[ShortName] | [Name] | [3-word theme] | Act [N]–[N] | [start / after event] | [N] |
+
+**Areas**:
+
+| Area ID | Area Name | Parent Region | Area Type | Location Count | Unlock Condition |
+|---|---|---|---|---|---|
+| AREA-[ShortName] | [Name] | REGION-[ShortName] | [dungeon / wilderness / urban / sea / underground] | [N] | [always / after quest X] |
+
+**Spatial Hierarchy**:
+
+```
+REGION-[Name] (unlock: [condition])
+└── AREA-[Name] ([type])
+    ├── LOC-[Name] ([location type], ~[N] scenes)
+    └── LOC-[Name] ([location type], ~[N] scenes)
+```
+
 ### Key Items
 
 <!-- Objects or facts introduced that MUST pay off narratively or mechanically.

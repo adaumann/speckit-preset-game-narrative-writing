@@ -35,12 +35,17 @@ Accepted arguments:
 
 ## Pre-Execution Checks
 
-**Extract Platform & Ruleset** (auto-detect RPG context):
-- Read `.specify/memory/constitution.md` YAML frontmatter and extract `[PLATFORM]` and `[RULESET]`
-- If `[PLATFORM]` = "Tabletop": Set `SESSION.is_rpg = "tabletop"` and load Tabletop prose model
-- If `[PLATFORM]` = "Computer Game": Set `SESSION.is_rpg = "computer"` and load Computer Game prose model
-- If neither detected: Set `SESSION.is_rpg = false` (generic prose model)
-- Store `SESSION.platform` and `SESSION.ruleset` for conditional prose generation and validation
+**Extract Platform, Ruleset & Engine** (auto-detect from constitution.md):
+- Read `.specify/memory/constitution.md` YAML frontmatter
+- Extract `[PLATFORM]` and `[RULESET]`:
+  - If `[PLATFORM]` = "Tabletop": Set `SESSION.is_rpg = "tabletop"` and load Tabletop prose model
+  - If `[PLATFORM]` = "Computer Game": Set `SESSION.is_rpg = "computer"` and load Computer Game prose model
+  - If neither: Set `SESSION.is_rpg = false` (generic prose model)
+- Extract `export_engines` (list) or `engine` (single value):
+  - If `sugarcube` is the target engine: Set `SESSION.engine = "sugarcube"` — **output `.twee` files directly; skip speckit.export**
+  - If `ink` is the target engine: Set `SESSION.engine = "ink"` — **output `.ink` files directly; skip speckit.export**
+  - Otherwise: Set `SESSION.engine = "generic"` — output engine-agnostic `.md` draft files
+- Store `SESSION.platform`, `SESSION.ruleset`, `SESSION.engine` for all conditional steps below
 
 **Check for extension hooks (before drafting)**:
 - Check if `.specify/extensions.yml` exists in the project root
@@ -49,7 +54,8 @@ Accepted arguments:
 
 Then:
 1. Confirm `specs/[FEATURE_DIR]/outline/` and `specs/[FEATURE_DIR]/constitution.md` exist
-2. For each requested node, verify an outline file exists at `outlines/[NODE_ID].md` 
+2. For each requested node, verify an outline file exists at `outlines/[NODE_ID].md`
+   - **Exception**: If `[NODE_ID]` matches the pattern `LOC-{ShortName}` (e.g. `LOC-Tavern`, `LOC-VaultEntry`), switch to **Hub Passage mode** (see Step 1b below) — no outline file is required for LOC-xxx IDs
 3. Verify outline status is `APPROVED` (skip nodes marked `DRAFT` or `SKIP`) — unless `--force` is set
 4. Confirm `specs/[FEATURE_DIR]/variables.md` exists — hooks declared in outlines must resolve
 5. Confirm `specs/[FEATURE_DIR]/characters.md` exists — dialogue and NPC references must resolve
@@ -57,6 +63,63 @@ Then:
 7. **If RPG detected**: Confirm `specs/[FEATURE_DIR]/mechanics-[ruleset].md` exists — skill checks, approval gates, faction reps must resolve
 
 ## Execution Steps
+
+### Phase 0 — Infrastructure Generation *(SugarCube only; skip for Ink / Generic)*
+
+**Run once per project before generating any node prose.** Check whether the infrastructure files already exist before generating. If they exist, skip and proceed to Step 1.
+
+Infrastructure files live in `draft/sugarcube/infra/`. Generate each file that is absent:
+
+| File | Source template | When needed |
+|---|---|---|
+| `infra/StoryInit.twee` | All template `[*-block-merge-into-existing]` blocks merged | Always (first project run) |
+| `infra/AllWidgets.twee` | All template `[widget]` passages merged | Always |
+| `infra/CharacterSheet.twee` | `sugarcube-character-sheet-template.twee` `CharacterSheet` passage | Always |
+| `infra/QuestJournal.twee` | `sugarcube-quest-journal-template.twee` `QuestJournal` passage | If quest mechanic active |
+| `infra/PartyRoster.twee` | `sugarcube-companion-template.twee` `PartyRoster` passage | If companion mechanic active |
+| `infra/WorldMap.twee` | `sugarcube-world-map-template.twee` `WorldMap` passage | If `world_map_fog` is set |
+| `infra/CombatUI.twee` + `CombatBody.twee` | `sugarcube-combat-template.twee` | If combat mechanic active |
+| `infra/LootContainer.twee` + `LootContainerUI.twee` | `sugarcube-loot-template.twee` | If loot mechanic active |
+| `infra/CraftUI.twee` + `CraftResultUI.twee` | `sugarcube-crafting-template.twee` | If craft mechanic active |
+| `infra/RestUI.twee` | `sugarcube-rest-template.twee` | If rest mechanic active |
+| `infra/TravelEncounterTransition.twee` | `sugarcube-travel-encounter-template.twee` | If `travel_encounters: encounter_table` |
+| `infra/InventoryUI.twee` | `sugarcube-equipment-ui-template.twee` `InventoryUI` passage | Always |
+| `infra/ShopUI.twee` | `sugarcube-shop-template.twee` `ShopUI` passage | If shop mechanic active |
+| `infra/StoryMenu.twee` | `sugarcube-character-sheet-template.twee` `StoryMenu` stub | Always |
+| `infra/StoryCaption.twee` | Merged from char/quest/companion StoryCaption stubs | Always |
+| `infra/StoryStylesheet.twee` | `sugarcube-theme-minimal.css` (or dark/light per constitution) | Always |
+
+**How to generate `StoryInit.twee`:**
+1. Read `constitution.md ## VI-B` (randomness model) and `## Companion System`
+2. Read `variables.md` — every declared variable becomes a `<<set $varname to initialValue>>` line, grouped by section
+3. Read `quests.md` — generate `$quest_[id]_state`, `$quest_[id]_stage`, and `$quest_registry` array
+4. Read `world-map.md` — generate `$region_*`, `$area_*`, `$loc_*` spatial variables
+5. Merge all template `[*-merge-into-existing]` StoryInit blocks, filling placeholders from spec files
+6. Emit the merged result as a single `:: StoryInit` passage
+
+**How to generate `AllWidgets.twee`:**
+1. Collect every `[widget]`-tagged passage from all active supplementary templates
+2. Merge into a single `:: AllWidgets [widget]` passage
+3. Replace placeholders in widget code (`[COMPANION_1]`, `[PASSAGE_NAME]`, etc.) with project-specific values from spec files
+
+**Compile command** (output at end of Phase 0):
+```bash
+tweego -o draft/sugarcube/[PROJECT_NAME].html \
+  draft/sugarcube/infra/StoryInit.twee \
+  draft/sugarcube/infra/AllWidgets.twee \
+  draft/sugarcube/infra/CharacterSheet.twee \
+  draft/sugarcube/infra/QuestJournal.twee \
+  draft/sugarcube/infra/CombatUI.twee \
+  draft/sugarcube/infra/CombatBody.twee \
+  draft/sugarcube/infra/WorldMap.twee \
+  draft/sugarcube/infra/*.twee \
+  draft/sugarcube/LOC-*.twee \
+  draft/sugarcube/NODE-*.twee
+```
+
+Confirm: `✓ Phase 0 complete — [N] infrastructure files generated in draft/sugarcube/infra/`
+
+---
 
 ### 1. Load Required Documents
 
@@ -75,6 +138,113 @@ For each target node, load:
 - **RPG-Only**: `mechanics-[ruleset].md` (skill DC ranges, approval thresholds, faction reps, Tabletop session structure)
 - **Tabletop-Only**: `quests.md`, `npc-roster.md` (quest context, NPC stat blocks if any)
 - **Computer Game-Only**: `npc-roster.md`, `locations.md` (playstyle routing hints, difficulty scaling)
+
+**Engine-specific node template** (loaded when `SESSION.engine` is set):
+- `SESSION.engine = "sugarcube"` — load `templates/node-outline-d5e-sugarcube.md` as the **structural reference** for all generated `.twee` passages. The generated output must follow the passage layout, macro patterns, skill check structure, and variable handling shown in that template. Load `templates/node-start-twee-template.twee` for the frontmatter comment block format.
+- `SESSION.engine = "ink"` — load `templates/node-outline-d5e-ink.md` as the structural reference for all generated `.ink` knots.
+- `SESSION.engine = "generic"` — load `templates/node-outline-template.md` as the structural reference for all generated `.md` drafts.
+
+**SugarCube supplementary templates** — load each only when the node requires it (check `scene_type` and mechanic hooks from the outline):
+
+| Template | Load when |
+|---|---|
+| `sugarcube-skill-checks-template.twee` | Outline has any skill-check mechanic hook (`[MECHANIC:SKILL_CHECK]` or `skill_check` hook type) |
+| `sugarcube-combat-template.twee` | `scene_type: combat` or outline has a combat mechanic hook |
+| `sugarcube-faction-reputation-template.twee` | Outline mutates any `$faction_*` or `$rep_*` variable |
+| `sugarcube-character-sheet-template.twee` | First node in a project (StoryInit setup) or any node using `$partyLevel`, `$playerHP`, ability modifiers |
+| `sugarcube-equipment-ui-template.twee` | Outline has an inventory mechanic hook (`add`/`remove` item) |
+| `sugarcube-shop-template.twee` | `scene_type: shop` |
+| `sugarcube-quest-journal-template.twee` | `scene_type: quest_event` or outline sets a quest-stage variable |
+| `sugarcube-loot-template.twee` | `scene_type: combat` post-combat drop, outline has a container/chest interaction, or a quest completion payout |
+| `sugarcube-rest-template.twee` | `scene_type: rest` node, or project uses `container_respawn: long_rest` / `quest_availability: random_pool` |
+| `sugarcube-crafting-template.twee` | Outline has a `MECHANIC:CRAFT` hook or `inventory_combine: yes` is set in `constitution.md ## II` |
+| `sugarcube-travel-encounter-template.twee` | `travel_encounters: encounter_table` in constitution and the node has `scene_type: travel` |
+| `sugarcube-companion-template.twee` | Outline contains a `MECHANIC:COMPANION` block or constitution.md lists at least one companion in `## Companion System` |
+| `sugarcube-spells-template.twee` | Outline has a spell-slot mechanic hook or spell cast event |
+| `sugarcube-spatial-init-template.twee` | First node in a project (StoryInit setup) or when `--all` / `--act 1` is used |
+| `sugarcube-world-map-template.twee` | WorldMap passage is requested, or project has `specs/world-map.md` and no WorldMap passage exists yet |
+| `sugarcube-hub-passage-template.twee` | Node ID matches `LOC-{ShortName}` pattern (see Step 1b) |
+
+For each loaded supplementary template: use its widget definitions (`<<widget ...>>`) inline in the generated `.twee` exactly as shown — **do not rewrite widget logic from scratch**.
+
+### 1b. Hub Passage Mode (LOC-xxx IDs only)
+
+> **Trigger**: If the requested node ID matches the pattern `LOC-{ShortName}` (from `specs/locations.md`), this mode replaces the standard drafting flow. Skip Steps 2–6 for this node; return here.
+
+Hub passages are navigation aggregation points. They do not carry story prose — they let the player see the current Location's scenes, NPCs, and exits.
+
+**Load from `specs/locations.md`**:
+- Location name, description, parent area, parent region
+- Scene IDs for all nodes in this Location (and their `scene_type`)
+- Hub Passage ID (should equal the requested `LOC-xxx`)
+
+**Load from `specs/world-map.md`** (if present):
+- Adjacent Locations reachable from this Location (travel connections)
+
+**Generate hub passage per engine**:
+
+**SugarCube** (`draft/sugarcube/LOC-{ShortName}.twee`):
+
+> **CRITICAL: Follow `templates/sugarcube-hub-passage-template.twee` exactly.**
+> Copy its `:: LOC-[ShortName] [hub location]` passage structure and populate from `locations.md` and `world-map.md`.
+> Use the `<<hubScene>>` and `<<hubTravel>>` widgets defined in `HubWidgets` (from that template — merge once into the project WidgetPassage).
+> Do not invent a different passage layout.
+
+Key rules from the template:
+- First-visit `<<if not $loc_{ShortName}_visited>>` trigger block at top
+- Location state guard (`<<if $loc_{ShortName}_state eq "abandoned">>` etc.) if `$loc_{ShortName}_state` is used
+- `<h2>[Location Name]</h2>` header
+- One `<<hubScene "NODE-xxx_Name" "Label">>` per scene in this Location (from `locations.md` Scene IDs)
+- State-gated scenes use third argument: `<<hubScene "NODE-xxx" "Label" "$condition">>`
+- One `<<hubTravel "LOC-Adjacent" "Label">>` per travel exit (from `world-map.md` travel connections)
+- At least one unconditional travel exit; flag WARNING if all exits are gated
+
+**Ink** (`draft/ink/LOC-{ShortName}.ink`):
+```ink
+=== LOC_{ShortName} ===
+[Location Name]
+[Brief 1–2 sentence sensory description]
+
+Where do you want to go?
++ [{Scene label A}] -> NODE_{seq}_{Name}
++ [{Scene label B}] -> NODE_{seq}_{Name}
++ [Travel to {Adjacent Location}] -> LOC_{AdjacentShortName}
+- -> LOC_{ShortName}
+```
+Rules:
+- Hub label uses `=== LOC_{ShortName} ===` (underscores, no hyphens — Ink identifier constraint)
+- Scene choices use `->` diverts to scene knots by NODE_ID
+- Travel choices divert to other LOC_ labels
+- Loop back (`-> LOC_{ShortName}`) so player can choose again after returning
+
+**Tabletop / GM Reference** (`draft/tabletop/LOC-{ShortName}.md`):
+```markdown
+## [Location Name] — GM Hub Reference
+
+> [Boxed text for first arrival — 2–3 sentences of sensory/atmospheric description]
+
+**Location ID**: LOC-{ShortName} | **Parent Area**: AREA-{AreaName} | **Parent Region**: REGION-{RegionName}
+
+### Scenes at this location
+| Scene | Node | Type | Notes |
+|---|---|---|---|
+| [Scene Name] | NODE-xxx | [scene_type] | [When triggered / conditions] |
+
+### NPC Roster
+| NPC | Status | Role |
+|---|---|---|
+| [Name] | Present / Optional / Gone if $loc_xxx_state = "cleared" | [Role] |
+
+### Travel exits
+| Destination | Direction | Condition |
+|---|---|---|
+| [Location Name] | [North / Port / etc.] | [Open / requires $area_xxx_cleared] |
+```
+
+**Output file naming**: `draft/[ENGINE]/LOC-{ShortName}.twee` / `.ink` / `.md`
+**Do not create an outline file** for LOC-xxx hub passages.
+
+---
 
 ### 2. Parse Outline Choices & Consequences
 
@@ -127,47 +297,269 @@ variables_set: [var3, var4]   # From outline's "Variables Set" section
 **Prose structure**:
 1. Opening: Orient the player (location, stakes, context)
 2. Middle: Describe the situation, NPCs, choices available
-3. Mechanic hooks: Insert [MECHANIC:...] blocks inline (see **Inline Mechanic Hooks** section below)
-4. Choices: Terminal ## Choices section with all outlined choices
+3. Mechanic hooks: Insert hooks inline (format depends on engine — see Step 5)
+4. Choices: Terminal choices section with all outlined choices (format depends on engine)
 
 **Style rules**:
 - POV: Use constitution.md default POV (second-person, third-person, first-person) or node-level override
 - Tone: Match constitution.md tone (dramatic, comedic, dark, uplifting, etc.)
 - Register: If style_mode is humanized-ai, use craft-rules.md to tune beat language and dialogue
 
+**Engine output format** (determined by `SESSION.engine`):
+
+> **SugarCube** (`SESSION.engine = "sugarcube"`)
+> Output: `draft/sugarcube/NODE-{seq}_{Name}.twee` — Twee 3 passage format, SugarCube 2.x macro syntax
+>
+> **CRITICAL: Follow `templates/node-outline-d5e-sugarcube.md` for all structural and macro patterns.**
+> The template defines the authoritative layout. Do not invent macro patterns not shown there.
+>
+> Required passage structure (from template):
+> 1. `/* ... */` frontmatter comment block (node_id, title, act, status, pov, variables_read, variables_set, drafted, outline_ref) — format from `node-start-twee-template.twee`
+> 2. `:: NODE-{seq}_{Name} [scene]` passage header with correct tags
+> 3. Prose opening (HTML paragraphs `<p>...</p>` or plain text per constitution.md prose_profile)
+> 4. Skill check sub-passages: each check gets its own `:: NODE-{seq}_{Name}_{CheckType}` passage with `<<set $roll to random(1,20)>>`, `<<set $total to $roll + $mod>>`, `<<if $total gte $dc>>` success/fail blocks — exactly as shown in template
+> 5. Variable mutations inline: `<<set $var to value>>` or `<<set $var += delta>>` at the point they occur in narrative, not batched at end
+> 6. Companion approval/faction rep mutations: `<<set $companionApproval += N>>` inline after the triggering dialogue, with conditional companion reaction dialogue
+> 7. Choices at the end as `[[Label|TARGET_NODE]]` wiki-links or `<<link "Label" "TARGET_NODE">>` macros
+> 8. Consequence comments as `/* Effect: ... */` on the same line as the choice
+>
+> For **hub passages** (LOC-xxx): use `templates/sugarcube-hub-passage-template.twee` instead — see Step 1b.
+> - **No speckit.export step required** — hand directly to `speckit.compile sugarcube`
+>
+> **Ink** (`SESSION.engine = "ink"`)
+> Output: `draft/ink/NODE-{seq}_{Name}.ink` — Ink knot format
+> **Follow `templates/node-outline-d5e-ink.md` for all structural and divert patterns.**
+> - Passage as `=== NODE_{seq}_{Name} ===` knot
+> - Variables as `~ var = value` and `{var}` conditionals
+> - Choices as `+ [Label] -> TARGET_NODE` diverts
+> - **No speckit.export step required** — hand directly to `speckit.compile ink`
+>
+> **Generic** (`SESSION.engine = "generic"` or not set)
+> Output: `draft/NODE-{seq}_{Name}.md` — engine-agnostic markdown
+> - Variables and hooks as `[MECHANIC:...]` token blocks (translated by speckit.export later)
+> - Choices as markdown links `[Label](TARGET_NODE)`
+> - **Requires speckit.export** to convert to engine format before speckit.compile
+
 ### 5. Inline Mechanic Hooks
 
-Insert [MECHANIC:...] blocks within prose where they occur:
+The mechanic hook format depends on `SESSION.engine`. **Do not use `[MECHANIC:...]` tokens when `SESSION.engine = "sugarcube"` or `"ink"`** — those are generic-only tokens for later translation.
 
-**Examples**:
+**Generic** (`SESSION.engine = "generic"`) — use `[MECHANIC:...]` token blocks:
 
 ```markdown
 You notice a rusty key on the ground.
 [MECHANIC:INVENTORY add=key_rusty]
 It might be useful.
 
-[MECHANIC:VISITED set=visited_chamber]
-You've been here before.
-
 [MECHANIC:TRUST npc=mira delta=+5]
 Mira smiles at you warmly, her trust deepening.
-
-[MECHANIC:COUNTER variable=escape_attempts delta=+1]
-You count this as your third attempt.
-
-[MECHANIC:CHOICE_MEMORY variable=player_loyalty value="helped_mira"]
-You remember: you chose to help Mira earlier.
 ```
 
-**Inline rules**:
-- Prose must read coherently if all [MECHANIC:...] blocks are removed
-- Each hook block must be isolated — no mixing multiple hooks in one block unless they fire simultaneously
-- The prose surrounding the hook should justify why the mechanic fires (e.g., "You gain her trust" before `[MECHANIC:TRUST delta=+5]`)
+**SugarCube** (`SESSION.engine = "sugarcube"`) — write SugarCube macros directly, following `templates/node-outline-d5e-sugarcube.md`:
+
+```twee
+You notice a rusty key on the ground.
+<<run $inv.push("key_rusty")>>
+It might be useful.
+
+Mira smiles at you warmly, her trust deepening.
+<<set $miraTrust += 5>>
+
+<<set $loc_chamber_visited to true>>
+You've been here before — you know which shadows to avoid.
+```
+
+Skill checks generate their own sub-passage, not an inline block — follow `templates/sugarcube-skill-checks-template.twee`:
+```twee
+[[Attempt Insight Check|NODE-015_InsightCheck]]
+
+:: NODE-015_InsightCheck
+<<set $roll to random(1, 20)>>
+<<set $total to $roll + $playerInsightMod>>
+<<if $total gte 14>>
+  [success prose]
+  <<set $conspiracyDiscovered to true>>
+  [[Continue|NODE-020_Report]]
+<<else>>
+  [failure prose]
+  [[Try again|NODE-015_GuardInterrogation]]
+<</if>>
+```
+
+Combat scenes — follow `templates/sugarcube-combat-template.twee` for `<<startCombat>>` / `<<combatResult>>` widget calls.
+
+Faction rep changes — follow `templates/sugarcube-faction-reputation-template.twee` for `<<factionRep>>` widget calls instead of bare `<<set>>`.
+
+Inventory/shop interactions — follow `templates/sugarcube-equipment-ui-template.twee` (`<<pickupItem>>` / `<<dropItem>>`) and `templates/sugarcube-shop-template.twee` (`<<shopOpen>>`).
+
+Quest-stage changes — follow `templates/sugarcube-quest-journal-template.twee` for `<<questUpdate>>` widget calls.
+
+Quest completion payouts — follow `templates/sugarcube-loot-template.twee` for `<<questReward>>`. Call `<<lootGold N>>` first for the gold amount, then `<<questReward "quest_name" xp ["item_var"]>>`. Do NOT call `<<questComplete>>` separately; `<<questReward>>` handles it.
+
+Post-combat loot drops — follow `templates/sugarcube-loot-template.twee`. In the `player_won` branch of the combat return passage:
+```twee
+<<if $lastCombatOutcome is "player_won">>
+  You stand over the fallen enemy.
+  <<lootDrop "goblin_chief" "NODE-050_Aftermath">>
+<</if>>
+```
+`<<lootDrop>>` resolves the drop table, grants items + gold, and navigates to `LootContainer` before returning to `NODE-050_Aftermath`. The container must be defined in `$loot_table_registry` (StoryInit).
+
+Searchable containers / chests — use `<<lootContainer>>` instead of `<<lootDrop>>` when the player should browse items individually:
+```twee
+A battered chest sits in the corner.
+<<if not $loot_opened_chest_crypt_1>>
+  [[Search the chest|LootContainer]]<<set $loot_active_container to "chest_crypt_1">><<set $loot_return_passage to "NODE-030_AfterSearch">>
+<<else>>
+  The chest is empty.
+<</if>>
+```
+
+Fixed key-item grants (no randomness) — use `<<lootFixed>>` directly:
+```twee
+Among the debris you find the captain's seal.
+<<lootFixed "captains_seal" "Captain's Seal">>
+```
+
+Rest scenes (`scene_type: rest`) — follow `templates/sugarcube-rest-template.twee`. Do NOT write `<<shortRest>>` or `<<longRest>>` directly; always use the scene-level wrappers:
+
+- **Short rest** — call `<<shortRestScene>>` at the narrative moment the party rests; prose continues in the same passage:
+```twee
+The party huddles in the alcove. Mira presses bandages against the wound.
+<<shortRestScene>>
+<<if $playerHitDiceRemaining gte 1>>
+  You recover <<= $last_short_rest_heal>> HP.
+<<else>>
+  You have no hit dice left — the rest does little good.
+<</if>>
+[[Press on|NODE-045_Corridor]]
+```
+
+- **Long rest** — call `<<longRestScene "location" "ReturnPassage">>` as the final statement; it navigates automatically:
+```twee
+The innkeeper leads you to a modest room. You shed your armour and sleep.
+<<longRestScene "inn" "NODE-050_Morning">>
+```
+Do NOT add any `<<goto>>` or `[[link]]` after `<<longRestScene>>` — it handles navigation.
+
+- **Milestone rest** — write prose only; no widget calls. Add a `/* milestone rest */` comment so speckit.compile and speckit.checklist can identify the node:
+```twee
+/* milestone rest */
+Sleep does not come easily. Faces of the dead drift through your mind —
+a warning, or a memory you cannot place.
+[[Dawn|NODE-055_Ruins]]
+```
+
+- **Interrupted rest** — set `$rest_interruption = true` before interruption prose, then branch:
+```twee
+The camp is quiet. You close your eyes.
+<<longRestScene "camp" "NODE-060_Dawn">>
+
+:: NODE-060_Dawn
+<<if $rest_interruption>>
+  [interrupted rest aftermath]
+<<else>>
+  [normal morning prose]
+<</if>>
+```
+
+Crafting — follow `templates/sugarcube-crafting-template.twee`. Two patterns:
+
+- **Player-driven (station menu)** — call `<<craftStation>>` as the final statement; it navigates to `CraftUI`:
+```twee
+Mira gestures to the alchemy bench. "Help yourself — the reagents are fresh."
+<<craftStation "alchemy_bench" "NODE-040_AfterCraft">>
+```
+Do NOT add any link or `<<goto>>` after `<<craftStation>>` — it handles navigation.
+
+- **Scripted inline craft** — call `<<craftAttempt>>` at the narrative moment, then branch on `$last_craft_success`:
+```twee
+You tear the cloth into strips and wind them tight.
+<<craftAttempt "bandage_kit">>
+<<if $last_craft_success>>
+  A serviceable bandage — crude, but it will hold.
+<<else>>
+  Your hands shake. The cloth unravels. The materials are gone.
+<</if>>
+[[Continue|NODE-045_Passage]]
+```
+
+- **Unlock a station** in a node where the player gains access:
+```twee
+The smith waves you over. "My forge is yours until dawn."
+<<craftUnlockStation "forge">>
+[[Talk more|NODE-030_SmithDialogue]] [[Head to the forge|NODE-035_ForgeRoom]]
+```
+
+- **Conditional prose** (check before offering): use `<<craftCheck>>` to branch on ingredient availability:
+```twee
+<<craftCheck "health_potion">>
+<<if $craft_can_make>>
+  You have everything to brew a health potion here.
+  [[Brew it|NODE-040_Brew]]
+<<else>>
+  You are missing: <<= $craft_missing_items.join(", ")>>.
+<</if>>
+```
+
+Spell-slot expenditure — follow `templates/sugarcube-spells-template.twee` for `<<castSpell>>` widget calls.
+
+**Inline rules (all engines)**:
+- Prose must read coherently without the mechanic blocks
+- Variable mutations fire at the narrative moment they occur, not batched at end
+- The prose surrounding a mutation should justify it ("Mira smiles" before `$miraTrust += 5`)
+
+Companion approval changes — follow `templates/sugarcube-companion-template.twee`. Four patterns:
+
+- **Approval delta** — call `<<companionApproval>>` at the narrative moment; write justifying prose before it:
+```twee
+Thorne glances sideways at you, and for the first time allows himself a thin smile.
+<<companionApproval "thorne" +10>>
+```
+
+- **Recruit** — call `<<companionRecruit>>` once, immediately after the join dialogue:
+```twee
+"Then we're agreed," Thorne says, shouldering his pack. "Lead on."
+<<companionRecruit "thorne">>
+```
+
+- **Leave / Death** — call `<<companionLeave>>` with reason; for death set reason to `"death"`:
+```twee
+Mira slams the door behind her.
+<<companionLeave "mira" "betrayal">>
+```
+
+- **Inline reaction** — `<<companionReact>>` for short two-branch prose; use `<<if $[id]_tier is "warm">>` blocks for multi-line branching:
+```twee
+<<companionReact "mira" 50 "Mira nods, impressed." "Mira looks away, unconvinced.">>
+```
+
+Approval changes **must** have justifying prose before them — never a bare widget call. Display the delta to the player within the prose (e.g. "Thorne approves" or show a UI pip via StoryCaption — do not use a `<<notify>>` popup unless the project explicitly configures one).
+
+Travel encounter rolls (`scene_type: travel`, `travel_encounters: encounter_table`) — follow `templates/sugarcube-travel-encounter-template.twee`. `<<travelRoll>>` must be the **last** statement in the node — it handles navigation for both safe and triggered outcomes:
+```twee
+The road through Thornwood narrows. Branches scratch at your armour. Silence.
+<<travelRoll "REGION-Thornwood" "NODE-050_ArriveVillage">>
+```
+Do NOT add `[[links]]` or `<<goto>>` after `<<travelRoll>>`. The node has no explicit exit — the roll decides where the player goes next.
+
+For the combat return passage after a travel encounter, handle the loot drop if `$travel_pending_loot` is set:
+```twee
+:: NODE-050_ArriveVillage
+<<if $lastCombatOutcome is "player_won" and $travel_pending_loot isnot "">>
+  <<lootDrop $travel_pending_loot "NODE-050_ArriveVillage">>
+<<elseif $lastCombatOutcome is "player_won">>
+  You stand over the bodies and move on.
+<</if>>
+```
+
+
 
 ### 6. Terminal Choices Section
 
-At the end of the node, create a ## Choices section with format:
+At the end of the node, write choices in the format matching `SESSION.engine`.
 
+**Generic** (`SESSION.engine = "generic"`):
 ```markdown
 ## Choices
 
@@ -176,20 +568,29 @@ At the end of the node, create a ## Choices section with format:
 - [Leave immediately](NODE-004) <!-- requires: $flag_danger_sense == true; Effect: You escape before being discovered -->
 ```
 
-**Rules**:
-- Each choice must match exactly one row from the outline's Choices table
-- Label MUST be verbatim from outline (or close synonym if prose uses simpler language)
-- Target node MUST match outline target
-- Include condition comment if outlined choice had a gate condition
-- Include Effect comment with the narrative consequence from the outline
-- Minimum 2 choices for non-terminal nodes; omit entirely for ending nodes
-
-**For ending nodes**: Single choice pointing to the ending:
-```markdown
-## Choices
-
-- [Accept your fate](END-001) <!-- Effect: You succumb to the darkness -->
+**SugarCube** (`SESSION.engine = "sugarcube"`) — wiki-links or `<<link>>` macros, consequence as inline comment:
+```twee
+[[Look around carefully|NODE-002_LookAround]] /* Effect: You gain awareness of the chamber */
+[[Check the equipment|NODE-003_Equipment]] /* Effect: You discover a tool that might help */
+<<if $flag_danger_sense>>
+  [[Leave immediately|NODE-004_Escape]] /* requires: $flag_danger_sense; Effect: You escape */
+<</if>>
 ```
+
+**Ink** (`SESSION.engine = "ink"`):
+```ink
++ [Look around carefully] -> NODE_002_LookAround
++ [Check the equipment] -> NODE_003_Equipment
++ {flag_danger_sense} [Leave immediately] -> NODE_004_Escape
+```
+
+**Rules (all engines)**:
+- Each choice must match exactly one row from the outline's Choices table
+- Label MUST be verbatim from outline (or close synonym)
+- Target node MUST match outline target
+- Include condition gate if outlined choice had one
+- Include consequence comment/annotation from the outline
+- Minimum 2 choices for non-terminal nodes; omit entirely for ending nodes
 
 ### 7. Validate Against Outline
 
@@ -294,7 +695,8 @@ Remind the author to:
 - **Tabletop**: Verify GM Notes section has session #, NPCs, encounter type
 - **Computer**: Verify playstyle routes and difficulty scaling documented
 - Change `status: DRAFT` → `status: APPROVED` when satisfied
-- Run `speckit.export` to convert to engine-specific format
+- **SugarCube/Ink**: Run `speckit.compile` directly — no export step needed
+- **Generic**: Run `speckit.export` to convert to engine format, then `speckit.compile`
 
 ### 10. Check for Extension Hooks
 

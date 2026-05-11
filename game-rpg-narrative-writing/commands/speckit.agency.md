@@ -444,10 +444,19 @@ Path 2: Forgive
 - What variable state must exist to reach specific endings
 - Where forced reconvergences happen
 
-### 7. **Report**
+### 7. **Hub Navigation Check** *(skip if `specs/world-map.md` absent)*
+
+For each hub passage (`LOC-{ShortName}` file in `draft/`):
+- **Destination count**: Count all navigation options (scene links + travel links). Flag if <3 destinations as WARNING — single-path hubs are not meaningful choices.
+- **Forced single path**: If only one travel exit exists and all scenes are complete/locked, the hub is a corridor — flag as WARNING (hub feels forced, not a real navigation choice).
+- **Meaningful variety**: Verify travel destinations lead to meaningfully different scenes (different scene types, areas, or contexts). If all exits lead to the same Area with the same scene type, flag as NOTE (limited exploration value).
+- **State-gated options**: If some exits are gated by `$loc_*` or `$area_*` variables, verify at least one exit is always available regardless of state — flag if no unconditional exit exists as CRITICAL (player can be locked in hub).
+
+### 8. **Report**
 
 Output `agency-audit.md` with:
 - Violation count by type (forced, cosmetic, valid)
+- Hub navigation issues (destination count, locked exits)
 - Agency strength metrics
 - Specific recommendations for fixes
 - If `--show-paths`: Full endpoint visualization for each choice

@@ -8,7 +8,7 @@
   "description": "Test suite for Tier 1/2/3 mechanic system"
 }
 
-:: Start Node
+:: NODE-001-start
 Welcome to the test story!
 
 <<run $store.variables.game_started = true>>
@@ -20,7 +20,7 @@ You wake up in a mysterious room.
 <<link "Explore the room" "NODE-002-tier2-demo">><</link>>
 <<link "Check inventory" "NODE-003-tier3-demo">><</link>>
 
-:: Tier 2 Mechanics Demo
+:: NODE-002-tier2-demo
 You enter a library. There's a mysterious figure studying an ancient tome.
 
 <<run $store.knowledge['ancient_prophecy'] = true>>
@@ -31,10 +31,10 @@ You enter a library. There's a mysterious figure studying an ancient tome.
 
 The scholar nods at you knowingly. You feel like something important just happened.
 
-<<link "Question the scholar" "NODE-001-start">><</link>>
+<<back "Question the scholar">>
 <<link "Examine the objects" "NODE-003-tier3-demo">><</link>>
 
-:: Tier 3 Mechanics Demo
+:: NODE-003-tier3-demo
 You step into a grand chamber. Interactive elements surround you.
 
 <<run $store.verbs['golden_statue'] = 'examine'>>
@@ -50,4 +50,4 @@ The statue glows with an ethereal light. You hear haunting music echo through th
 What do you do?
 
 <<link "Use the ornate key" "NODE-001-start">><</link>>
-<<link "Leave the chamber" "NODE-002-tier2-demo">><</link>>
+<<back "Leave the chamber">>

@@ -20,16 +20,25 @@ Generate a Mermaid flowchart of the full node graph. Annotates mechanic triggers
 ## User Input
 
 Provide one of:
-- Nothing — generate full flowchart from all node files and `plan.md`
-- `--act [N]` — diagram one act only
+- Nothing — generate full spatial flowmap set (all levels, see `--level`)
+- `--act [N]` — diagram one act only (scene-level)
 - `--endings` — highlight ending nodes only
 - `--hooks` — annotate mechanic trigger types on edges
 
+**Spatial level flag** (RPG — controls which tier of the hierarchy to diagram):
+- `--level world` — Region-level map: Regions and their unlock dependencies
+- `--level area` — Area-level map: Locations within one or all Areas and their travel connections. Combine with `--area AREA-[ShortName]` to scope to one Area.
+- `--level location` — Scene-level map (existing behavior): all scenes within a single Location. Combine with `--location LOC-[ShortName]`.
+- `--level scene` — Same as `--level location` but shows individual node content (beats, variables)
+- Default (no `--level`): generate **all** levels and write separate files: `flowmap-world.md`, `flowmap-area-{AreaShortName}.md` per Area, `flowmap-loc-{LocShortName}.md` per Location
+
 Optional flags:
-- `--act [N]` — scope to one act
+- `--act [N]` — scope to one act (for `--level location` or `--level scene`)
+- `--area [AREA-ShortName]` — scope to one Area (for `--level area`)
+- `--location [LOC-ShortName]` — scope to one Location (for `--level location` or `--level scene`)
 - `--endings` — bold or colour-code ending nodes
 - `--hooks` — add edge labels for mechanic triggers (trust, flag, inventory check)
-- `--output [filename]` — write to a named file instead of printing
+- `--output [filename]` — write to a named file instead of the default filenames
 
 ## Pre-Execution Checks
 
@@ -45,6 +54,42 @@ Optional flags:
 3. If node files exist: prefer actual node file links over plan.md estimates.
 
 ## Outline
+
+**Step 0 — Determine level and scope** (RPG):
+- Load `specs/[FEATURE_DIR]/world-map.md` and `specs/[FEATURE_DIR]/locations.md` if present.
+- If `--level world` (or default): generate world-level map first (Step 0a).
+- If `--level area` (or default): generate area-level maps next (Step 0b).
+- If `--level location` / `--level scene` (or default): generate per-location scene maps (existing steps 1–5).
+- If no `world-map.md` exists, skip Step 0a–0b and proceed to scene-level map with a note: "⚠ world-map.md not found — generating flat scene graph. Run speckit.plan to generate spatial hierarchy first."
+
+**Step 0a — World-level flowmap** (`--level world`):
+- Output file: `flowmap-world.md`
+- Diagram: one node per Region, directed edges for unlock dependencies and travel connections between Regions.
+- Format:
+  ```mermaid
+  flowchart TD
+  %% WORLD MAP %%
+  REGION_Start([REGION-Name — unlock: start])
+  REGION_Next([REGION-Name — unlock: after Event])
+  REGION_Start -->|"Travel: road"| REGION_Next
+  ```
+- Add a `:::locked` style to Regions with an unlock condition not yet met by Act 1.
+
+**Step 0b — Area-level flowmap(s)** (`--level area`):
+- Output file(s): `flowmap-area-{AreaShortName}.md` per Area (or single file if `--area` scoped).
+- Diagram: one node per Location within the Area, directed edges for travel connections between Locations.
+- Annotate each Location node with its scene count and dominant scene type: `LOC_Name([LOC-Name | 5 scenes | combat+dialogue])`.
+- Mark rest locations with `:::rest-location` styling.
+- Mark entry travel scene node on the edge entering the Area: `--[Entry]-->`.
+- Format:
+  ```mermaid
+  flowchart TD
+  %% AREA-Name %%
+  LOC_Hub([LOC-TownCenter | hub | 4 scenes]):::rest-location
+  LOC_Dungeon([LOC-KingsVault | dungeon | 7 scenes])
+  LOC_Hub -->|"Travel: south gate"| LOC_Dungeon
+  LOC_Dungeon -->|"Travel: escape route (one-way)"| REGION_Next_Entry
+  ```
 
 1. **Build graph model** (with RPG enhancements if [PLATFORM] detected):
 
@@ -110,9 +155,13 @@ Optional flags:
    NODE_END_A[[Ending A — Redemption]]
    NODE_END_B[[Ending B — Exile]]
    ```
-   - Write to `flowmap-diagram.md` or specified `--output` file
-   - Report: "Diagram generated: [N] nodes, [N] edges, [N] ending nodes."
-   - If RPG campaign: Add "Sessions: [N]" (tabletop) or "Chapters: [N], Routes: [N]" (computer) to report
+   - **Default (no `--level`)**: Write three sets of files:
+     - `flowmap-world.md` — world/region level (Step 0a)
+     - `flowmap-area-{name}.md` per Area — area/location level (Step 0b)
+     - `flowmap-loc-{name}.md` per Location — scene level (Steps 1–4)
+   - **Scoped (`--level` flag)**: Write only the requested level to `flowmap-{level}-{name}.md` or `--output` path.
+   - Report: "Flowmap files written: [N] world, [N] area, [N] location. Total nodes: [N], edges: [N], endings: [N]."
+   - If RPG campaign: Add "Regions: [N], Areas: [N], Locations: [N]" (tabletop) or "Chapters: [N], Routes: [N]" (computer) to report.
 
 ---
 

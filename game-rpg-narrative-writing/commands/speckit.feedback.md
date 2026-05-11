@@ -114,7 +114,7 @@ Parse raw notes and populate the per-category issue tables.
 | "colorblind mode broken in diplomacy", "audio cues missing in combat", "motor accessibility only in one route" | CR-AX — Accessibility Consistency | Computer |
 | "chapter pacing felt off", "didn't know which chapter I was in", "escalation didn't build" | CR-CP — Chapter Pacing | Computer |
 
-**Node ID mapping**: when the tester references a passage name, scene label, or description, map to the closest `NODE-NNN` or `SESSION-N-NODE-NNN` (for tabletop) / `CHAPTER-N-NODE-NNN` (for computer) by cross-referencing node file titles and `specs/plan.md`. When no node is identifiable, mark as `NODE-UNKNOWN`.
+**Node ID mapping**: when the tester references a passage name, scene label, location name, or description, map to the closest `NODE-NNN`, `LOC-{ShortName}` (hub passage), `AREA-{ShortName}` (area-level feedback), `SESSION-N-NODE-NNN` (for tabletop), or `CHAPTER-N-NODE-NNN` (for computer) by cross-referencing node file titles, `specs/plan.md`, `specs/locations.md`, and `specs/world-map.md`. When no node is identifiable, mark as `NODE-UNKNOWN`.
 
 **Severity assignment** (Generic):
 - CRITICAL: blocks progression, crashes export, breaks variable state, or creates unwinnable state

@@ -257,3 +257,45 @@ Check `hooks.after_implement`: run if present.
 - Write prose that matches the beat summary and narrative purpose
 
 Consequences are the **bridge** between mechanical outcome and narrative meaning. They must be preserved.
+
+---
+
+## SugarCube Export Rules (Twee)
+
+When the target engine is SugarCube, the following rules apply to all generated `.twee` files:
+
+### Passage Naming
+
+Every passage header MUST use the `node_id` from frontmatter as the passage name:
+
+```twee
+:: NODE-001-start
+```
+
+**Never** use human-readable titles as passage names (e.g. `:: Start Node`). The node_id is the canonical identifier — all links in other passages reference it by this name. A mismatch between a passage name and the link target silently breaks navigation.
+
+### Back Navigation
+
+For choices that return the player to the previous passage (e.g. "Go back", "Return", "Cancel"), use the SugarCube history macro:
+
+```twee
+<<back "Return">>
+```
+
+**Never** use a hardcoded link to the previous node:
+
+```twee
+<!-- WRONG: breaks if the player arrived from a different passage -->
+<<link "Return" "NODE-001-start">><</link>>
+[[Return->NODE-001-start]]
+```
+
+`<<back>>` uses the engine's history stack, so it correctly navigates to wherever the player actually came from regardless of which node they visited before.
+
+### When to Use `<<back>>` vs `<<link>>`
+
+| Use case | Macro |
+|---|---|
+| Player navigates forward to a new scene | `<<link "Label" "NODE-xxx">><</link>>` |
+| Player wants to return/cancel/go back | `<<back "Label">>` |
+| Non-linear return to a hub passage | `<<link "Label" "LOC-xxx">><</link>>` |

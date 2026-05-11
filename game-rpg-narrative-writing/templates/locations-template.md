@@ -8,10 +8,14 @@ Use this template for each distinct location in your world.
 
 # [Location Name]
 
+**Location ID:** LOC-[ShortName]  
 **Location Type:** [Urban / Rural / Dungeon / Wilderness / Interior / Exterior / Hybrid]  
-**Region/Area:** [What larger region contains this location?]  
+**Parent Region:** [REGION-xxx — the Region this Location belongs to]  
+**Parent Area:** [AREA-xxx — the Area within the Region]  
 **Accessibility:** [Easy to reach / Hidden / Restricted / Remote]  
-**First Appearance Node:** [NODE reference where players first visit]
+**Hub Passage:** [LOC-xxx passage that acts as the navigation hub for this Location]  
+**First Appearance Node:** [NODE reference where players first visit]  
+**Scene IDs:** [NODE-NNN, NODE-NNN, ... — all scenes that take place in this Location]
 
 ---
 
@@ -102,9 +106,10 @@ Use this template for each distinct location in your world.
 
 ## Encounters & Quests
 
-**Encounters Occurring Here:**
-- [NODE reference]: [Encounter name], [NPC/enemy types], [CR or difficulty]
-- [NODE reference]: [Encounter name], [NPC/enemy types], [CR or difficulty]
+**Scenes occurring here:**
+<!-- These must match the Scene IDs listed in the Location header above. -->
+- [NODE-NNN]: [Scene name], type: [scene_type], [brief description]
+- [NODE-NNN]: [Scene name], type: [scene_type], [brief description]
 
 **Associated Quests:**
 - [Quest name]: [Stage(s) that occur here]

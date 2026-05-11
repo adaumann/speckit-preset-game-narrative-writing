@@ -1,5 +1,5 @@
 ---
-description: Compile drafted node files to playable output format (HTML for Twine/SugarCube, compiled JSON for Ink with HTML wrapper, etc.). Includes built-in structural validation and automatic retry logic for compilation errors. For RPG campaigns (tabletop D&D/Pathfinder/Shadowrun and computer game), validates campaign prep document generation, route variable isolation, accessibility variant consistency, and exports ruleset-specific mechanics guides.
+description: Compile drafted node files to playable output format (HTML for Twine/SugarCube, compiled JSON for Ink with HTML wrapper, etc.). Accepts .twee/.ink files generated directly by speckit.implement (no export step for SugarCube/Ink). Includes built-in structural validation and a self-correcting fix loop that runs until compilation succeeds or no further progress can be made.
 handoffs:
   - label: Run full test suite
     agent: speckit.verify
@@ -21,7 +21,7 @@ scripts:
 
 Compile all drafted node files from `spec/<specname>/draft/<ENGINE>/` to a playable output file in `spec/<specname>/output/<ENGINE>/`.
 
-Uses native compilers (tweego for SugarCube, inklecate for Ink) with automatic retry logic for compilation errors.
+Uses native compilers (tweego for SugarCube, inklecate for Ink) with a self-correcting fix loop: each compilation error is parsed, a targeted fix is applied to the specific file, and the compiler re-runs until the story compiles clean or no further automatic progress can be made.
 
 **Output formats**:
 - **Twine/SugarCube** (twee) → HTML file with StoryData JSON header (via tweego.exe)
@@ -126,9 +126,17 @@ Accepted arguments:
 
 **Output**: Playable HTML file - open in browser to play
 
-**Retry logic**: 
-- If tweego fails, attempts to auto-fix common issues (unmatched braces, etc.)
-- Retries up to 3 times with error feedback
+**Fix loop** (runs until compiled or no further progress):
+1. Run tweego. If success → done.
+2. Parse tweego error output: extract file name, line number, error type.
+3. For each error, apply a targeted fix to the specific `.twee` file:
+   - `Unmatched '<<'` → find unclosed macro block in that file, close it
+   - `Undefined variable: $var` → add `<<set $var to 0>>` to StoryInit block
+   - `Passage not found: NAME` → check if the passage exists in another file; if not, create a stub `:: NAME` passage with a placeholder link back
+   - `Unexpected token` / `Unknown macro` → flag to user; cannot auto-fix — report line with suggestion
+4. Re-run tweego after each fix batch.
+5. If the same errors repeat unchanged after a fix attempt (no progress), stop the loop and report: `Stuck — auto-fix made no progress. Manual edit required.` with exact file/line/error.
+6. No hard retry limit — loop continues as long as errors are being resolved.
 
 #### Ink (ink → JSON + HTML via inklecate)
 
@@ -152,9 +160,15 @@ Accepted arguments:
 - `spec/<specname>/output/ink/story.json` - Compiled story (use with Ink runtime)
 - `spec/<specname>/output/ink/story.html` - HTML display wrapper
 
-**Retry logic**:
-- If inklecate fails, attempts to auto-fix common divert syntax errors
-- Retries up to 3 times with error feedback
+**Fix loop** (same pattern as SugarCube above):
+1. Run inklecate `-p` (validate). If clean → compile with `-c` → done.
+2. Parse inklecate error output: extract knot name, line, error type.
+3. For each error, apply a targeted fix:
+   - `Unknown knot: NAME` → create stub `=== NAME ===\n-> END` in the appropriate file
+   - `INCLUDE file not found` → flag; cannot auto-fix — report with path suggestion
+   - Divert syntax errors (`->` missing) → add missing divert
+4. Re-run inklecate `-p` after each fix batch.
+5. Stop loop if same errors repeat (no progress); report stuck state with file/line/error.
 
 #### Multi-Engine Compilation
 
@@ -467,11 +481,12 @@ When compiling a computer game (`[PLATFORM]` = "Computer Game"), validate and ex
 ## Error Handling
 
 **If compilation fails**:
-- Shows specific error from compiler (first 10 lines)
-- Attempts automatic fix for common errors
-- Retries up to 3 times
-- Shows which line numbers have issues (when possible)
-- Offers next steps (re-draft nodes, check configuration, etc.)
+- Shows specific error from compiler (file, line, error text)
+- Applies targeted auto-fix per error type (see Fix loop above)
+- Re-runs compiler after each fix batch — no fixed limit on attempts
+- Stops when: compilation succeeds, or no progress in a fix round (stuck)
+- On stuck: reports exact errors that could not be auto-fixed with remediation suggestions
+- Offers next steps (re-draft nodes, check configuration, manual edit)
 
 **Example error output**:
 ```
@@ -479,15 +494,19 @@ When compiling a computer game (`[PLATFORM]` = "Computer Game"), validate and ex
    NODE-001.twee:15: Error: Unmatched '<<'
    NODE-003.twee:8: Error: Undefined variable: $player_name
 
-🔧 Attempting auto-fix...
-   Detected: Unmatched macro braces
-   Fixed: NODE-001.twee
+🔧 Fix round 1:
+   NODE-001.twee:15 — Unmatched '<<' → closed macro block ✓
+   NODE-003.twee:8  — Undefined variable $player_name → added <<set $player_name to "">> in StoryInit ✓
 
-▶️  Attempt 2/3...
-❌ Compilation failed (still has errors)
+▶️  Re-running tweego...
+✅ Compilation succeeded after 1 fix round
 
-❌ Compilation failed after 3 attempts
-   Check the errors above and fix the source files
+--- (example: stuck case) ---
+🔧 Fix round 1:
+   NODE-007.twee:22 — Unknown macro <<customWidget>> → cannot auto-fix
+   ⚠ Stuck: error unchanged after fix attempt
+   Manual fix required: NODE-007.twee:22 — unknown macro <<customWidget>>
+   Suggestion: Define <<widget "customWidget">> in your WidgetPassage, or replace with a supported macro
 ```
 
 ## Compilation Success Output
@@ -495,7 +514,7 @@ When compiling a computer game (`[PLATFORM]` = "Computer Game"), validate and ex
 When compilation completes successfully:
 
 ```
-✅ Compilation succeeded on attempt 1
+✅ Compilation succeeded (no fixes needed)
 ✅ Output: spec/<specname>/output/sugarcube/story.html
    Size: 125000 bytes
 
@@ -534,7 +553,12 @@ Use `speckit.verify` if you want:
    ```
 
 **Compile steps**:
-1. Read all files in `spec/<specname>/draft/sugarcube/NODE-*.twee` in node ID order
+1. Read all source files in `spec/<specname>/draft/sugarcube/`:
+   - `WorldMap.twee` — if present, include first after StoryInit/StoryMenu
+   - `LOC-*.twee` — hub passage files; include in Area order (as listed in `world-map.md`, or alphabetically if world-map absent)
+   - `NODE-*.twee` — scene files; include in node ID order after all LOC-* files
+   - `END-*.twee` — ending files; include last
+   **Assembly order**: `StoryInit → StoryMenu → WorldMap.twee → [LOC-*.twee in area order] → [NODE-*.twee in node ID order] → [END-*.twee]`
 2. Strip YAML header (front matter) from each file
 3. Convert `[MECHANIC:...]` blocks to SugarCube macro syntax:
    - `[MECHANIC:FLAG set=var value=true]` → `<<run $store.variables.var = true>>`
@@ -555,6 +579,11 @@ Use `speckit.verify` if you want:
 ### Ink (ink → single file)
 
 **Status**: Placeholder (coming soon)
+
+**Compile order** (when implemented):
+- Include `LOC-*.ink` hub passage files before scene knots so diverts resolve correctly
+- Hub passage labels use `=== LOC_{ShortName} ===` format (underscores — Ink identifier constraint); scene knots use `=== NODE_{seq}_{Name} ===`
+- Assembly order: `START → [LOC_*.ink hub labels] → [NODE_*.ink scene knots] → [END_*.ink ending knots]`
 
 ### Renpy (rpy file)
 

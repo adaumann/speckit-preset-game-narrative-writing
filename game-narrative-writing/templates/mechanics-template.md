@@ -1,14 +1,18 @@
 ﻿# Mechanic Hook Schemas: [GAME_TITLE]
 
 <!-- Reference document for all mechanic hooks used in this project.
-     Cross-referenced by speckit.implement, speckit.checklist, speckit.continuity, and export.py.
-     Only hooks declared as enabled in constitution.md Section II are active. -->
+     Cross-referenced by speckit.implement, speckit.outline, speckit.checklist, and export.py.
+     Only hooks declared as enabled in constitution.md Section II are active.
+     
+     NARRATIVE DESIGN FOCUS: These mechanics enable dialogue branching, state tracking,
+     and outcome validation. All export to SugarCube for rapid prototyping and testing.
+-->
 
 ---
 
-## Tier 1 Hooks — Fully Exported (v1.0)
+## Core Mechanics — Exported to SugarCube
 
-### lag — Boolean State
+### flag — Boolean State
 
 `
 [MECHANIC:FLAG set=[variable_name] value=true|false]
@@ -17,12 +21,14 @@
 [/MECHANIC]
 `
 
-| Parameter | Sugarcube Export | Ink Export | Ren'Py |
-|---|---|---|---|
-| set=true | <<set $[var] to true>> | ~ [var] = true | $ [var] = True |
-| set=false | <<set $[var] to false>> | ~ [var] = false | $ [var] = False |
-| check (true) | <<if $[var]>>...<</if>> | {[var]: ...} | if [var]: |
-| check (false) | <<if not $[var]>>...<</if>> | {not [var]: ...} | if not [var]: |
+| Parameter | SugarCube Export |
+|---|---|
+| set=true | <<set $[var] to true>> |
+| set=false | <<set $[var] to false>> |
+| check (true) | <<if $[var]>>...<</if>> |
+| check (false) | <<if not $[var]>>...<</if>> |
+
+**Use case:** Quest completed, dialogue seen, puzzle solved, area unlocked
 
 ---
 
@@ -35,18 +41,20 @@
 [/MECHANIC]
 `
 
-| Parameter | Sugarcube Export | Ink Export | Ren'Py |
-|---|---|---|---|
-| delta=+1 | <<set $[var] += 1>> | ~ [var]++ | $ [var] += 1 |
-| delta=-1 | <<set $[var] -= 1>> | ~ [var]-- | $ [var] -= 1 |
-| delta=N | <<set $[var] += N>> | ~ [var] += N | $ [var] += N |
-| check gte N | <<if $[var] gte N>>...<</if>> | {[var] >= N: ...} | if [var] >= N: |
-| check lte N | <<if $[var] lte N>>...<</if>> | {[var] <= N: ...} | if [var] <= N: |
-| check eq N | <<if $[var] is N>>...<</if>> | {[var] == N: ...} | if [var] == N: |
+| Parameter | SugarCube Export |
+|---|---|
+| delta=+1 | <<set $[var] += 1>> |
+| delta=-1 | <<set $[var] -= 1>> |
+| delta=N | <<set $[var] += N>> |
+| check gte N | <<if $[var] gte N>>...<</if>> |
+| check lte N | <<if $[var] lte N>>...<</if>> |
+| check eq N | <<if $[var] is N>>...<</if>> |
+
+**Use case:** Loyalty points, days elapsed, encounter count, player reputation with faction
 
 ---
 
-### isited — Node Seen Tracking
+### visited — Node Seen Tracking
 
 `
 [MECHANIC:VISITED set=[variable_name]]
@@ -55,15 +63,17 @@
 [/MECHANIC]
 `
 
-| Parameter | Sugarcube Export | Ink Export | Ren'Py |
-|---|---|---|---|
-| set | <<run memorize(\"[var]\", true)>> or <<set $[var] to true>> | ~ [var] = true | $ [var] = True |
-| check (first visit) | <<if not $[var]>>...<</if>> | {not [var]: ...} | if not [var]: |
-| check (revisit) | <<if $[var]>>...<</if>> | {[var]: ...} | if [var]: |
+| Parameter | SugarCube Export |
+|---|---|
+| set | <<set $[var] to true>> |
+| check (first visit) | <<if not $[var]>>...<</if>> |
+| check (revisit) | <<if $[var]>>...<</if>> |
+
+**Use case:** Tutorial text on first playthrough, NPC intro dialogue, location description variations
 
 ---
 
-### inventory — Item Management
+### inventory — Item Management (Widget)
 
 `
 [MECHANIC:INVENTORY add=[item_variable]]
@@ -77,12 +87,16 @@
 [/MECHANIC]
 `
 
-| Parameter | Sugarcube Export | Ink Export | Ren'Py |
-|---|---|---|---|
-| add | <<set \[item] to true>> | ~ inv_[item] = true | $ inv_[item] = True |
-| remove | <<set \[item] to false>> | ~ inv_[item] = false | $ inv_[item] = False |
-| check present | <<if \[item]>>...<</if>> | {inv_[item]: ...} | if inv_[item]: |
-| check absent | <<if not \[item]>>...<</if>> | {not inv_[item]: ...} | if not inv_[item]: |
+| Parameter | SugarCube Export |
+|---|---|
+| add | <<set $inventory.[item] to true>> |
+| remove | <<set $inventory.[item] to false>> |
+| check present | <<if $inventory.[item]>>...<</if>> |
+| check absent | <<if not $inventory.[item]>>...<</if>> |
+
+**Use case:** Key items gating dialogue, tools enabling puzzle solutions, collectibles for endings
+
+**Widget:** Inventory display widget shows all items with descriptions (defined in character profile)
 
 ---
 
@@ -108,9 +122,45 @@
 
 ---
 
+### attribute — Player Stats / Character Traits
+
+`
+[MECHANIC:ATTRIBUTE modify=[attribute] delta=+1|-1|N]
+[MECHANIC:ATTRIBUTE check=[attribute] op=gte|lte|eq value=N]
+[conditional prose]
+[/MECHANIC]
+`
+
+| Parameter | SugarCube Export |
+|---|---|
+| modify +N | <<set $character.[attr] += N>> |
+| modify -N | <<set $character.[attr] -= N>> |
+| check gte N | <<if $character.[attr] gte N>>...<</if>> |
+| check lte N | <<if $character.[attr] lte N>>...<</if>> |
+| check eq N | <<if $character.[attr] eq N>>...<</if>> |
+
+**Predefined attributes:**
+- `intelligence` — Affects logical/puzzle dialogue choices
+- `wisdom` — Affects moral/spiritual dialogue choices
+- `power` — Affects combat/intimidation outcomes
+- `gold` — Currency; gating purchases or bribes
+- `custom: [user-defined]` — Define in character profile
+
+**Use case:** Gate dialogue choices by minimum stat, modify outcome probability, track character growth
+
+**Widget:** Character Profile widget displays current attributes and changes per dialogue choice
+
+---
+
 ## Generic/Markdown Annotations
 
-When export_target: generic is set, all hooks are written as:
-[MECHANIC:TYPE parameter=value] prose [/MECHANIC]
-or
+When using generic export or documentation, all hooks are written as:
+```
+[MECHANIC:TYPE parameter=value]
+conditional prose
+[/MECHANIC]
+```
+or inline:
+```
 [MECHANIC:TYPE parameter=value] (inline)
+```
