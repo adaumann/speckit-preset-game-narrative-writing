@@ -19,7 +19,9 @@ scripts:
 
 # speckit.compile
 
-Compile all drafted node files from `spec/<specname>/draft/<ENGINE>/` to a playable output file in `spec/<specname>/output/<ENGINE>/`.
+Compile node files to a playable output file in `spec/<specname>/output/<ENGINE>/`.
+
+**Source priority**: prefers `spec/<specname>/export/<ENGINE>/` (if `speckit.export` has been run), falls back to `spec/<specname>/draft/<ENGINE>/`.
 
 Uses native compilers (tweego for SugarCube, inklecate for Ink) with automatic retry logic for compilation errors.
 
@@ -44,9 +46,10 @@ Accepted arguments:
 
 ## Pre-Execution Checks
 
-**Verify drafted nodes exist**:
-- Scan `spec/<specname>/draft/<ENGINE>/` for node files
-- If no files found - halt: "No drafted nodes found for engine `$ENGINE`. Run `speckit.implement` first."
+**Verify source files exist** (checks in order):
+- Scan `spec/<specname>/export/<ENGINE>/` for all engine files (boilerplate + nodes from `speckit.export`)
+- If no export dir, scan `spec/<specname>/draft/<ENGINE>/` for `story.twee` or `NODE-*.twee` files
+- If no files found - halt: "No source files found for engine `$ENGINE`. Run `speckit.implement` (or `speckit.export`) first."
 
 **Verify engine configuration**:
 - Check `constitution.md` for `export_engines`
@@ -167,6 +170,77 @@ speckit.compile --all-engines
    Check the errors above and fix the source files
 ```
 
+## Runtime Testing Loop (SugarCube)
+
+After successful compilation, `speckit.compile` automatically runs a **runtime validation session** to catch errors that only appear when the game runs.
+
+### Test Session Steps
+
+1. **Start browser session**: Open compiled `.html` in headless browser
+2. **Walk starting passage**: Load initial node, verify:
+   - No console errors
+   - All UI elements render (HUD, menus visible)
+   - Variables initialized correctly
+3. **Test navigation**: Click each menu button to verify:
+   - QuestUI, CharacterSheet, InventoryUI pages load without errors
+   - Return to main passage works
+4. **Walk key passages**: Auto-click a sample choice path (1-2 passages deep):
+   - Execute conditionals (`<<if>>` blocks)
+   - Test widget calls (`<<questList>>`, `<<inventory>>`, etc.)
+   - Capture any runtime errors
+5. **Check console**: Report any JavaScript errors that occurred during test
+6. **Report results**: List any runtime issues found
+
+### Test Validation Checklist
+
+```
+✓ Initial passage loads
+✓ No console errors on startup
+✓ All UI buttons clickable
+✓ Menu passages navigate without errors
+✓ Widget macros execute (questList, inventory, etc.)
+✓ Conditional choices display correctly
+✓ Choice navigation works
+✓ Back button navigates correctly
+✓ No undefined variable errors
+```
+
+### Runtime Error Examples
+
+**Captured During Test**:
+```
+⚠️  Runtime validation found issues:
+
+❌ NODE-005-donate: Undefined variable $player.gold
+   → Suggestion: Add $player = {gold: 10} to StoryInit
+   
+❌ widget <<questList>>: Macro not found
+   → Suggestion: Check widgets.twee is included in compile order
+   
+⚠️  3 console warnings (non-fatal)
+   → Suggestion: Review console logs for details
+```
+
+**Test Output**:
+```
+Testing runtime...
+ ✓ Start passage loaded
+ ✓ Menu navigation working
+ ✓ No console errors detected
+ ✓ 3 passages walked
+ ✓ 12 choices tested
+
+✅ Runtime validation passed
+```
+
+### Skipping Test Session
+
+To compile without testing:
+```bash
+speckit.compile --no-test
+speckit.compile --dry-run  # Validate only, don't write output
+```
+
 ## Compilation Success Output
 
 When compilation completes successfully:
@@ -176,8 +250,13 @@ When compilation completes successfully:
 ✅ Output: spec/<specname>/output/sugarcube/story.html
    Size: 125000 bytes
 
+✅ Runtime validation passed
+   ✓ 3 passages walked, 0 errors
+   ✓ Menu navigation works
+   ✓ Widget macros executing
+
 Next steps:
-- Open story.html in browser to playtest
+- Open story.html in browser to playtest manually
 - Gather feedback with speckit.feedback
 - Document issues in tasks.md
 ```
@@ -211,7 +290,7 @@ Use `speckit.verify` if you want:
    ```
 
 **Compile steps**:
-1. Read all files in `spec/<specname>/draft/sugarcube/NODE-*.twee` in node ID order
+1. Determine source: `spec/<specname>/export/sugarcube/*.twee` (if export exists) or `spec/<specname>/draft/sugarcube/NODE-*.twee` (fallback)
 2. Strip YAML header (front matter) from each file
 3. Convert `[MECHANIC:...]` blocks to SugarCube macro syntax:
    - `[MECHANIC:FLAG set=var value=true]` → `<<run $store.variables.var = true>>`

@@ -38,16 +38,28 @@ class CompileWrapper:
         self.engine = engine.lower()
         self.output_dir = output_dir or spec_path / f"output/{engine}"
         self.draft_dir = spec_path / f"draft/{engine}"
+        self.export_dir = spec_path / f"export/{engine}"
+        self.source_dir = None
+        self.source_label = "Draft"
         self.errors = []
         self.max_retries = 3
         self.retry_count = 0
         
     def run(self, error_context: Optional[str] = None) -> bool:
         """Execute compilation with optional error context."""
+        # Prefer export/ over draft/ when export exists
+        if self.export_dir.exists():
+            self.source_dir = self.export_dir
+            self.source_label = "Export"
+        elif self.draft_dir.exists():
+            self.source_dir = self.draft_dir
+            self.source_label = "Draft"
+        
         print(f"🎮 Speckit Compiler")
         print(f"📦 Spec: {self.spec_path.name}")
         print(f"🔧 Engine: {self.engine}")
-        print(f"📁 Source: {self.draft_dir}")
+        if self.source_dir:
+            print(f"📁 Source ({self.source_label}): {self.source_dir}")
         print(f"📤 Output: {self.output_dir}")
         
         if error_context:
@@ -94,13 +106,16 @@ class CompileWrapper:
         return False
     
     def _validate_setup(self) -> bool:
-        """Check if spec and draft directory exist."""
+        """Check if spec and source directory (export or draft) exist."""
         if not self.spec_path.exists():
             print(f"❌ Error: Spec not found: {self.spec_path}")
             return False
         
-        if not self.draft_dir.exists():
-            print(f"❌ Error: Draft directory not found: {self.draft_dir}")
+        if not self.source_dir:
+            print(f"❌ Error: No source files found. Checked:")
+            print(f"   • Export: {self.export_dir}")
+            print(f"   • Draft:  {self.draft_dir}")
+            print(f"   Run speckit.implement (or speckit.export) first.")
             return False
         
         return True
@@ -145,28 +160,38 @@ class CompileWrapper:
         return None
     
     def _find_source_files(self) -> list:
-        """Find all source files for the target engine."""
-        # Check for pre-combined story file first
+        """Find all source files for the target engine.
+        
+        When using export/, collect all relevant engine files (includes
+        boilerplate: init, widgets, ui). When using draft/, check for
+        a pre-combined story file first, then collect NODE-* files.
+        """
+        source_dir = self.source_dir
+        is_export = self.source_label == "Export"
+        
         if self.engine == 'sugarcube':
-            story_file = self.draft_dir / "story.twee"
+            if is_export:
+                return sorted(source_dir.glob("*.twee"))
+            story_file = source_dir / "story.twee"
             if story_file.exists():
                 return [story_file]
-            # Otherwise collect all NODE-*.twee files
-            return sorted(self.draft_dir.glob("NODE-*.twee"))
+            return sorted(source_dir.glob("NODE-*.twee"))
         
         elif self.engine == 'ink':
-            story_file = self.draft_dir / "story.ink"
+            if is_export:
+                return sorted(source_dir.glob("*.ink"))
+            story_file = source_dir / "story.ink"
             if story_file.exists():
                 return [story_file]
-            # Otherwise collect all NODE-*.ink files
-            return sorted(self.draft_dir.glob("NODE-*.ink"))
+            return sorted(source_dir.glob("NODE-*.ink"))
         
         elif self.engine == 'renpy':
-            story_file = self.draft_dir / "story.rpy"
+            if is_export:
+                return sorted(source_dir.glob("*.rpy"))
+            story_file = source_dir / "story.rpy"
             if story_file.exists():
                 return [story_file]
-            # Otherwise collect all NODE-*.rpy files
-            return sorted(self.draft_dir.glob("NODE-*.rpy"))
+            return sorted(source_dir.glob("NODE-*.rpy"))
         
         return []
     

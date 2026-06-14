@@ -61,8 +61,7 @@ Then:
    - **Optional**: `specs/glossary.md` (terminology registry) -- load if present; check outline for any terminology that should be flagged for consistency checking during drafting
    - **Optional**: `specs/locations.md` (sensory anchors, location rules) -- load if present; populate location context in outline if this node takes place in a key location
    - **Optional**: `specs/themes.md` -- load if present; use to populate the Thematic work field in the outline Beat Summary: match the node's act to the Thematic Arc by Act table, and check whether any registered motif (MO-NNN) or symbol has a planned occurrence in this node
-   - **Optional**: `specs/world-building.md` (location sensory anchors, world rules)
-   - Note any missing required documents -- abort with clear error if `specs/endings.md` or `specs/characters.md` missing
+   - **Optional**: `specs/world-building.md` (location sensory anchors, world rules)   - **Optional (if quest mechanics enabled)**: `specs/world/locations.md` (location index), `specs/world/[location-name]/passages.md` (available passages/encounters at each location), `specs/world/[location-name]/[quest-id]/` (quest outlines organized by location)   - Note any missing required documents -- abort with clear error if `specs/endings.md` or `specs/characters.md` missing
    - Note any missing optional documents � affected outline sections are marked `[TBD � populate <document>]`
 
 3. **Determine target nodes**:
@@ -79,7 +78,7 @@ Then:
    Use `templates/node-outline-template.md` as the base structure. Populate each section from the source documents:
 
    **Frontmatter** — pull from `plan.md` node entry:
-   - `node_id`, `title`, `act`, `status: DRAFT`, `pov` (from constitution.md default or node override)
+   - `node_id`, `title`, `act`, `status: DRAFT`, `pov` (from `.specify/memory/constitution.md` default or node override)
 
    **Beat Summary** � derive from the flowmap node entry:
    - 2�4 sentences: what happens in this node, what the player is doing or deciding
@@ -90,7 +89,7 @@ Then:
    - Each variable used as a gate or prose condition, with expected value and source node
    - Flag any variable not yet declared in `variables.md` with `[UNDECLARED]`
 
-   **Variables Set** � derive from flowmap annotations and constitution.md hook schemas:
+   **Variables Set** — derive from flowmap annotations and `.specify/memory/constitution.md` hook schemas:
    - Each variable changed by this node, with hook type, new value/delta, and trigger condition
    - Flag any variable not yet declared in `variables.md` with `[UNDECLARED]`
 
@@ -156,7 +155,7 @@ Then:
    - Any complex gate logic, reachability conditions, or POV overrides
    - If this node is only reachable via specific upstream variable states, document them here
 
-   **Game Bible Compliance Notes** � scan `constitution.md` for:
+   **Game Bible Compliance Notes** — scan `.specify/memory/constitution.md` for:
    - Any mechanic or hook constraints relevant to this node
    - Platform/engine limits on choice count or variable types
    - POV rules or tone requirements that apply
@@ -174,6 +173,16 @@ Then:
    - Populate a new **Setting Anchors** field in the outline with sensory and rule details from the location profile
      - E.g., "Sanctuary Station: sterile white walls, hum of life support, restricted entry"
    - If location is absent from locations.md, mark as `[LOCATION PROFILE NEEDED]`
+
+   **Quest-Based Location Passages** — if quest mechanics enabled in `.specify/memory/constitution.md`:
+   - Check if this node appears in `specs/world/[location-name]/passages.md` or `specs/world/[location-name]/[quest-id]/stage-N.md`
+   - If yes: populate a **Quest Context** field in the outline showing:
+     - Which quest(s) this node belongs to (e.g., QUEST-guild-contract)
+     - Which stage(s) of the quest (e.g., Stage 2 of 3)
+     - Opening condition (what must be true before this passage is available, e.g., `$quest_guild_contract_stage == 1 and $character.intelligence >= 6`)
+     - Closing condition (what becomes true after this passage completes, e.g., `$quest_guild_contract_stage = 2`)
+   - Mark any quest dependencies that are not yet registered in `variables.md` as `[QUEST VAR UNDECLARED]`
+   - This field is optional for non-quest nodes; omit if this node is not part of a quest
 
    **Terminology Cross-Check** — load from `specs/glossary.md` if present:
    - Scan beat summary and choice labels for any specialized terminology
@@ -203,7 +212,7 @@ Then:
 
 ## RPG-Specific Outline Extension (--mode rpg)
 
-**When activated**: If `--mode rpg` or `constitution.md` declares `game_system: "d5e"` (or other RPG system), populate these additional outline sections:
+**When activated**: If `--mode rpg` or `.specify/memory/constitution.md` declares `game_system: "d5e"` (or other RPG system), populate these additional outline sections:
 
 ### RPG Beat Summary (D&D 5e / PBTA / FATE / Blades)
 
@@ -243,7 +252,7 @@ Example:
 
 **Validation**:
 - Approval gates must fall within companion's -100 to +100 range (D&D 5e standard)
-- Romance gates (if applicable) should use thresholds from constitution.md
+- Romance gates (if applicable) should use thresholds from `.specify/memory/constitution.md`
 - Each companion should have a potential approval change for this node (+/- N)
 
 ### Faction Effects (RPG-Specific)
@@ -302,11 +311,26 @@ Flag for author review:
 - ⚠️ `[REPUTATION SPIKE]` — Single node changes faction rep by > +25 or < -25
 - ⚠️ `[SKILL CHECK DISCONNECT]` — Skill check result doesn't actually change story (purely informational)
 
----
-   - Verify ending gates are correct (choice targets are valid ending IDs or intermediate nodes)
-   - Check sensory anchors for location-based nodes
-   - Change `status: DRAFT` ? `status: APPROVED` when satisfied, or `status: SKIP` to write the node themselves
-   - Run `speckit.implement` once outlines are approved
-
 7. **Check for extension hooks** (after generation): check `hooks.after_outline`.
+
+---
+
+## SugarCube/Twine Considerations
+
+When the target engine is SugarCube (from `.specify/memory/constitution.md` `engine: sugarcube`), apply these additional outline rules to ensure generated outlines produce draftable Twee passages:
+
+### ✅ DO
+
+- **Use simple, linear dialogue** — SugarCube handles branching well; avoid deeply nested conditions
+- **Keep choice gates to 1-2 attributes max** — e.g., `requires: $character.wisdom >= 6` is clear; `requires: ($character.wisdom >= 6 AND $character.power <= 4 AND not $flags.x)` gets hard to read and test
+- **Use inventory checks sparingly** — Each check adds UI complexity in SugarCube inventory widgets
+- **Group related choices together** — SugarCube renders best with 2-4 choices per node
+- **Document variable changes clearly** — Outline should show `$character.wisdom +1`, `$inventory.gold -5`, etc.
+
+### ❌ DON'T
+
+- **Use attribute ranges that change mid-conversation** — SugarCube doesn't support dynamic range recalculation; write gates based on current-value checks
+- **Create more than 1 level of dialogue nesting** — Twee doesn't handle complex nested dialogue trees well; use separate nodes for deep branches
+- **Use variables with spaces or special characters** — Stick to `snake_case` (e.g., `$flags.priestess_spoken_to`, not `$flags."priestess spoken to"`)
+- **Gate choices on more than 2 unrelated variables** — Players can't mentally track complex multi-variable gates; simplify or merge conditions
 

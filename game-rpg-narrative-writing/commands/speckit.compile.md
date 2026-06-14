@@ -1,5 +1,5 @@
 ---
-description: Compile drafted node files to playable output format (HTML for Twine/SugarCube, compiled JSON for Ink with HTML wrapper, etc.). Accepts .twee/.ink files generated directly by speckit.implement (no export step for SugarCube/Ink). Includes built-in structural validation and a self-correcting fix loop that runs until compilation succeeds or no further progress can be made.
+description: Compile node files to playable output format (HTML for Twine/SugarCube, compiled JSON for Ink with HTML wrapper, etc.). Prefers export/ over draft/ when export exists. Includes built-in structural validation and a self-correcting fix loop that runs until compilation succeeds or no further progress can be made.
 handoffs:
   - label: Run full test suite
     agent: speckit.verify
@@ -19,7 +19,9 @@ scripts:
 
 # speckit.compile
 
-Compile all drafted node files from `spec/<specname>/draft/<ENGINE>/` to a playable output file in `spec/<specname>/output/<ENGINE>/`.
+Compile node files to a playable output file in `spec/<specname>/output/<ENGINE>/`.
+
+**Source priority**: prefers `spec/<specname>/export/<ENGINE>/` (if `speckit.export` has been run), falls back to `spec/<specname>/draft/<ENGINE>/`.
 
 Uses native compilers (tweego for SugarCube, inklecate for Ink) with a self-correcting fix loop: each compilation error is parsed, a targeted fix is applied to the specific file, and the compiler re-runs until the story compiles clean or no further automatic progress can be made.
 
@@ -55,9 +57,10 @@ Accepted arguments:
 - **Tabletop**: Load `specs/companions.md`, `specs/factions.md`, `specs/mechanics-[ruleset].md`, `campaign-guide.md`, `SESSION-N-BRIEFING.md`
 - **Computer**: Load `specs/variables.md` (route-specific variables), `specs/accessibility.md` (accessibility variants), `playthrough_route` variable usage
 
-**Verify drafted nodes exist**:
-- Scan `spec/<specname>/draft/<ENGINE>/` for node files
-- If no files found - halt: "No drafted nodes found for engine `$ENGINE`. Run `speckit.implement` first."
+**Verify source files exist** (checks in order):
+- Scan `spec/<specname>/export/<ENGINE>/` for all engine files (boilerplate + nodes from `speckit.export`)
+- If no export dir, scan `spec/<specname>/draft/<ENGINE>/` for `story.twee` or `NODE-*.twee` files
+- If no files found - halt: "No source files found for engine `$ENGINE`. Run `speckit.implement` (or `speckit.export`) first."
 
 **Verify engine configuration**:
 - Check `constitution.md` for `export_engines`

@@ -32,6 +32,13 @@ The Shrine: A Narrative Design Sample
 /* ── INVENTORY ───────────────────────────────────────────────────────── */
 <<set $inventory to []>>
 
+/* ── QUEST TRACKING ──────────────────────────────────────────────────── */
+/* Quest status: "active" | "completed" | "failed" | "inactive" */
+/* Each quest tracked by: $quest_[id]_status, $quest_[id]_stage */
+
+<<set $quest_shrine_blessing_status to "active">>
+<<set $quest_shrine_blessing_stage to 1>>
+
 /* ── FLAGS ───────────────────────────────────────────────────────────── */
 <<set $visited_shrine to false>>
 <<set $spoke_priestess to false>>

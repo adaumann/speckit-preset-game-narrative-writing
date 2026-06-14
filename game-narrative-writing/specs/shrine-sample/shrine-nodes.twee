@@ -6,6 +6,7 @@
   - Dialogue choices gated by character attributes
   - Inventory pickup and hasItem checks
   - Character profile display
+  - Quest stage tracking and completion (optional)
 */
 
 :: Start [entry]
@@ -13,6 +14,10 @@ You stand before an ancient shrine, its stone walls weathered by centuries.
 A priestess emerges from the shadows within.
 
 "Greetings, wanderer. You've come seeking the shrine's blessing?"
+
+<<if $quest_shrine_blessing_status === "active">>
+  <<questProgress "shrine_blessing">>
+<</if>>
 
 What do you do?
 
@@ -30,10 +35,14 @@ What do you do?
   The priestess nods approvingly. "Few recognize that. You are perceptive."
   <<set $character.wisdom += 1>>
   
+  <<advanceQuestStage "shrine_blessing">>
+  
   [[Continue|AfterHistory]]
 <<else>>
   The priestess speaks of the shrine's history, but much of it is lost to you.
   You nod along, understanding little.
+  
+  <<advanceQuestStage "shrine_blessing">>
   
   [[Continue|AfterHistory]]
 <</if>>
@@ -41,7 +50,10 @@ What do you do?
 :: AfterHistory
 "Is there anything else?" the priestess asks.
 
+<<questProgress "shrine_blessing">>
+
 [[Return to the shrine entrance|Start]]
+[[Receive the shrine's blessing|End]]
 
 :: Donate
 "A generous offering," the priestess says.
@@ -64,6 +76,8 @@ The priestess accepts your donation graciously.
 You feel a warmth settle over you—your wisdom grows.
 <<set $character.wisdom = Math.min($character.wisdom + 2, 10)>>
 
+<<advanceQuestStage "shrine_blessing">>
+
 [[Return to the shrine|Start]]
 
 :: Donate1
@@ -71,6 +85,8 @@ You feel a warmth settle over you—your wisdom grows.
 The priestess accepts your small donation with a knowing smile.
 
 "Every offering, no matter how small, is valued."
+
+<<advanceQuestStage "shrine_blessing">>
 
 [[Return to the shrine|Start]]
 
@@ -83,7 +99,20 @@ In a stone alcove, you find an old book bound in leather.
 
 "Ah, the shrine's grimoire," the priestess says. "It was thought lost. You should have it."
 
+<<advanceQuestStage "shrine_blessing">>
+
 [[Return to the shrine|Start]]
 
 :: End
-[Final passage - to be expanded]
+"The shrine has much to teach," the priestess says with knowing eyes.
+
+"May wisdom guide your path from this day forward."
+
+<<completeQuest "shrine_blessing">>
+
+Your quest is complete. The encounter remains etched in your memory.
+
+[[Depart|Final]]
+
+:: Final
+You leave the shrine behind, forever changed by your encounter with the priestess and her ancient wisdom.

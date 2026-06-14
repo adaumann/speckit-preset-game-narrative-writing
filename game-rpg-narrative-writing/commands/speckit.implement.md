@@ -1,5 +1,5 @@
 ---
-description: Draft narrative prose for nodes from approved outlines. Prose is generated engine-agnostic (markdown), then exported to engine-specific formats (Twee for SugarCube, Ink, etc.) via speckit.export.
+description: Draft narrative prose for nodes from approved outlines. When invoked without NODE_ID, reads tasks.md to find the next uncompleted draft task. After drafting, marks the corresponding task as completed in tasks.md. Prose is generated engine-agnostic (markdown), then exported to engine-specific formats (Twee for SugarCube, Ink, etc.) via speckit.export.
 handoffs:
   - label: Export to engines
     agent: speckit.export
@@ -31,7 +31,7 @@ Accepted arguments:
 - `--act [N]` – draft all nodes for a given act
 - `--all` – draft all approved nodes that don't yet have draft files
 - `--force` – regenerate an existing draft (overwrite)
-- *(no argument)* – draft the next unoutlined node with status APPROVED
+- *(no argument)* – read `tasks.md` to find the next uncompleted `[P] Draft:` or `Draft:` task, then draft that node
 
 ## Pre-Execution Checks
 
@@ -51,6 +51,12 @@ Accepted arguments:
 - Check if `.specify/extensions.yml` exists in the project root
 - If it exists, read it and look for entries under the `hooks.before_implement` key
 - Process as standard hook block (Optional/Mandatory). Skip silently if absent.
+
+**If no NODE_ID was given:**
+1. Check if `specs/[FEATURE_DIR]/tasks.md` exists
+2. If it exists, scan for the first uncompleted `[P] Draft:` or `Draft:` task (check for `- [ ]` checkbox in Phase 2/4/6 task tables)
+3. Extract the NODE_ID from the task's Node column
+4. If no uncompleted draft task is found, halt: "No uncompleted draft tasks in tasks.md. Run `speckit.tasks --update` or specify NODE_ID manually."
 
 Then:
 1. Confirm `specs/[FEATURE_DIR]/outline/` and `specs/[FEATURE_DIR]/constitution.md` exist
@@ -667,6 +673,14 @@ outline_ref: outlines/[NODE_ID].md
 - [Label](NODE_TARGET) <!-- Effect: consequence -->
 ```
 
+### 8b. Update tasks.md
+
+If `specs/[FEATURE_DIR]/tasks.md` exists, mark the drafted node's task as completed:
+
+1. Find the task row for this NODE_ID (look for `Draft: [NODE_TITLE]` matching the drafted node)
+2. Replace the `- [ ]` checkbox with `- [x]` in that row
+3. If no matching task is found, add a note: "`tasks.md` has no draft entry for `[NODE_ID]`. Run `speckit.tasks --update` to regenerate."
+
 ### 9. Report
 
 **Generic/Computer Game**:
@@ -686,6 +700,7 @@ Flag any:
 - Undeclared variables
 - Outline deviations (new choices, variables, or mechanics not in outline)
 - (RPG-specific warnings from Quality Checklist above)
+- Tasks updated in `tasks.md`
 
 Remind the author to:
 - ✅ **Tabletop**: Share `campaign-guide.md` with players before first session

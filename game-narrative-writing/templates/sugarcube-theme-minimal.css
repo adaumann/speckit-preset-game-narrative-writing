@@ -232,3 +232,224 @@ code {
   padding: 0.1em 0.35em;
   border-radius: 2px;
 }
+
+/* ---------------------------------------------------------------------------
+   OPTIONAL COMPONENTS: Character Profile
+   Displayed via <<charProfile>> widget if character attributes enabled
+   Minimal theme: subtle presentation, text only
+   --------------------------------------------------------------------------- */
+.char-profile {
+  padding: 1.5em 0;
+  border-top: 1px solid var(--color-accent);
+  border-bottom: 1px solid var(--color-accent);
+  margin: 1.5em 0;
+}
+
+.char-profile h3 {
+  margin-top: 0;
+  color: var(--color-text-heading);
+  margin-bottom: 1em;
+  font-size: 1em;
+}
+
+.char-stats {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.char-stats td {
+  padding: 0.3em 0;
+  border: none;
+}
+
+.stat-label {
+  color: var(--color-text-muted);
+  font-size: 0.9em;
+}
+
+.stat-value {
+  text-align: right;
+  color: var(--color-text);
+  font-weight: normal;
+}
+
+/* ---------------------------------------------------------------------------
+   OPTIONAL COMPONENTS: Inventory
+   Displayed via <<inventory>> widget if inventory enabled
+   Minimal theme: subtle presentation, text only
+   --------------------------------------------------------------------------- */
+.inventory-list {
+  padding: 1.5em 0;
+  margin: 1.5em 0;
+  border-top: 1px solid var(--color-accent);
+  border-bottom: 1px solid var(--color-accent);
+}
+
+.inventory-list h4 {
+  margin-top: 0;
+  color: var(--color-text-heading);
+  margin-bottom: 0.8em;
+  font-size: 1em;
+}
+
+.inventory-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5em 0;
+}
+
+.inventory-list li {
+  padding: 0.2em 0;
+  color: var(--color-text);
+}
+
+.inventory-empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.pickup {
+  color: var(--color-text);
+  font-weight: normal;
+  margin: 0.5em 0;
+}
+
+/* ---------------------------------------------------------------------------
+   OPTIONAL COMPONENTS: Quest Tracking
+   Displayed via <<questList>> and related widgets if quest system enabled
+   Minimal theme: subtle presentation, text only, no colors
+   --------------------------------------------------------------------------- */
+.quests-container {
+  margin: 1.5em 0;
+}
+
+.quest-group {
+  padding: 1em 0;
+  margin-bottom: 0.8em;
+  border-bottom: 1px solid var(--color-accent);
+}
+
+.quest-group:last-of-type {
+  border-bottom: none;
+}
+
+.quest-group h4 {
+  margin-top: 0;
+  color: var(--color-text-heading);
+  margin-bottom: 0.6em;
+  font-size: 0.95em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Quest group variants by status */
+.quest-group.active h4 {
+  color: var(--color-text-heading);
+}
+
+.quest-group.completed h4 {
+  color: var(--color-text-muted);
+}
+
+.quest-group.failed h4 {
+  color: var(--color-text-muted);
+}
+
+.quest-group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quest-item {
+  padding: 0.3em 0;
+  margin: 0.2em 0;
+  color: var(--color-text);
+  border: none;
+}
+
+/* Quest item variants */
+.quest-item.active {
+  color: var(--color-text);
+  font-weight: normal;
+}
+
+.quest-item.completed {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.quest-item.failed {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+/* Quest stage indicator */
+.quest-stage {
+  font-size: 0.8em;
+  color: var(--color-text-muted);
+  margin-left: 0.5em;
+}
+
+/* Inline quest progress display */
+.quest-progress {
+  display: inline;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 1em;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.quest-progress.active {
+  color: var(--color-text);
+}
+
+.quest-progress.completed {
+  color: var(--color-text-muted);
+}
+
+.quest-progress.failed {
+  color: var(--color-text-muted);
+}
+
+.quest-progress.inactive {
+  color: var(--color-text-muted);
+}
+
+/* Quest completion/failure messages */
+.quest-complete {
+  color: var(--color-text);
+  font-weight: normal;
+  margin: 0.5em 0;
+}
+
+.quest-fail {
+  color: var(--color-text);
+  font-weight: normal;
+  margin: 0.5em 0;
+}
+
+/* ---------------------------------------------------------------------------
+   OPTIONAL: Story Caption (HUD)
+   Shows game state info like gold, item count, etc.
+   Minimal theme: very subtle, matches prose style
+   --------------------------------------------------------------------------- */
+#sc-header {
+  display: block;
+  margin-bottom: 1em;
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-accent);
+  padding-bottom: 0.5em;
+  text-align: center;
+}
+
+.sc-gold,
+.sc-inventory {
+  display: inline;
+  margin: 0 0.5em;
+}

@@ -124,7 +124,19 @@ Optional flags:
     - If it **does not exist**: generate a skeleton `specs/[FEATURE_DIR]/series-bible.md` from `series-bible-template.md`. Populate what can be inferred (series title, world rules, named entities, the current game's entry in the Games in Series table, carry-over variable registry, dramatic question if stated). Leave all fields requiring future games as `[TBD]`. Emit: `?? specs/[FEATURE_DIR]/series-bible.md created ï¿½ review [TBD] entries before planning the next entry.`
     - If it **already exists**: load it and verify the current game has an entry in the Games in Series table. If missing, add the row. Check the Known Contradictions table; if any `OPEN` rows reference this game, emit a warning listing each `SX-NNN` code.
   - If `standalone`: skip.
-
+- **World Structure** (conditional—generated if `quest` mechanics enabled in constitution.md):
+  - Create `specs/[FEATURE_DIR]/world/` directory
+  - Generate `specs/[FEATURE_DIR]/world/locations.md`: index of all locations in the quest system
+    - For each location: name, description, sensory anchors, quests available here, passage count, which acts appear
+  - For each location mentioned in the plan, create `specs/[FEATURE_DIR]/world/[location-name]/passages.md`:
+    - "Passages" = scenes/encounters at this location
+    - List all quest nodes that occur here, grouped by quest ID and stage
+    - Include opening conditions and closing conditions for each passage
+  - For each quest, create subdirectory `specs/[FEATURE_DIR]/world/[location-name]/[quest-id]/`:
+    - Create one outline file per quest stage: `stage-1.md`, `stage-2.md`, etc.
+    - These are outlined nodes (like those in `outlines/` but organized by location and quest)
+    - Populate each with: quest objective, stage goal, location context, available choices, and advancement condition
+  - Update `variables.md` to register all quest-stage variables (e.g., `$quest_guild_contract_stage`, `$quest_guild_contract_complete`)
 **Phase 1 ï¿½ Act Structure & Node Graph**:
 
 5. **Fill Act Structure**:

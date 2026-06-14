@@ -5,9 +5,12 @@
   Mechanics:
   - Character Profile: Read-only display (name, attributes only)
   - Inventory: View list, pickup items, check if has item
+  - Quests: Track quest progress, completion, failures
   
   NOTE: No character actions, no stats modifications. Pure narrative mechanics.
 */
+
+:: ShrineWidgets [widget]
 
 /* ══════════════════════════════════════════════════════════════════════════
    CHARACTER PROFILE WIDGETS (Display Only)
@@ -80,4 +83,83 @@
       <<link $args[1] $args[2]>><</link>>
     <</if>>
   <</if>>
+<</widget>>
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   QUEST WIDGETS (Optional Quest System)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Initialize quest if not exists; use individual stage/status variables */
+<<widget "initQuest">>
+  <<set _id to $args[0]>>
+  <<set _name to $args[1]>>
+  /* If quest tracking not set up, create it via individual variables */
+  <<if State.variables["quest_" + _id + "_status"] === undefined>>
+    <<run State.variables["quest_" + _id + "_status"] to "active">>
+    <<run State.variables["quest_" + _id + "_stage"] to 1>>
+  <</if>>
+<</widget>>
+
+/* <<questList>> — display all quests grouped by status (active/completed/failed) */
+<<widget "questList">>
+<<silently>>
+  <<set _active_html = "">>
+  <<set _completed_html = "">>
+  <<set _failed_html = "">>
+  <<for _key, _val range State.variables>>
+    <<if _key.startsWith("quest_") and _key.endsWith("_status")>>
+      <<set _qname = _key.substring(6, _key.length - 7)>>
+      <<if _val === "active">>
+        <<set _qstage = State.variables["quest_" + _qname + "_stage"] || 1>>
+        <<set _active_html += "<li class='quest-item active'><strong>" + _qname.toUpperCase() + "</strong> — Stage " + _qstage + "</li>">>
+      <<elseif _val === "completed">>
+        <<set _completed_html += "<li class='quest-item completed'><strong>" + _qname.toUpperCase() + "</strong></li>">>
+      <<elseif _val === "failed">>
+        <<set _failed_html += "<li class='quest-item failed'><strong>" + _qname.toUpperCase() + "</strong></li>">>
+      <</if>>
+    <</if>>
+  <</for>>
+<</silently>>
+<<if _active_html >><h4>📋 Active Quests</h4><ul class="quest-list"><<print _active_html>></ul><</if>>
+<<if _completed_html>><h4>✅ Completed Quests</h4><ul class="quest-list"><<print _completed_html>></ul><</if>>
+<<if _failed_html>><h4>❌ Failed Quests</h4><ul class="quest-list"><<print _failed_html>></ul><</if>>
+<</widget>>
+
+/* <<questProgress "quest_id">> — display current stage of a quest */
+<<widget "questProgress">>
+  <<set _id to $args[0]>>
+  <<set _status to State.variables["quest_" + _id + "_status"] || "inactive">>
+  <<set _stage to State.variables["quest_" + _id + "_stage"] || 0>>
+  
+  <<if _status === "active">>
+    <span class="quest-progress">📍 Stage <<= _stage>> (In Progress)</span>
+  <<elseif _status === "completed">>
+    <span class="quest-progress completed">✅ Completed</span>
+  <<elseif _status === "failed">>
+    <span class="quest-progress failed">❌ Failed</span>
+  <<else>>
+    <span class="quest-progress inactive">◯ Not started</span>
+  <</if>>
+<</widget>>
+
+/* <<completeQuest "quest_id">> — mark quest as completed */
+<<widget "completeQuest">>
+  <<set _id to $args[0]>>
+  <<run State.variables["quest_" + _id + "_status"] = "completed">>
+  <p class="quest-complete">✅ <strong><<= _id.replace(/-/g, " ").toLocaleUpperCase()>></strong> quest completed!</p>
+<</widget>>
+
+/* <<failQuest "quest_id">> — mark quest as failed */
+<<widget "failQuest">>
+  <<set _id to $args[0]>>
+  <<run State.variables["quest_" + _id + "_status"] = "failed">>
+  <p class="quest-failed">❌ <strong><<= _id.replace(/-/g, " ").toLocaleUpperCase()>></strong> quest failed.</p>
+<</widget>>
+
+/* <<advanceQuestStage "quest_id">> — increment quest stage */
+<<widget "advanceQuestStage">>
+  <<set _id to $args[0]>>
+  <<set _current to State.variables["quest_" + _id + "_stage"] || 1>>
+  <<run State.variables["quest_" + _id + "_stage"] = _current + 1>>
 <</widget>>

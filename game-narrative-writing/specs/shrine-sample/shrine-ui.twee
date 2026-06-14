@@ -12,17 +12,22 @@
 :: StoryMenu
 <<link "📋 Character" "CharacterSheet">><</link>>
 <<link "🎒 Inventory" "InventoryUI">><</link>>
+<<link "📜 Quests" "QuestUI">><</link>>
 <<link "🏠 Home" "Start">><</link>>
 
 :: CharacterSheet
 <h2>Character Profile</h2>
 <<charProfile>>
-<<link "Back" previous()>><</link>>
+<<link "Back" "Start">><</link>>
 
 :: InventoryUI
 <h2>Inventory</h2>
 <<inventory>>
-<<link "Back" previous()>><</link>>
+<<link "Back" "Start">><</link>>
+
+:: QuestUI [nobr]
+<h2>Quests</h2><<questList>>
+<<link "Back" "Start">><</link>>
 
 :: StoryStylesheet [stylesheet]
 body { 
@@ -31,11 +36,18 @@ body {
   font-family: Georgia, serif; 
   max-width: 800px; 
   margin: 0 auto; 
-  padding: 2em; 
+  padding: 1.5em 2em; 
+}
+
+h2 {
+  margin: 0 0 0.25em 0;
+  font-size: 1.5em;
 }
 
 a, a:visited { color: #8eb4d4; text-decoration: none; }
 a:hover { color: #a8cae8; text-decoration: underline; }
+
+main { display: block; min-height: auto; }
 
 #sc-header { 
   display: flex; 
@@ -47,14 +59,15 @@ a:hover { color: #a8cae8; text-decoration: underline; }
 
 .char-profile { 
   background: #333; 
-  padding: 1.5em; 
+  padding: 1em; 
   border-left: 4px solid #8eb4d4; 
-  margin: 1em 0; 
+  margin: 0.5em 0; 
 }
 
 .char-profile h3 { 
-  margin-top: 0; 
+  margin: 0 0 0.5em 0; 
   color: #a8cae8; 
+  font-size: 1.1em;
 }
 
 .char-stats { 
@@ -63,7 +76,7 @@ a:hover { color: #a8cae8; text-decoration: underline; }
 }
 
 .char-stats td { 
-  padding: 0.5em; 
+  padding: 0.35em 0.5em; 
   border-bottom: 1px solid #444; 
 }
 
@@ -75,24 +88,25 @@ a:hover { color: #a8cae8; text-decoration: underline; }
 
 .inventory-list { 
   background: #333; 
-  padding: 1.5em; 
-  margin: 1em 0; 
+  padding: 1em; 
+  margin: 0.5em 0; 
   border-left: 4px solid #8eb4d4; 
 }
 
 .inventory-list h4 { 
-  margin-top: 0; 
-  color: #a8cae8; 
+  margin: 0 0 0.3em 0; 
+  color: #a8cae8;
+  font-size: 1em;
 }
 
 .inventory-list ul { 
   list-style: none; 
   padding: 0; 
-  margin: 0.5em 0; 
+  margin: 0; 
 }
 
 .inventory-list li { 
-  padding: 0.4em 0; 
+  padding: 0.25em 0; 
   color: #d0d0d0; 
 }
 
@@ -103,6 +117,106 @@ a:hover { color: #a8cae8; text-decoration: underline; }
 
 .pickup { 
   color: #7fb854; 
+  font-weight: bold; 
+  margin: 0.5em 0; 
+}
+
+/* ── QUEST STYLES ────────────────────────────────────────────────── */
+
+.quests-container { 
+  display: block;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.quest-group { 
+  display: block;
+  background: #333; 
+  padding: 0.8em; 
+  margin: 0.5em 0;
+  border-left: 4px solid #8eb4d4; 
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.quest-group h4 { 
+  margin: 0 0 0.3em 0; 
+  color: #a8cae8; 
+  font-size: 1em;
+}
+
+.quest-group ul { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+}
+
+.quest-item { 
+  padding: 0.25em 0.2em; 
+  margin: 0.1em 0; 
+  border-radius: 3px; 
+  color: #d0d0d0; 
+  font-size: 0.95em;
+}
+
+.quest-item.active { 
+  border-left: 3px solid #7fb854; 
+  padding-left: 0.7em; 
+  background: rgba(127, 184, 84, 0.1); 
+}
+
+.quest-item.completed { 
+  border-left: 3px solid #4a9d5f; 
+  padding-left: 0.7em; 
+  background: rgba(74, 157, 95, 0.1); 
+  text-decoration: line-through; 
+  opacity: 0.8; 
+}
+
+.quest-item.failed { 
+  border-left: 3px solid #d64545; 
+  padding-left: 0.7em; 
+  background: rgba(214, 69, 69, 0.1); 
+  opacity: 0.7; 
+}
+
+.quest-stage { 
+  font-size: 0.85em; 
+  color: #909090; 
+  margin-left: 0.5em; 
+}
+
+.quest-progress { 
+  display: inline-block; 
+  padding: 0.4em 0.6em; 
+  background: #444; 
+  border-radius: 3px; 
+  font-size: 0.9em; 
+  color: #b8b8b8; 
+  margin: 0.5em 0; 
+}
+
+.quest-progress.completed { 
+  color: #4a9d5f; 
+}
+
+.quest-progress.failed { 
+  color: #d64545; 
+}
+
+.quest-progress.inactive { 
+  color: #707070; 
+}
+
+.quest-complete { 
+  color: #4a9d5f; 
+  font-weight: bold; 
+  margin: 0.5em 0; 
+}
+
+.quest-failed { 
+  color: #d64545; 
   font-weight: bold; 
   margin: 0.5em 0; 
 }

@@ -66,6 +66,55 @@ The Shrine sample uses a **read-only character profile** and **minimal inventory
   <<hasItemCheck "old_book" "Read the grimoire" "ReadGrimoire">>
   ```
 
+### Quest System (Optional)
+
+**`<<questList>>`**
+- Display all quests grouped by status: Active, Completed, Failed
+- Shows quest name and current stage for active quests
+- Typically shown on dedicated QuestUI passage
+- Usage:
+  ```twee
+  :: QuestUI
+  <h2>Quests</h2>
+  <<questList>>
+  ```
+
+**`<<questProgress "quest_id">>`**
+- Show current status and stage of a single quest
+- Displays: "📍 Stage 2 (In Progress)" or "✅ Completed" or "❌ Failed"
+- Usage in prose:
+  ```twee
+  Your progress: <<questProgress "quest_shrine_blessing">>
+  ```
+
+**`<<advanceQuestStage "quest_id">>`**
+- Increment quest to next stage
+- Use when completing a stage
+- Usage:
+  ```twee
+  [MECHANIC:QUEST advance=quest_shrine_blessing]
+  <<advanceQuestStage "quest_shrine_blessing">>
+  The priestess guides you forward. Stage complete.
+  ```
+
+**`<<completeQuest "quest_id">>`**
+- Mark quest as complete (status = "completed")
+- Shows completion message
+- Usage:
+  ```twee
+  [MECHANIC:QUEST complete=quest_shrine_blessing]
+  <<completeQuest "quest_shrine_blessing">>
+  ```
+
+**`<<failQuest "quest_id">>`**
+- Mark quest as failed (status = "failed")
+- Shows failure message
+- Usage:
+  ```twee
+  [MECHANIC:QUEST fail=quest_shrine_blessing]
+  <<failQuest "quest_shrine_blessing">>
+  ```
+
 ## Data Structures
 
 ### Character Object
@@ -95,6 +144,30 @@ $inventory = [
   {item: "coin", name: "Bronze Coin", qty: 3}
 ]
 ```
+
+### Quest Tracking Variables
+
+If using the optional quest system:
+
+```javascript
+/* Quest status (per quest) */
+$quest_shrine_blessing_status = "active" | "completed" | "failed"
+$quest_shrine_blessing_stage = 1  /* Current stage (integer) */
+
+/* Multiple quests tracking */
+$quest_guild_contract_status = "active"
+$quest_guild_contract_stage = 2
+
+$quest_tavern_revenge_status = "completed"
+```
+
+**Quest Status Values**:
+- `"active"` — Quest in progress, currently available
+- `"completed"` — Quest finished successfully
+- `"failed"` — Quest failed (if `failed_quests: true` in constitution)
+- `"inactive"` — Quest not yet started
+
+**Naming Convention**: `$quest_[location]_[quest_id]_[property]`
 
 ## Common Patterns
 
@@ -133,6 +206,30 @@ You feel wiser but wearier.
 [[Continue|Start]]
 ```
 
+### Quest Tracking (Optional)
+
+If using the quest system (optional feature):
+
+```twee
+/* Display all quests organized by status */
+<<questList>>
+
+/* Show status of a single quest */
+<<questProgress "quest_shrine_blessing">>
+
+/* Advance quest to next stage */
+[MECHANIC:QUEST advance=quest_shrine_blessing]
+<<advanceQuestStage "quest_shrine_blessing">>
+
+/* Complete a quest */
+[MECHANIC:QUEST complete=quest_shrine_blessing]
+<<completeQuest "quest_shrine_blessing">>
+
+/* Fail a quest (if failed_quests enabled) */
+[MECHANIC:QUEST fail=quest_shrine_blessing]
+<<failQuest "quest_shrine_blessing">>
+```
+
 ## Export Checklist
 
 When exporting this pattern to SugarCube:
@@ -143,6 +240,9 @@ When exporting this pattern to SugarCube:
 - ✅ All `<<if $character.attr gte N>>` gates work correctly
 - ✅ Attributes update only through `<<set>>`, not widget calls
 - ✅ No widget modifies character stats directly
+- ✅ (Optional) All `<<questList>>` calls show quest state correctly
+- ✅ (Optional) All `<<completeQuest>>` and `<<failQuest>>` calls update quest status
+- ✅ (Optional) Quest stages track via `$quest_[id]_stage` and `$quest_[id]_status`
 
 ## Comparison to Witchhunter Sample
 

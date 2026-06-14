@@ -121,6 +121,84 @@ When changing the font:
   qualifier; split them if user specifies *body font* or *UI font* separately.
 - Always include a fallback stack ending in `serif`, `sans-serif`, or `monospace`.
 
+### Component CSS Classes Reference
+
+The following CSS classes style optional game mechanics. Add these to `:root {}` or targeted selectors as needed:
+
+#### Character Profile
+| Class | Purpose | CSS to customize |
+|---|---|---|
+| `.char-profile` | Character sheet container | `background`, `border-left` color, `padding` |
+| `.char-profile h3` | Character name heading | `color` (use `--color-text-heading`) |
+| `.char-stats` | Stat table display | `border-bottom` color (use `--color-accent-dim`) |
+| `.stat-value` | Individual stat number | `color` (use `--color-link`) |
+
+#### Inventory
+| Class | Purpose | CSS to customize |
+|---|---|---|
+| `.inventory-list` | Inventory container | `background`, `border-left` color, `padding` |
+| `.inventory-list h4` | "Inventory" heading | `color` (use `--color-text-heading`) |
+| `.inventory-list li` | Item entry | `color` (use `--color-text`) |
+| `.inventory-empty` | "No items" message | `color` (use `--color-text-muted`), `font-style` |
+| `.pickup` | Item pickup notification | `color` (use accent green: `#7fb854`) |
+
+#### Quests (Optional)
+| Class | Purpose | CSS to customize |
+|---|---|---|
+| `.quest-group` | Quest status group (Active/Completed/Failed) | `background`, `border-left` color, `padding` |
+| `.quest-group h4` | Group heading | `color` (use `--color-text-heading`) |
+| `.quest-item` | Individual quest entry | `color` (use `--color-text`) |
+| `.quest-item.active` | Active quest variant | `border-left-color` (use `--color-accent` or `#7fb854`), `background` |
+| `.quest-item.completed` | Completed quest variant | `border-left-color` (use `#4a9d5f`), `opacity`, `text-decoration: line-through` |
+| `.quest-item.failed` | Failed quest variant | `border-left-color` (use `#d64545`), `opacity` |
+| `.quest-stage` | Quest stage badge | `color` (use `--color-text-muted`), `font-size` |
+| `.quest-progress` | Inline quest status | `background`, `color`, `padding` |
+| `.quest-progress.completed` | Completed status badge | `color` (use `#4a9d5f`) |
+| `.quest-progress.failed` | Failed status badge | `color` (use `#d64545`) |
+
+#### Optional: Quest State Colors (Add to `:root {}` if using quest system)
+
+```css
+:root {
+  /* Quest tracking colours */
+  --color-quest-active:     #7fb854;   /* green: in-progress quest */
+  --color-quest-completed:  #4a9d5f;   /* teal: finished quest */
+  --color-quest-failed:     #d64545;   /* red: failed quest */
+  --color-quest-inactive:   #707070;   /* grey: not started */
+}
+```
+
+### Step 2b — Basic CSS Customization Patterns
+
+If user requests CSS changes beyond colour/font/size flags, provide guidance on these common patterns:
+
+#### Hiding Elements
+- Hide sidebar: Add `#ui-bar { display: none !important; }` (already in `--no-sidebar` flag)
+- Hide inventory button: Add `.sc-inventory { display: none !important; }`
+- Hide character sheet button: Add `.sc-character { display: none !important; }`
+- Hide quest UI: Add `.quest-group { display: none !important; }`
+
+#### Changing Spacing
+- Prose padding: Adjust `--prose-padding` (default: `2rem`)
+- Sidebar width: Adjust `--sidebar-width` (default: `14em`)
+- Line height: Adjust `--line-height` (default: `1.75`)
+
+#### Text Effects
+- All caps headings: Add to `h1, h2, h3 { text-transform: uppercase; letter-spacing: 0.08em; }`
+- Monospace prose: Change `--font-body` to `--font-mono`
+- Small caps: Add `h1 { font-variant: small-caps; }`
+- Letter spacing: Adjust `--letter-spacing` (default: `0.01em`)
+
+#### Border & Highlight Styles
+- Thicker choice borders: Add `.choice::before { content: '▶'; }`
+- Coloured choice icons: Add `.choice::before { color: var(--color-accent); }`
+- Quest item emphasis: Add `.quest-item.active { font-weight: bold; background: rgba(...) }`
+
+#### Transitions & Animations
+- Disable hover effects: Add `* { transition: none !important; }`
+- Slower transitions: Change `--transition-speed` from `0.18s` to `0.35s` or higher
+- Fade passage transitions: Add `#passages { animation: fadeIn 0.3s ease-in; }`
+
 ### Step 3 — Write story.css
 
 Write the complete modified CSS to `story.css` in the project root.

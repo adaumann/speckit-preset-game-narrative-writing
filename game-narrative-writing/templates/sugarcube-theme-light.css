@@ -276,6 +276,229 @@ hr {
   margin: 1.5em 0;
 }
 
+/* ---------------------------------------------------------------------------
+   OPTIONAL COMPONENTS: Character Profile
+   Displayed via <<charProfile>> widget if character attributes enabled
+   --------------------------------------------------------------------------- */
+.char-profile {
+  background: var(--color-bg-sidebar);
+  padding: 1.5em;
+  border-left: 4px solid var(--color-accent);
+  margin: 1em 0;
+  border-radius: 3px;
+}
+
+.char-profile h3 {
+  margin-top: 0;
+  color: var(--color-text-heading);
+  margin-bottom: 1em;
+}
+
+.char-stats {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.char-stats td {
+  padding: 0.5em;
+  border-bottom: 1px solid var(--color-accent-dim);
+}
+
+.stat-label {
+  color: var(--color-text-muted);
+  font-size: 0.9em;
+}
+
+.stat-value {
+  text-align: right;
+  color: var(--color-link);
+  font-weight: bold;
+}
+
+/* ---------------------------------------------------------------------------
+   OPTIONAL COMPONENTS: Inventory
+   Displayed via <<inventory>> widget if inventory enabled
+   --------------------------------------------------------------------------- */
+.inventory-list {
+  background: var(--color-bg-sidebar);
+  padding: 1.5em;
+  margin: 1em 0;
+  border-left: 4px solid var(--color-accent);
+  border-radius: 3px;
+}
+
+.inventory-list h4 {
+  margin-top: 0;
+  color: var(--color-text-heading);
+  margin-bottom: 0.8em;
+}
+
+.inventory-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5em 0;
+}
+
+.inventory-list li {
+  padding: 0.4em 0;
+  color: var(--color-text);
+}
+
+.inventory-empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.pickup {
+  color: #2d7c3f;  /* green accent for item pickups */
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+/* ---------------------------------------------------------------------------
+   OPTIONAL COMPONENTS: Quest Tracking
+   Displayed via <<questList>> and related widgets if quest system enabled
+   --------------------------------------------------------------------------- */
+.quests-container {
+  margin: 1.5em 0;
+}
+
+.quest-group {
+  background: var(--color-bg-sidebar);
+  padding: 1.5em;
+  margin-bottom: 1em;
+  border-left: 4px solid var(--color-accent-dim);
+  border-radius: 3px;
+}
+
+.quest-group h4 {
+  margin-top: 0;
+  color: var(--color-text-heading);
+  margin-bottom: 0.8em;
+}
+
+/* Quest group variants by status */
+.quest-group.active {
+  border-left-color: #2d7c3f;  /* green: active quests */
+}
+
+.quest-group.completed {
+  border-left-color: #1a5fb4;  /* blue: completed quests */
+}
+
+.quest-group.failed {
+  border-left-color: #c54235;  /* red: failed quests */
+}
+
+.quest-group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quest-item {
+  padding: 0.6em 0.4em;
+  margin: 0.4em 0;
+  border-radius: 3px;
+  color: var(--color-text);
+  border-left: 3px solid transparent;
+  transition: border-color var(--transition-speed), background var(--transition-speed);
+}
+
+/* Quest item variants */
+.quest-item.active {
+  border-left-color: #2d7c3f;
+  padding-left: 0.7em;
+  background: rgba(45, 124, 63, 0.1);
+}
+
+.quest-item.completed {
+  border-left-color: #1a5fb4;
+  padding-left: 0.7em;
+  background: rgba(26, 95, 180, 0.1);
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+.quest-item.failed {
+  border-left-color: #c54235;
+  padding-left: 0.7em;
+  background: rgba(197, 66, 53, 0.1);
+  opacity: 0.7;
+}
+
+/* Quest stage indicator */
+.quest-stage {
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+  margin-left: 0.5em;
+}
+
+/* Inline quest progress display */
+.quest-progress {
+  display: inline-block;
+  padding: 0.4em 0.6em;
+  background: var(--color-bg-sidebar);
+  border-radius: 3px;
+  font-size: 0.9em;
+  color: var(--color-text-muted);
+  margin: 0.5em 0;
+  border: 1px solid var(--color-accent-dim);
+  transition: border-color var(--transition-speed);
+}
+
+.quest-progress.active {
+  color: #2d7c3f;
+  border-color: #2d7c3f;
+}
+
+.quest-progress.completed {
+  color: #1a5fb4;
+  border-color: #1a5fb4;
+}
+
+.quest-progress.failed {
+  color: #c54235;
+  border-color: #c54235;
+}
+
+.quest-progress.inactive {
+  color: var(--color-text-muted);
+  border-color: var(--color-accent-dim);
+}
+
+/* Quest completion/failure messages */
+.quest-complete {
+  color: #2d7c3f;
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+.quest-fail {
+  color: #c54235;
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+/* ---------------------------------------------------------------------------
+   OPTIONAL: Story Caption (HUD)
+   Shows game state info like gold, item count, etc.
+   --------------------------------------------------------------------------- */
+#sc-header {
+  display: flex;
+  gap: 2em;
+  margin-bottom: 1em;
+  font-size: 0.95em;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-accent-dim);
+  padding-bottom: 0.5em;
+}
+
+.sc-gold,
+.sc-inventory {
+  display: inline-block;
+}
+
 @media (max-width: 640px) {
   #ui-bar { display: none; }
   #passages { margin-left: 0; border-left: none; }
