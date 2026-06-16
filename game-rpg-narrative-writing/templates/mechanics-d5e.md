@@ -76,9 +76,7 @@ Mechanics: Binary story states that enable/disable branches.
 - Guard/Temple/Syndicate factions → Your three rival power structures
 - Guard Captain NPC → Your key ally/informant character
 
-### Investigation Progression Flags (SAMPLE: Conspiracy Investigation Theme)
 
-**Example below uses conspiracy investigation. Create YOUR investigation goal flags following this pattern:**
 
 ```
 flag:[INVESTIGATION_GOAL]_discovered
@@ -154,7 +152,6 @@ flag:key_ally_recruited
   IMPLEMENTATION: AI can create multiple ally patterns—see values for how many are available per campaign tier
 ```
 
-### Companion Recruitment Flags
 
 ```
 flag:companion_1_recruited
@@ -186,7 +183,6 @@ flag:companion_3_recruited
   Validation: No strict prerequisite, recruits last
 ```
 
-### Companion Death Flags
 
 ```
 flag:companion_1_alive
@@ -217,7 +213,6 @@ flag:companion_3_alive
   Validation: Can survive with any ending
 ```
 
-### Faction Status Flags
 
 ```
 flag:guard_weakened
@@ -732,7 +727,6 @@ ending_condition:ending_type
     "Tragedy"
     "Pyrrhic_Victory"
   Evaluated At: NODE-280 (final decision point)
-  Criteria: Complex combination of reputation, companion state, plot flags
   Validation: Must result in exactly one ending selected
   
 ending_condition:world_state_change
@@ -768,7 +762,6 @@ Before finalizing mechanics:
 
 - [ ] All 8 hook types used at least once in campaign
 - [ ] Each ending depends on 2-3 distinct hook states
-- [ ] No hook exceeds maximum range (flags stay binary, counters within range)
 - [ ] Reputation counters change meaningfully (not just +1 or -1)
 - [ ] Companion approval changes tied to major story beats
 - [ ] Quest items all acquirable via at least one path
@@ -784,7 +777,6 @@ Before finalizing mechanics:
 **Mechanics Configuration Status:** [DRAFT / APPROVED / READY FOR IMPLEMENT]
 
 **Total Hooks Configured:** 8  
-**Flags Defined:** 18+  
 **Counters Defined:** 12+  
 **Quest Items:** 4+  
 **NPC States:** 5+  

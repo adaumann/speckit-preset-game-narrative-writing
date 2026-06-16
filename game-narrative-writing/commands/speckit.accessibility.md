@@ -48,7 +48,6 @@ Accepted input:
 - `--contrast-only` — check UI contrast only
 - `--language-only` — check for ableist/inaccessible language
 
-Optional flags:
 - `--target-grade [N]` — custom target reading level (default: 8–10)
 - `--strict` — flag any sentence >30 words
 - `--show-violations` — display problematic text passages with suggestions
@@ -167,13 +166,11 @@ Example NODE scan:
 NODE-025: "Marcus bleeds out. His body jerks once, then stills. 
           You watch the light leave his eyes."
           
-Flags: ✅ Character Death (Marcus), ✅ Graphic Violence
 Warnings needed: "Character Death, Graphic Violence"
 
 NODE-030: "Red lights pulse. Red lights pulse. Red lights pulse. 
           [This continues for 10 seconds in-game]"
           
-Flags: ✅ Flashing Lights (seizure risk)
 Warnings needed: "Flashing Lights (Seizure Risk)" + explanation of duration
 ```
 
@@ -240,7 +237,6 @@ Example NODE scan:
 NODE-015: "The militia troops were deaf to reason and blind to mercy.
           Their leader was clearly insane."
           
-Flags: 
   • "deaf to reason" → Metaphorical, acceptable ✅
   • "blind to mercy" → Metaphorical, acceptable ✅
   • "clearly insane" → Ableist, imprecise ⚠️

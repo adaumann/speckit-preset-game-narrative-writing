@@ -133,7 +133,6 @@ Consider user input before proceeding. Accepted arguments:
    - Nodes with `status: DRAFT` (outline not yet approved â€” blocking `speckit.implement`)
    - Open CRITICAL issues from `analysis-report.md`
    - Checklist gates with failing items
-   - Variables declared in `specs/variables.md` but not yet used in any node (`[UNDECLARED]` flags from `speckit.analyze`)
    - Phase 0 tasks remaining that gate Act 1 outlining
 
 8. **If `--export` is in `$ARGUMENTS`**:

@@ -159,7 +159,6 @@ def test_no_dead_end_nodes(nodes_data, *_):
         re.compile(r"^\s{4}\"", re.MULTILINE),     # renpy menu option
         re.compile(r"-> END"),                     # ink terminal
         re.compile(r"\breturn\b"),                 # renpy return
-        re.compile(r"\bset_scene\b"),              # escoria
     ]
     for path, content, header in nodes_data:
         fname = os.path.basename(path)

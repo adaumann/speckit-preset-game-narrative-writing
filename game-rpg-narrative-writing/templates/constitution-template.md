@@ -10,13 +10,11 @@ genre: [GENRE]
 narrative_mode: [NARRATIVE_MODE]
 style_mode: [STYLE_MODE]
 prose_profile: [PROSE_PROFILE]
-# NARRATIVE_MODE: linear | branching | point-and-click | emergent
 # STYLE_MODE: author-sample | humanized-ai
 # PROSE_PROFILE: dialogue-heavy | environmental | action-forward | atmospheric | minimalist
 export_engines:
   - generic
   - sugarcube
-# EXPORT_ENGINES: generic | sugarcube | ink | renpy | ags | escoria | unity
 # 'generic' outputs annotated Markdown with hook blocks.
 # Specify one or more engines to produce during implementation.
 player_perspective: [PLAYER_PERSPECTIVE]
@@ -241,7 +239,6 @@ map_directory: specs/maps # Where maps are stored
 | Studio / Author | [STUDIO_NAME] / [AUTHOR_NAME] |
 
 <!-- EXPORT_ENGINES: List of engines to produce during implementation
-     Options: generic (Markdown with hooks), sugarcube, ink, renpy, ags, escoria, unity
      Example: [generic, sugarcube] will produce both .md and .twee files
      PLAYER_PERSPECTIVE: second-person | third-person | first-person | switching
      POV_VARIABLE: name of the variable used when switching (e.g. $pov) — leave blank if not switching -->
@@ -279,7 +276,6 @@ map_directory: specs/maps # Where maps are stored
 | `choice_memory` | [yes/no] | |
 | `clue` | [yes/no] | |
 
-### Tier 3 Hooks (v2.x — point-and-click / high-fidelity)
 
 | Hook | Enabled | Notes |
 |---|---|---|
@@ -379,7 +375,6 @@ randomness_model:
   # Whether enemy groups in combat encounters are fixed or can vary in count.
   #
   #   scripted      — exact enemy list is always set by the author in the node.
-  #                   speckit.checklist flags any combat node with no $combat_enemies <<set>>.
   #   variant_range — author declares min/max; runtime picks count in that range.
   #                   Format in node: <<set $combat_enemies to _spawnGroup("goblin_patrol", 2, 4)>>
   #                   _spawnGroup is emitted by speckit.compile from the encounter definition.
@@ -557,20 +552,11 @@ These rules apply to every node regardless of engine target.
 | Player character death | [permanent / checkpoint / impossible] | |
 | Horror content | [none / mild / moderate / extreme] | |
 | Sexual content | [none / fade-to-black / explicit] | |
-| Reader advisory flags | [NEEDS CLARIFICATION] | |
 
 ---
 
 ## XI. Tooling
 
-### Search Index (RAG)
-<!-- Optional: configure offline semantic search for large projects -->
-
-```yaml
-search_index:
-  enabled: false
-  backend: tf       # tf (zero-dep) | bm25 (pip install rank-bm25) | chromadb (pip install chromadb sentence-transformers)
-  index_dir: .specify/index/
 ```
 
 ### Bible Version

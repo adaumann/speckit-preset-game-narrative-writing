@@ -321,7 +321,6 @@ variables_set: [var3, var4]   # From outline's "Variables Set" section
 >
 > Required passage structure (from template):
 > 1. `/* ... */` frontmatter comment block (node_id, title, act, status, pov, variables_read, variables_set, drafted, outline_ref) — format from `node-start-twee-template.twee`
-> 2. `:: NODE-{seq}_{Name} [scene]` passage header with correct tags
 > 3. Prose opening (HTML paragraphs `<p>...</p>` or plain text per constitution.md prose_profile)
 > 4. Skill check sub-passages: each check gets its own `:: NODE-{seq}_{Name}_{CheckType}` passage with `<<set $roll to random(1,20)>>`, `<<set $total to $roll + $mod>>`, `<<if $total gte $dc>>` success/fail blocks — exactly as shown in template
 > 5. Variable mutations inline: `<<set $var to value>>` or `<<set $var += delta>>` at the point they occur in narrative, not batched at end
@@ -448,7 +447,7 @@ The innkeeper leads you to a modest room. You shed your armour and sleep.
 ```
 Do NOT add any `<<goto>>` or `[[link]]` after `<<longRestScene>>` — it handles navigation.
 
-- **Milestone rest** — write prose only; no widget calls. Add a `/* milestone rest */` comment so speckit.compile and speckit.checklist can identify the node:
+- **Milestone rest** — write prose only; no widget calls. Add a `/* milestone rest */` comment so speckit.compile and speckit.verify can identify the node:
 ```twee
 /* milestone rest */
 Sleep does not come easily. Faces of the dead drift through your mind —
@@ -1312,7 +1311,6 @@ THORNE: "I trust you." [Approval: +5]
 [MECHANIC:ENCOUNTER difficulty_scale=1.2]
 ```
 
-**Accessibility Flags**:
 ```markdown
 [ACCESSIBILITY: colorblind_mode, audio_cues, timer=adjustable]
 Solve the light puzzle (Normal: 60s | Extended: 90s)
@@ -1342,9 +1340,7 @@ Solve the light puzzle (Normal: 60s | Extended: 90s)
 
 ---
 
-### NPC Dialogue Tags (RPG-Specific)
 
-Use consistent NPC tags matching `npc-roster.md`:
 
 ```markdown
 [GUARD_CAPTAIN]:
@@ -1358,7 +1354,6 @@ Use consistent NPC tags matching `npc-roster.md`:
 ```
 
 **Validation**:
-- All NPC dialogue tags must match `npc-roster.md` names
 - Each NPC uses distinct voice from character profile
 - Multi-character scenes show reactions in sequence (primary responder, then others)
 

@@ -64,7 +64,6 @@ Perform a **non-blocking inventory scan** — read each file if present, note it
 | `outlines/` | Exists? Count by status: DRAFT / APPROVED / SKIP? |
 | `draft/<ENGINE>/` | Node file count per engine? Count by status in frontmatter? Engine targets configured? |
 | `checklists/` | Exists? Count of failing gates (incomplete items)? |
-| `research.md` | Exists? OPEN item count? Any HIGH authenticity flags? |
 | `analysis-report.md` | Exists? CRITICAL issue count? Date of last run? |
 | `specs/consequences-audit.md` | Exists? Any choice outcome problems flagged? |
 | `specs/accessibility-audit.md` | Exists? Reading level, warnings, contrast, language issues identified? |
@@ -130,7 +129,6 @@ For each blocker:
 - `mechanics.md` missing Tier 1 schemas AND any Tier 1 hooks used in drafts ? hook translation risk
 - `outlines/` has `status: DRAFT` entries AND a matching node file exists in `draft/` ? outline gate was skipped
 - `analysis-report.md` exists with CRITICAL issues AND new nodes are still being drafted ? structural debt compounding
-- `research.md` has HIGH authenticity flags OPEN AND any nodes referencing those topics are drafted ? factual debt compounding
 - `tasks.md` has `[FEEDBACK]` CRITICAL tasks open AND new nodes are being drafted ? structural debt
 - `export_engines` configured but no compilation tooling found (tweego.exe missing for sugarcube, inklecate.exe missing for ink) ? export will fail
 - Engine-specific draft files exist but variables.md has no export names for that engine ? compilation will fail
@@ -176,9 +174,9 @@ Things that are not on the critical path but would strengthen the game:
 - `series-bible.md` not yet created for a non-standalone game ? `speckit.series init`
 - All nodes drafted but no `analysis-report.md` ? `speckit.analyze --report` (run full audit before final review)
 - `outlines/` has SKIP entries that cover ending-gating nodes ? worth reviewing whether the skip was intentional
-- All nodes drafted but no `consequences-audit.md` ? `speckit.consequences` (verify choice branches lead to meaningful outcomes)
+- All nodes drafted but no `consequences-audit.md` ? `speckit.branching` (verify choice branches lead to meaningful outcomes)
 - No accessibility audit run ? `speckit.accessibility` (check reading level, content warnings, contrast, ableist language)
-- No secret content documented ? `speckit.secrets` (map achievements, hidden content, easter eggs)
+- No secret content documented ? `speckit.information` (map achievements, hidden content, easter eggs)
 - `draft/<ENGINE>/` populated but `output/` missing ? `speckit.compile --all-engines` (generate playable builds)
 - All nodes drafted but engine targets not yet tested ? `speckit.compile --engine <ENGINE>` (test each target engine)
 - Puzzles exist but `puzzles.md` not documented ? `speckit.brainstorm puzzles` (document puzzle dependencies)
@@ -203,10 +201,10 @@ Use these per-phase command sets:
 `speckit.plan`, `speckit.tasks`, `speckit.flowmap`, `speckit.mechanics`, `speckit.analyze`, `speckit.variables check`, `speckit.research status`
 
 **Phase 3 (Active drafting):**
-`speckit.outline`, `speckit.implement`, `speckit.checklist`, `speckit.continuity`, `speckit.status`, `speckit.brainstorm`, `speckit.research check`
+`speckit.outline`, `speckit.implement`, `speckit.verify`, `speckit.continuity`, `speckit.status`, `speckit.brainstorm`, `speckit.research check`
 
 **Phase 4 (Quality Review):**
-`speckit.analyze`, `speckit.continuity`, `speckit.checklist`, `speckit.revise`, `speckit.pacing`, `speckit.agency`, `speckit.consequences`, `speckit.accessibility`, `speckit.secrets`
+`speckit.analyze`, `speckit.continuity`, `speckit.verify`, `speckit.revise`, `speckit.readability`, `speckit.branching`, `speckit.accessibility`, `speckit.information`
 
 **Phase 5 (Export / Compilation):**
 `speckit.compile`, `speckit.export`, `speckit.series update`, `speckit.analyze --report`

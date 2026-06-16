@@ -676,7 +676,6 @@ Most workflows: `speckit.compile` alone is sufficient.
 | "No drafted nodes found" | No files in `draft/<ENGINE>/` | Run `speckit.implement` first |
 | "YAML validation failed" | Malformed front matter | Check node header syntax |
 | "Unknown hook type" | Invalid [MECHANIC:...] block | Check hook type against mechanics.md |
-| "Unclosed hooks" | Mismatched [MECHANIC] and [/MECHANIC] | Balance opening/closing tags |
 | "Variable undefined" | Export name missing in `variables.md` | Add export name for target engine |
 | "tweego.exe not found" | Twine toolchain not installed | Use template-based HTML generation or install tweego |
 

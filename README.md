@@ -23,7 +23,6 @@ speckit-preset-game-narrative-writing/
 
 ### 1. Generic Narrative Writing Preset
 
-**For:** Choice-based storytelling, interactive fiction, branching narratives, point-and-click adventures
 
 **Contains:**
 - Story structure templates (spec, plan, outline, variables, endings)
@@ -59,7 +58,6 @@ Requires [Spec Kit](https://github.com/github/spec-kit) >= 0.5.0.
 ### Install for Narrative Writing
 
 ```bash
-specify preset add --from https://github.com/adaumann/speckit-preset-game-narrative-writing/archive/refs/tags/v1.0.0.zip game-narrative-writing
 ```
 
 Or for local development:
@@ -71,7 +69,6 @@ specify preset add --dev /path/to/speckit-preset-game-narrative-writing/game-nar
 ### Install for RPG Campaign Design
 
 ```bash
-specify preset add --from https://github.com/adaumann/speckit-preset-game-narrative-writing/archive/refs/tags/v1.0.0.zip game-rpg-narrative-writing
 ```
 
 Or for local development:
@@ -83,7 +80,6 @@ specify preset add --dev /path/to/speckit-preset-game-narrative-writing/game-rpg
 ### Install Both Presets
 
 ```bash
-specify preset add --from https://github.com/adaumann/speckit-preset-game-narrative-writing/archive/refs/tags/v1.0.0.zip
 ```
 
 This installs both presets, allowing you to choose the right one for each project.

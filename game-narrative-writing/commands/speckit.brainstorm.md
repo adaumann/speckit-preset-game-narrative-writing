@@ -157,7 +157,6 @@ Commands available at any time:
 ---------------------------------------------
 ```
 
-Initialise an **Insight Log** — ordered list of Q&A pairs plus derived insight and any conflict flags.
 
 ---
 

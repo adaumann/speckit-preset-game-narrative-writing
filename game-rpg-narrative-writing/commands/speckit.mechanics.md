@@ -82,7 +82,6 @@ RPG Campaign Hooks (if [PLATFORM]=computer):
   route_variable       [Sugarcube: stub] [Ink: stub]  – route-exclusive variable ($stealth_*, $combat_*, $diplomacy_*)
   accessibility_mode   [Sugarcube: stub] [Ink: stub]  – tracks active accessibility variant (colorblind/audio/motor)
   chapter_milestone    [Sugarcube: stub] [Ink: stub]  – marks chapter progression
-  route_convergence    [Sugarcube: stub] [Ink: stub]  – flags reconvergence point after route divergence
 
 Run `speckit.mechanics audit` to check coverage against node files.
 ```
@@ -187,7 +186,6 @@ Suggest: "Run `speckit.mechanics promote [HOOK_TYPE]` for any Tier 2 hooks in ac
 - companion_loyalty must persist across all SESSION-N files (not reset between sessions)
 - Set loyalty shift when player makes faction/companion-affecting choice
 - Example: SESSION-3 choice to help Thieves Guild → Theron loyalty(-2), Lyssa loyalty(+1)
-- Red flags:
   - Loyalty resets between sessions (player loses all progress)
   - Loyalty shift declared but never checked before critical NPC actions
   - Loyalty threshold decisions lack corresponding NPC behavior changes
@@ -197,7 +195,6 @@ Suggest: "Run `speckit.mechanics promote [HOOK_TYPE]` for any Tier 2 hooks in ac
 - faction_reputation must persist campaign-wide, not reset per session
 - Major faction choice in SESSION-N should affect faction standing permanently
 - Example: SESSION-2 choice helps Temple → faction_reputation(Temple, +2) persists through SESSION-3, SESSION-4, SESSION-5
-- Red flags:
   - faction_reputation set in SESSION-3 but never checked again
   - Faction standing expected to be high but contradicts earlier choices
   - Faction's reaction to player is inconsistent despite same standing
@@ -207,7 +204,6 @@ Suggest: "Run `speckit.mechanics promote [HOOK_TYPE]` for any Tier 2 hooks in ac
 - session_milestone marks completion of SESSION-N, prevents re-entry
 - Example: session_milestone(SESSION-3) set when player reaches final scene of SESSION-3
 - Used to branch into SESSION-4-specific content
-- Red flags:
   - Player can re-enter SESSION-3 after completing it (milestone not checked)
   - SESSION-4 references SESSION-3 events but doesn't verify SESSION-3 was completed
   - Milestone set too early (player can skip critical SESSION-3 content)
@@ -216,7 +212,6 @@ Suggest: "Run `speckit.mechanics promote [HOOK_TYPE]` for any Tier 2 hooks in ac
 **NPC Recruitment/Dismissal Hooks**:
 - npc_recruitment tracks companion join/leave, must persist across sessions
 - Once Theron joins in SESSION-2, availability in SESSION-3/4 depends on loyalty + faction
-- Red flags:
   - Companion rejoins without explanation (should require rescue/reunion scene)
   - Companion dismissed but returns without narrative justification
   - Recruitment state doesn't affect available party size or NPC dialogue
@@ -225,20 +220,16 @@ Suggest: "Run `speckit.mechanics promote [HOOK_TYPE]` for any Tier 2 hooks in ac
 **Ruleset-Specific Condition Hooks**:
 - D&D 5e: Conditions (Frightened, Poisoned, Cursed) should be tracked as hooks, checked before combat/social scenes
   - Example: If player character is Cursed from SESSION-3 choice, curse should persist, affect rolls in SESSION-5
-  - Red flags: Curse mentioned but doesn't mechanically affect outcomes
 - Pathfinder 2e: Critical success/failure states should persist session-to-session
   - Example: Critical success on check in SESSION-2 reveals secret; failure leads to combat
-  - Red flags: Critical outcome in SESSION-2 never mentioned again despite narrative significance
 - Shadowrun 6e: Karma/Edge pool depletion must carry across sessions
   - Example: Spending Karma in SESSION-3 means less Karma available in SESSION-4
-  - Red flags: Karma resets between sessions (defeats resource scarcity tension)
 
 ### Computer Game Route Mechanics Considerations
 
 **Playthrough Route Commitment Hook**:
 - playthrough_route must be set exactly ONCE in CHAPTER-2 (Stealth / Combat / Diplomacy)
 - Once set, playthrough_route never changes (binding commitment)
-- Red flags:
   - playthrough_route set in CHAPTER-3 or later (too late for narrative weight)
   - playthrough_route reset mid-playthrough (breaks route exclusivity)
   - Player can switch routes dynamically (confuses route-exclusive content)
@@ -248,7 +239,6 @@ Suggest: "Run `speckit.mechanics promote [HOOK_TYPE]` for any Tier 2 hooks in ac
 **Route-Exclusive Variables**:
 - Must use naming convention: $stealth_[VAR], $combat_[VAR], $diplomacy_[VAR]
 - Each variable only set/checked in route-specific nodes
-- Red flags:
   - Variable $stealth_infiltration_plan set, but $combat_infiltration_plan checks same plan (routes bleeding together)
   - Route variable checked in route-agnostic node (defeats isolation)
   - Variable name doesn't indicate route ($plan vs $stealth_plan)
@@ -259,7 +249,6 @@ Suggest: "Run `speckit.mechanics promote [HOOK_TYPE]` for any Tier 2 hooks in ac
 - accessibility_mode tracks active accessibility variant (colorblind/audio/motor)
 - Should persist across entire playthrough (don't reset between chapters)
 - Should be orthogonal to routes (all three routes support all accessibility modes)
-- Red flags:
   - Accessibility mode only applies to one route (breaks access equity)
   - Accessibility mode resets between chapters (frustrating for players with access needs)
   - Accessibility mode changes game difficulty balance (should only change presentation)
@@ -269,7 +258,6 @@ Suggest: "Run `speckit.mechanics promote [HOOK_TYPE]` for any Tier 2 hooks in ac
 - chapter_milestone marks CHAPTER-N completion
 - Example: chapter_milestone(CHAPTER-2) set when player reaches CHAPTER-3 opening
 - Used to prevent backtracking
-- Red flags:
   - Player can re-enter CHAPTER-2 after completing playthrough
   - CHAPTER-3 references CHAPTER-2 events but doesn't verify chapter_milestone
   - Milestone set too early (player skips critical CHAPTER-2 content)
@@ -279,7 +267,6 @@ Suggest: "Run `speckit.mechanics promote [HOOK_TYPE]` for any Tier 2 hooks in ac
 - route_convergence marks where all three routes reconverge after divergence
 - Example: CHAPTER-3 opens with all routes in common hub area (convergence point)
 - Used to sync story state across routes for final chapters
-- Red flags:
   - Routes never reconverge (three separate endings, no common story)
   - Convergence creates plot holes (route-exclusive events ignored in common scenes)
   - Convergence happens too late (routes isolated through most of game)
@@ -535,7 +522,6 @@ Total: 1100 XP (slightly over budget but acceptable)
 - [ ] Encounters don't repeat enemy types excessively (variety per session)
 - [ ] Deadly encounters have clear telegraphing (players see danger before commitment)
 
-**Red Flags During Playtesting**:
 - ⚠️ Party defeats Deadly encounter in <10 minutes → too easy, increase CR by 2-3
 - ⚠️ Party takes >60 minutes on Medium encounter → too complex, simplify tactics or enemy count
 - ⚠️ Single player downed while others untouched → unbalanced target allocation (enemy AI should focus fire, but not one target exclusively)
@@ -715,7 +701,6 @@ Three playstyle routes (Stealth, Combat, Diplomacy) committed in CHAPTER-2 with 
 - [ ] Difficulty scaling consistent across routes (easy/normal/hard applies all routes)
 - [ ] Companion synergy matches route playstyle (combat companions in combat route, etc.)
 
-**Red Flags During Playtesting**:
 - ⚠️ Combat route trivializes encounters, stealth route struggles → rebalance enemy HP/AC
 - ⚠️ Diplomacy always succeeds where others fail → raise Persuasion DCs or add consequences
 - ⚠️ One route completes 30% faster than others → add padding encounters to shorter route

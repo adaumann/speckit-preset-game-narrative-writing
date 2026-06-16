@@ -32,7 +32,6 @@ Provide one of:
 - `--level scene` — Same as `--level location` but shows individual node content (beats, variables)
 - Default (no `--level`): generate **all** levels and write separate files: `flowmap-world.md`, `flowmap-area-{AreaShortName}.md` per Area, `flowmap-loc-{LocShortName}.md` per Location
 
-Optional flags:
 - `--act [N]` — scope to one act (for `--level location` or `--level scene`)
 - `--area [AREA-ShortName]` — scope to one Area (for `--level area`)
 - `--location [LOC-ShortName]` — scope to one Location (for `--level location` or `--level scene`)

@@ -7,7 +7,6 @@ Ensures:
 - Recruitment happens at expected sessions (2, 5, 7-8)
 - Approval gates are respected
 - Companions not used before recruitment
-- Companion state flags (alive/dead) consistent with requirements
 """
 
 import sys

@@ -10,7 +10,7 @@ handoffs:
     prompt: Run a full continuity check to cross-reference feedback against known continuity issues
     send: true
   - label: Run Node Checklists
-    agent: speckit.checklist
+    agent: speckit.verify
     prompt: Run quality checklists for the nodes flagged in the feedback log
     send: true
   - label: Check Project Status

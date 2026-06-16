@@ -482,29 +482,101 @@ class CompileWrapper:
         """Attempt to fix common Twee compilation errors. Returns True if fix attempted."""
         if not error_msg:
             return False
-        
+
         print(f"\n🔧 Attempting auto-fix...")
-        
+
         # Common issue: unmatched braces in macros
         if 'unmatched' in error_msg.lower() and '<<' in error_msg:
             print(f"   Detected: Unmatched macro braces")
             fixed_any = False
             for src_file in source_files:
                 content = src_file.read_text(encoding='utf-8')
-                # Try to fix unclosed << >> pairs
-                fixed = re.sub(r'<<([^>]*?)$', r'<<\1>>', content, flags=re.MULTILINE)
+                fixed = content
+                # Fix unclosed << >> pairs: count opens vs closes
+                opens = fixed.count('<<')
+                closes = fixed.count('>>')
+                if opens > closes:
+                    print(f"   Fixing {opens - closes} unclosed macro(s) in {src_file.name}")
+                    lines = fixed.split('\n')
+                    for i in range(len(lines) - 1, -1, -1):
+                        if opens <= closes:
+                            break
+                        if lines[i].count('<<') > lines[i].count('>>'):
+                            lines[i] += '>>'
+                            opens -= 1
+                    fixed = '\n'.join(lines)
+                elif closes > opens:
+                    print(f"   Fixing {closes - opens} extra closing tag(s) in {src_file.name}")
+                    lines = fixed.split('\n')
+                    for i in range(len(lines) - 1, -1, -1):
+                        if closes <= opens:
+                            break
+                        extra_closes = lines[i].count('>>') - lines[i].count('<<')
+                        if extra_closes > 0:
+                            lines[i] = lines[i].rstrip('>')
+                            closes -= extra_closes
+                    fixed = '\n'.join(lines)
+
+                # Fix unmatched curly braces
+                open_braces = fixed.count('{')
+                close_braces = fixed.count('}')
+                if open_braces > close_braces:
+                    fixed += '\n' + '}' * (open_braces - close_braces)
+                    print(f"   Fixed {open_braces - close_braces} unclosed brace(s) in {src_file.name}")
+                elif close_braces > open_braces:
+                    lines = fixed.split('\n')
+                    extra = close_braces - open_braces
+                    for i in range(len(lines) - 1, -1, -1):
+                        if extra <= 0:
+                            break
+                        if lines[i].strip().startswith('}'):
+                            lines[i] = ''
+                            extra -= 1
+                    fixed = '\n'.join(lines)
+                    print(f"   Fixed {close_braces - open_braces} extra closing brace(s) in {src_file.name}")
+
                 if fixed != content:
                     src_file.write_text(fixed, encoding='utf-8')
                     fixed_any = True
-                    print(f"   Fixed: {src_file.name}")
             return fixed_any
-        
+
         # Common issue: invalid node references
         if 'not found' in error_msg.lower() or 'undefined' in error_msg.lower():
             print(f"   Detected: Node/variable reference error")
+            refs = re.findall(r"'([^']+)'", error_msg)
+            if refs:
+                for ref in refs[:3]:
+                    print(f"   Reference: {ref}")
             print(f"   Cannot auto-fix: Requires manual correction")
             return False
-        
+
+        # Common issue: passage header problems
+        if 'passage' in error_msg.lower() or 'header' in error_msg.lower():
+            print(f"   Detected: Passage header error")
+            fixed_any = False
+            for src_file in source_files:
+                content = src_file.read_text(encoding='utf-8')
+                fixed = content
+                # Check for :: passage without space
+                fixed = re.sub(r'^::(\S)', r':: \1', fixed, flags=re.MULTILINE)
+                # Remove duplicate :: headers
+                lines = fixed.split('\n')
+                seen_headers = set()
+                clean_lines = []
+                for line in lines:
+                    if line.startswith(':: '):
+                        header_name = line.strip()
+                        if header_name in seen_headers:
+                            continue
+                        seen_headers.add(header_name)
+                    clean_lines.append(line)
+                fixed = '\n'.join(clean_lines)
+                if fixed != content:
+                    src_file.write_text(fixed, encoding='utf-8')
+                    fixed_any = True
+                    print(f"   Fixed passage header in {src_file.name}")
+            return fixed_any
+
         print(f"   No auto-fix available for this error")
         return False
     
@@ -561,7 +633,15 @@ def main():
         '--error',
         help='Error context from speckit.implement (e.g., "NODEx not found")'
     )
-    
+    parser.add_argument(
+        '--export-first', action='store_true',
+        help='Run speckit.export before compiling'
+    )
+    parser.add_argument(
+        '--no-test', action='store_true',
+        help='Skip runtime testing after compilation'
+    )
+
     args = parser.parse_args()
     
     # Validate arguments
@@ -595,6 +675,25 @@ def main():
     else:
         engines_to_compile = [args.engine]
     
+    # Auto-run export if --export-first is set
+    if args.export_first:
+        print(f"\n📤 Running export before compile...")
+        export_script = Path(__file__).parent / "export.py"
+        if export_script.exists():
+            for engine in engines_to_compile:
+                export_cmd = [sys.executable, str(export_script), '--spec', args.spec, '--engine', engine, '--force']
+                try:
+                    export_result = subprocess.run(export_cmd, capture_output=True, text=True, timeout=30)
+                    if export_result.returncode != 0:
+                        print(f"⚠️  Export for {engine} had issues:")
+                        print(export_result.stdout[-300:] if export_result.stdout else export_result.stderr[-300:])
+                    else:
+                        print(f"✅ Export for {engine} completed")
+                except Exception as e:
+                    print(f"⚠️  Export failed: {e}")
+        else:
+            print(f"⚠️  export.py not found at {export_script}")
+
     # Compile each engine
     print(f"🎮 Speckit Compiler - Multi-Engine")
     print(f"📦 Spec: {args.spec}")
@@ -621,6 +720,10 @@ def main():
             print(f"❌ {engine} compilation failed")
         else:
             print(f"✅ {engine} compilation succeeded")
+            
+            # Run Playwright tests unless --no-test
+            if not args.no_test:
+                _run_playwright_tests(args.spec, engine)
     
     print(f"\n{'='*60}")
     if all_success:
@@ -630,6 +733,61 @@ def main():
     print(f"{'='*60}")
     
     sys.exit(0 if all_success else 1)
+
+
+def _run_playwright_tests(spec_name: str, engine: str):
+    """Run Playwright tests on the compiled output."""
+    test_dir = Path(__file__).parent.parent / "tests"
+    if not test_dir.exists():
+        print(f"\n⚠️  Playwright tests not found at {test_dir}")
+        print(f"   Run tests manually: cd scripts/tests && npx playwright test")
+        return
+    
+    # Check if compiled output exists
+    html_file = Path('specs') / spec_name / 'output' / engine / 'story.html'
+    if not html_file.exists():
+        print(f"\n⚠️  Compiled HTML not found at {html_file}")
+        return
+    
+    # Generate Playwright test specs from .twee files
+    generate_script = Path(__file__).parent / "generate_tests.py"
+    if generate_script.exists():
+        print(f"\n🔧 Generating Playwright tests from .twee files...")
+        gen_result = subprocess.run(
+            [sys.executable, str(generate_script), '--spec', spec_name, '--engine', engine],
+            capture_output=True, text=True, timeout=30
+        )
+        for line in gen_result.stdout.split('\n'):
+            if line.strip():
+                print(f"   {line.strip()}")
+        if gen_result.returncode != 0:
+            for line in gen_result.stderr.split('\n'):
+                if line.strip():
+                    print(f"   {line.strip()}")
+            print(f"   ⚠️  Test generation reported issues (broken links)")
+    else:
+        print(f"\n⚠️  generate_tests.py not found at {generate_script}")
+    
+    print(f"\n🎭 Running Playwright tests for {engine}...")
+    try:
+        result = subprocess.run(
+            ['npx', 'playwright', 'test', '--config', str(test_dir / 'playwright.config.ts')],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            cwd=str(test_dir)
+        )
+        if result.returncode == 0:
+            print(f"✅ Playwright tests passed")
+        else:
+            print(f"❌ Playwright tests failed")
+            print(result.stdout[-500:] if result.stdout else result.stderr[-500:])
+    except FileNotFoundError:
+        print(f"⚠️  npx/playwright not found. Install: npm install @playwright/test")
+    except subprocess.TimeoutExpired:
+        print(f"⚠️  Playwright tests timed out (120s)")
+    except Exception as e:
+        print(f"⚠️  Playwright test error: {e}")
 
 
 if __name__ == '__main__':

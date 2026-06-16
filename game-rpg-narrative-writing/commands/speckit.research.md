@@ -90,10 +90,6 @@ Accepted arguments:
 - Process as standard hook block (Optional/Mandatory). Skip silently if absent.
 
 **Search index** (large projects � optional):
-- For `add` mode: after logging a new research item, check whether `.specify/index/` exists. If so, run `python scripts/python/index.py update` to keep the index current.
-- For `check` mode: if `.specify/index/` exists, you MAY query the index to surface node passages that may contain unresearched claims:
-  > `python scripts/python/index.py query "[claim text]" --type node --top 5`
-  Use results as supplementary input � do not replace the full `check` scan.
 
 ---
 
@@ -105,7 +101,6 @@ Locate `FEATURE_DIR/research.md`. If the file does not exist:
 - For `add` mode: create it from `templates/research-template.md`. Populate `## Research Scope` from `specs/spec.md` and `.specify/memory/constitution.md` if present (setting, technical domains, reference games, cultural context). Emit: `? Created research.md from template. Proceeding to add first item.`
 - For `resolve`, `check`, or `status` modes: abort with `? research.md not found. Run speckit.research add [topic] to create it.`
 
-Parse `$ARGUMENTS` for mode and any inline flags. Resolve mode:
 - `add �` ? **Mode: Add**
 - `resolve �` ? **Mode: Resolve**
 - `check �` ? **Mode: Check**
@@ -124,7 +119,6 @@ If `$ARGUMENTS` contains a topic after `add`: use it as the item title. Otherwis
 
 ### Add Step 2 � Context questions
 
-Ask the following. Accept inline flags if provided (`--source`, `--finding`). Skip any question already answered by `$ARGUMENTS`:
 
 1. **Why does this matter?**
    > `Which node, branch, or mechanic requires this knowledge? (e.g. "NODE-2003 � player must give correct orders in the control room")`
@@ -139,7 +133,6 @@ Ask the following. Accept inline flags if provided (`--source`, `--finding`). Sk
 
 4. **Authenticity risk** – is this an expert-visible error?
    > `Would a specialist player or reader catch it if this is wrong? (y/n)`
-   If yes: add it to the `## Authenticity Flags` table with a risk description.
 
 4. **Node impact** (if a node was named in question 1):
    > `How will the findings change the prose, dialogue, choices, or mechanic logic? (leave blank if unknown)`   - **For Tabletop**: Will this inform campaign-guide.md, SESSION-N-BRIEFING.md, or encounter design?
@@ -171,7 +164,6 @@ Append the new item to `research.md ## Research Items`:
 **Node impact**: [text or TBD]
 ```
 
-If the item is an Authenticity Flag: also append a row to `## Authenticity Flags`:
 
 ```markdown
 | [FLAG description] | [NODE_ID or branch] | [Risk if Wrong] |
@@ -227,7 +219,6 @@ Move the block from `## Research Items` to `## Resolved Research` table:
 
 | R[NNN] | [Topic] | [one-sentence finding summary] | [source] |
 
-If the item was in `## Authenticity Flags`: mark it as resolved by appending ` ?` to its Flag column value.
 
 Confirm:
 ```
@@ -317,14 +308,12 @@ Recommended action: [run speckit.research add for each UNSUPPORTED claim / resol
   OPEN: [N]  RESOLVED: [N]  Total: [N]
 ???????????????????????????????????????????????????????
 
-### Open Research Items  (sorted: Authenticity Flags first, then by node order)
 | ID    | Topic                              | Node / Branch     | Authenticity flag |
 |-------|------------------------------------|-------------------|-------------------|
 | R003  | Submarine dive order protocols     | NODE-2003         | ?? HIGH           |
 | R007  | Soviet coup announcement sequence  | NODE-1004         | ?? HIGH           |
 | R011  | How Ink handles nested conditions  | All Act 2 gates   | �                 |
 
-### Authenticity Flags (unresolved)
 | Flag                              | Node / Branch | Risk if wrong |
 |-----------------------------------|---------------|---------------|
 | Submarine dive order protocols    | NODE-2003     | Expert players will catch immediately |
@@ -336,7 +325,6 @@ Recommended action: [run speckit.research add for each UNSUPPORTED claim / resol
 | R001  | Ink passage-name conventions      | [one sentence summary]     | [source] |
 �
 
-Recommended action: [clear to draft / resolve HIGH flags before export / run speckit.research check]
 ???????????????????????????????????????????????????????
 ```
 

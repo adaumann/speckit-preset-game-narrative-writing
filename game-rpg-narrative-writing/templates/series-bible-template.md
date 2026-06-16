@@ -66,7 +66,6 @@
 ## Series Canon
 
 <!-- Hard facts that are TRUE across all entries and cannot be contradicted by a per-entry decision.
-     speckit.series audit flags violations when checking non-standalone entries. -->
 
 ### World Rules (Series-Level)
 
@@ -205,7 +204,6 @@ canonical_import:
 ## Known Contradictions
 
 <!-- Continuity issues between entries. Log and resolve; do not delete rows.
-     speckit.series audit flags OPEN contradictions as CRITICAL. -->
 
 | ID | Description | Entries Affected | Status | Resolution |
 |---|---|---|---|---|

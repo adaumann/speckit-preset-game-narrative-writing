@@ -23,7 +23,6 @@ Provide one of:
 - `--endings` — highlight ending nodes only
 - `--hooks` — annotate mechanic trigger types on edges
 
-Optional flags:
 - `--act [N]` — scope to one act
 - `--endings` — bold or colour-code ending nodes
 - `--hooks` — add edge labels for mechanic triggers (trust, flag, inventory check)

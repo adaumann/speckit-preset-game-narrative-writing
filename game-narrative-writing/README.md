@@ -1,6 +1,6 @@
 # Spec Kit Game Narrative Writing Preset
 
-**Version 1.0.0** · Part of [Spec Kit](https://github.com/github/spec-kit)
+**Version 1.1.0** · Part of [Spec Kit](https://github.com/github/spec-kit)
 
 A Spec-Driven Development preset purpose-built for branching narrative game design, this is a pre-production topic in game design. It applies structured software development discipline to interactive fiction, quest design, dialogue trees, and player agency: narrative bibles instead of design docs, node tasks instead of tickets, dialogue branching validation instead of manual testing.
 
@@ -9,14 +9,14 @@ A Spec-Driven Development preset purpose-built for branching narrative game desi
 - **Constitution governance** — `constitution.md` is the single source of truth for engine targets (SugarCube, Ink, Ren'py), POV architecture, player character voice, narrative mode (linear/branching/emergent), mechanics hooks, and craft rules. Every command reads from it; no inconsistencies across sessions.
 - **Full narrative pipeline** — 36 AI commands from first idea (`speckit.specify`) through planning (`speckit.plan`, `speckit.outline`), drafting (`speckit.implement`), quality validation (13 narrative analysis tools), and compilation (`speckit.compile`) to playable output.
 - **Dialogue branching system** — Plan dialogue trees with trust states, NPC responses, player choices, and branch targets. Outline dialogue beats with multi-party reactions. Implement prose with mechanic hooks. Validate consequences and choice clarity.
-- **13 Narrative Quality Validators** — Player agency (no illusory choices), ending quality, subplot resolution, emotional pacing, foreshadowing/payoff, information asymmetry, state mapping, branch complexity, replayability metrics, choice consequences, accessibility (reading level + content warnings), and secret content discovery.
+- **8 Narrative Quality Validators** — Branch structure and agency, narrative arc quality, subplot resolution, narrative flow and emotional tempo, cross-branch variable consistency, foreshadowing/payoff, dialogue trees and information asymmetry, replayability metrics, and accessibility (reading level + content warnings).
 - **Multi-POV support** — Single protagonist, dual parallel, switching POV, ensemble casts, or rotating perspectives. Trust state tracking per POV. Information asymmetry mapping (what each character knows when).
 - **Mechanic hooks (Tier 1)** — Flag, counter, visited, inventory, timer, trust, currency, npc_state, ending_condition, choice_memory, clue. SugarCube and Ink translations included. Extensible Tier 2 schema.
-- **Multi-engine compilation** — SugarCube 2.x (Twine), Ink (usable in Unreal, Unity, Godot), with Ren'py, Esconia, AGS support coming. Compiled output in `output/[ENGINE]/`. Automatic theme application (dark/light/minimal CSS for SugarCube; HTML wrappers for Ink).
+- **Multi-engine compilation** — SugarCube 2.x (Twine), Ink (usable in Unreal, Unity, Godot), with Ren'py support in development. Compiled output in `output/[ENGINE]/`. Automatic theme application (dark/light/minimal CSS for SugarCube; HTML wrappers for Ink).
 - **Series Bible support** — Carry-over variable registry, ending canon table, NPC survival tracking, world state deltas per game entry, series arc continuity.
 - **Playable themes** — 3 base SugarCube CSS themes (dark, light, minimal) with all values as CSS custom properties for easy tweaking. 3 Ink HTML theme wrappers. All themes exposed via `speckit.theme`.
 
-- **TBI** - For next version Point-And-Click adventure engines and RenPy are planning as export format.
+- **TBI** - RenPy export is in development.
 
 ---
 
@@ -57,7 +57,7 @@ The Game Narrative Writing preset applies Spec-Driven Development to interactive
 - **1 compilation script** (Python-based) for SugarCube, Ink, and Ren'py output
 - Support for **multiple POV architectures** (single, dual, rotating, ensemble)
 - Support for **all major game narrative modes** (linear, branching, emergent)
-- **13 narrative quality validators** covering player agency, endings, pacing, accessibility, and more
+- **8 narrative quality validators** covering branch structure, narrative arc, information flow, pacing, accessibility, and more
 - Two **theme modes**: pre-built (dark/light/minimal) or custom via `speckit.theme`
 
 The central philosophy: the **constitution** (`constitution.md`) is the governing authority. Every drafted node, every choice consequence, every mechanic hook derives its rules from it.
@@ -138,16 +138,18 @@ This preset requires the following tools installed on your system:
 # 11. Start drafting nodes (prose + mechanic hooks)
 /speckit.implement
 
-# 12. Check prose quality per node
-/speckit.checklist
+# 12. Run comprehensive validation suite
+/speckit.readability           # Narrative flow: pacing, tone, emotional tempo
+/speckit.continuity            # Variable consistency + state space mapping
+/speckit.branching             # Branch structure, consequences, agency
+/speckit.information           # Dialogue trees, knowledge gaps, secrets
+/speckit.narrative-arc         # Character arcs, subplot resolution, ending quality
+/speckit.foreshadow            # Clue/payoff balance
+/speckit.replayability         # Unique content per playthrough
+/speckit.accessibility         # Reading level + content warnings
 
-# 13. Run comprehensive validation suite
-/speckit.agency                # Player agency validator
-/speckit.endings              # Ending quality check
-/speckit.consequences         # Choice outcome validator
-/speckit.continuity           # Cross-branch consistency
-/speckit.pacing               # Word count and beat pacing
-/speckit.accessibility        # Reading level + content warnings
+# 13. Verify all nodes (structural + quality gates)
+/speckit.verify --all
 
 # 14. Polish prose
 /speckit.polish
@@ -203,8 +205,7 @@ draft/
   generic/
     NODE-001_Opening.md                † Prose for human reviewers
 
-checklists/
-  NODE-001_Opening-checklist.md        † Quality checklist (choice test, hook check, etc.)
+checklists/                         † Generated by speckit.verify
 
 tasks/
   NODE-001_Opening-tasks.md
@@ -264,44 +265,25 @@ Most commands accept these optional arguments:
 | `speckit.research` | Support | Log knowledge gaps, record findings, scan drafts for unsupported claims, view open items ranked by risk | `add` \| `view` \| `scan` |
 | `speckit.interview` | Character | Interactive one-on-one conversation with an NPC; export insights as revision notes | `[CHARACTER_ID]` or interactive |
 
-### Quality Validation (13 Tools)
-
-#### Narrative Quality
+### Quality Validation (8 Tools)
 
 | Command | Validates | How to Use |
 |---|---|---|
-| `speckit.agency` | Player agency | Run after all branches drafted: detects illusory choices, forced branches, dead choices. **Workflow**: identifies branches where all paths reconverge → revise to add consequence branching |
-| `speckit.endings` | Ending quality | All endings resolve central question, arc closure, character fates clear. **Workflow**: run before export → fix any hollow or unresolved endings |
-| `speckit.subplots` | Subplot resolution | Subplots start, develop, resolve. Not abandoned mid-branch. **Workflow**: detects dangling threads → revise or mark as intentional |
-| `speckit.tone` | Emotional trajectory | Tone consistency and earned payoff. No tonal whiplash. **Workflow**: flags hollow moments or manipulative tone → adjust beats |
+| `speckit.readability` | Narrative flow | Word count per node, beat spacing, emotional tempo, tone trajectory. No info dumps, dead zones, or tonal whiplash. **Workflow**: identifies draggy or jarring sections → tighten prose or adjust beats |
+| `speckit.continuity` | Cross-branch consistency + state space | Variable consistency per branch, state space mapping, no dead-end combos, convergence conflicts. **Workflow**: visualizes branch state space → detects unreachable or broken states |
+| `speckit.branching` | Branch structure, consequences, agency | Branch topology, choice outcome distinctness, player agency (no illusory choices), branch explosion warnings. **Workflow**: identifies forced branches, cosmetic choices, exponential growth → recommend convergence or consequence strengthening |
+| `speckit.information` | Dialogue trees, knowledge gaps, secrets | What player knows vs NPCs know, dialogue tree structure, hidden/secret content discoverability. **Workflow**: detects unrealistic NPC knowledge or unfair secrets → adjust scene order or add clue nodes |
+| `speckit.narrative-arc` | Character arcs, subplot resolution, ending quality | Subplot start/develop/resolve lifecycle, character arc closure, ending resolution of central question. **Workflow**: detects dangling threads or hollow endings → revise or mark as intentional |
 | `speckit.foreshadow` | Clue/payoff balance | Clues placed before revelations. Mysteries feel fair. **Workflow**: detects premature payoffs or orphaned clues → reorder or remove |
-
-#### Player Experience
-
-| Command | Validates | How to Use |
-|---|---|---|
-| `speckit.consequences` | Choice outcomes | Each choice branches into distinct outcome. No identical consequences. **Workflow**: clarifies which choices matter → strengthens consequence clarity |
-| `speckit.pacing` | Beat spacing & reading time | Word count per node, beat pacing, reading time. No info dumps or dead zones. **Workflow**: identifies draggy sections → tighten prose or split into multiple nodes |
 | `speckit.replayability` | Unique content per playthrough | Measures content reuse ratio, hidden content tracking. **Workflow**: ensures multiple playthroughs feel fresh |
-| `speckit.complexity` | Branch explosion | Warns if exponential growth makes maintenance unsustainable. **Workflow**: recommends convergence points or content reuse |
-
-#### Consistency & Accessibility
-
-| Command | Validates | How to Use |
-|---|---|---|
-| `speckit.asymmetry` | Information gaps | What player knows vs NPCs know. Player agency via informed decisions. **Workflow**: detects unrealistic NPC knowledge → adjust scene order or add clue nodes |
-| `speckit.statemap` | Variable state consistency | Variable state transitions per branch, no dead-end combos, convergence conflicts. **Workflow**: visualizes branch state space → detects unreachable or broken states |
 | `speckit.accessibility` | Readability + content warnings | Flesch-Kincaid grade level, sentence length, content warnings, UI contrast (WCAG), ableist language. **Workflow**: ensures game is playable by broad audience → simplify prose or add warnings |
-| `speckit.secrets` | Hidden content | Achievements, easter eggs, secret scenes reachable and discoverable. **Workflow**: ensures hidden content is fair challenge, not frustrating |
 
 ### Revision & Polish
 
 | Command | Phase | What It Does | Arguments |
 |---|---|---|---|
-| `speckit.checklist` | Quality | Per-node quality gates: choice meaningfulness test, hook declaration check, dead-end detection, POV drift check | `[NODE_ID]` \\| `--all` \\| `--act [N]` |
-| `speckit.revise` | Revision | Surgically rewrite failing passages identified by checklist or continuity. Produces versioned node file | `[NODE_ID]` \\| `--all` |
+| `speckit.revise` | Revision | Surgically rewrite failing passages identified by verify or continuity. Produces versioned node file | `[NODE_ID]` \\| `--all` |
 | `speckit.polish` | Polish | Final line-edit: prose rhythm, sentence variety, word repetition, filter words, adverb density, voice consistency | `[NODE_ID]` \\| `--all` \\| `--aggressive` |
-| `speckit.continuity` | Post-draft | Cross-branch audit: variable consistency, POV drift, NPC knowledge state, series bible validation | *(none)* |
 | `speckit.feedback` | Revision | Ingest playtest notes, categorize by issue type (Branch/Variable/Pacing), generate prioritized revision tasks | `upload [FILE]` \\| `view` |
 
 ### Compilation & Export
@@ -309,7 +291,7 @@ Most commands accept these optional arguments:
 | Command | Phase | What It Does | Arguments |
 |---|---|---|---|
 | `speckit.compile` | Build | Compile all nodes to engine-specific output (SugarCube, Ink, Ren'py). Includes theme, variables, and hook translation. Output in `output/[ENGINE]/` | `--all-engines` \| `[ENGINE]` (sugarcube/ink/renpy/generic) |
-| `speckit.verify` | QA | Optional: Run comprehensive unit test suite on all nodes (structural tests, hook validation, self-correction). Use for deep audits | `--all-engines` \| `[ENGINE]` \| `--unit-tests` \| `--structural-only` |
+| `speckit.verify` | QA | Per-node quality gates + comprehensive validation: structural tests, hook validation, choice meaningfulness check, dead-end detection, POV drift, and self-correction. Use for deep audits | `--all-engines` \| `[ENGINE]` \| `--unit-tests` \| `--structural-only` |
 | `speckit.theme` | Styling | Generate or adjust story.css (SugarCube) or ink-theme.html wrapper. Dark/light/minimal base themes or custom via flags | `dark` \| `light` \| `minimal` \| `custom [FILE]` |
 | `speckit.export` | Distribution | Export final game to platform-specific formats (coming: web deployment, itch.io packaging) | `web` \| `itch` (coming soon) |
 
@@ -659,13 +641,12 @@ You have a window.
 #### Step 7: Quality Check
 
 ```bash
-/speckit.checklist
+/speckit.verify --all
 /speckit.continuity
-/speckit.agency
-/speckit.consequences
+/speckit.branching
 ```
 
-**speckit.checklist** per node:
+**speckit.verify** per node:
 - ✅ Choice meaningfulness: Both paths have distinct consequences? Yes (stealth += 10 heat vs wait costs 5 turns)
 - ✅ Hook declaration: All `MECHANIC:` blocks declared? Yes
 - ✅ Dead-end check: Both branches reconverge? Yes (NODE-020)
@@ -673,13 +654,13 @@ You have a window.
 **speckit.continuity**:
 - ✅ Variable consistency: heat_level only modified in branching paths? Yes
 - ✅ NPC state: guard_alerted consistent across branches? Yes
+- ✅ State space: No unreachable variable combinations? Yes
 
-**speckit.agency**:
-- ✅ Forced branches: Both paths reach the ending? Yes
+**speckit.branching**:
+- ✅ Agency: Both paths reach the ending? Yes
 - ✅ Cosmetic choices: Do choices have real consequences? Yes (heat_level += 10 vs wait = different npc_alerted state at finale)
-
-**speckit.consequences**:
 - ✅ Choice outcomes distinct? Yes (stealth = quick but dangerous; wait = slow but safe)
+- ✅ Branch complexity: Maintainable? Yes (2 branches, converge at finale)
 
 #### Step 8: Polish
 
@@ -813,7 +794,7 @@ What do you say?
 #### Step 4: Validate Multi-POV Consistency
 
 ```bash
-/speckit.asymmetry
+/speckit.information
 ```
 
 Checks:
@@ -1001,7 +982,7 @@ MECHANIC:trust:guard_trust (current: 50)
 #### Phase 4: Validate Dialogue Consequences
 
 ```bash
-/speckit.consequences NODE-015
+/speckit.branching NODE-015
 ```
 
 Output:
@@ -1035,7 +1016,7 @@ Overall Agency: 7/10
 #### Phase 5: Validate Player Agency
 
 ```bash
-/speckit.agency
+/speckit.branching
 ```
 
 Checks:
@@ -1170,7 +1151,7 @@ Verify narrative continuity at each handoff.
 
 ### Tutorial: Using All Validation Tools
 
-**This walks through using all 13 narrative quality validators in sequence**
+**This walks through using all narrative quality validators in sequence**
 
 After drafting all nodes, run validation suite in order:
 
@@ -1188,28 +1169,29 @@ Checks:
 
 **If failures**: Fix and re-draft before continuing.
 
-#### 2. Player Agency Validation
+#### 2. Branching & Agency Validation
 
 ```bash
-/speckit.agency
+/speckit.branching
 ```
 
 Checks:
 - ✅ Are choices real or illusory?
 - ✅ Do both branches in a fork lead to different outcomes?
 - ✅ Can player fail a challenge?
+- ✅ Is branch explosion manageable?
 
-**Output**: `specs/agency-audit.md`
+**Output**: `specs/branching-audit.md`
 **If issues**: Revise choices to add consequence branching.
 
 ```bash
-/speckit.revise --fix-agency
+/speckit.revise --fix-branching
 ```
 
-#### 3. Ending Quality Validation
+#### 3. Narrative Arc Validation
 
 ```bash
-/speckit.endings
+/speckit.narrative-arc
 ```
 
 Checks:
@@ -1222,7 +1204,7 @@ Checks:
 #### 4. Subplot Resolution
 
 ```bash
-/speckit.subplots
+/speckit.narrative-arc
 ```
 
 Checks:
@@ -1232,13 +1214,14 @@ Checks:
 
 **If issues**: Add resolution nodes or mark as intentional cliffhanger.
 
-#### 5. Emotional Trajectory
+#### 5. Narrative Flow & Emotional Trajectory
 
 ```bash
-/speckit.tone
+/speckit.readability
 ```
 
 Checks:
+- ✅ Word count per node within range?
 - ✅ Tone shifts earned (not whiplash)?
 - ✅ No hollow emotional moments?
 - ✅ Alignment with theme?
@@ -1258,72 +1241,57 @@ Checks:
 
 **If issues**: Reorder clue placement or add subtle hints.
 
-#### 7. Choice Consequences
+#### 7. (Covered by `speckit.branching` above)
+
+Branch structure, choice distinctness, and consequences are all validated by `speckit.branching` in step 2.
+
+#### 8. Pacing & Narrative Flow (Covered by `speckit.readability`)
 
 ```bash
-/speckit.consequences
-```
-
-Checks:
-- ✅ Each choice leads to distinct outcome?
-- ✅ Consequences clear and immediate?
-- ✅ No identical branches?
-
-**If issues**: Differentiate branch outcomes via variables or prose.
-
-#### 8. Pacing & Reading Time
-
-```bash
-/speckit.pacing
+/speckit.readability
 ```
 
 Checks:
 - ✅ No node >1000 words (info dump)?
 - ✅ Beat spacing consistent?
 - ✅ Reading time reasonable per branch?
+- ✅ Emotional tempo and tone trajectory coherent?
 
-**Output**: `specs/pacing-audit.md` with word count per node
+**Output**: `specs/readability-audit.md` with word count per node
 **If issues**: Split long nodes or tighten prose.
 
-#### 9. Information Asymmetry
+#### 9. Information & Secrets
 
 ```bash
-/speckit.asymmetry
+/speckit.information
 ```
 
 Checks:
 - ✅ Does player know what's needed to make informed choice?
 - ✅ Do NPCs know things they shouldn't?
 - ✅ Is information gap realistic?
+- ✅ Hidden/secret content discoverable?
 
 **If issues**: Adjust scene order or add exposition nodes.
 
-#### 10. State Mapping
+#### 10. State Mapping (Covered by `speckit.continuity`)
 
 ```bash
-/speckit.statemap
+/speckit.continuity
 ```
 
 Checks:
 - ✅ No unreachable variable combinations?
 - ✅ No dead-end states?
 - ✅ Branch convergence conflicts?
+- ✅ Cross-branch variable consistency?
 
 **Output**: State space graph
 **If issues**: Adjust variable transitions to avoid dead-ends.
 
-#### 11. Complexity Analysis
+#### 11. (Covered by `speckit.branching` above)
 
-```bash
-/speckit.complexity
-```
-
-Checks:
-- ✅ Branch explosion warning?
-- ✅ Exponential growth manageable?
-- ✅ Maintenance effort sustainable?
-
-**If issues**: Add convergence points or reuse content.
+Branch explosion and complexity analysis are validated by `speckit.branching` in step 2.
 
 #### 12. Replayability
 
@@ -1358,8 +1326,8 @@ Checks:
 After all validators pass:
 
 ```bash
-/speckit.secrets                    # Map hidden content
-/speckit.continuity                 # Final cross-branch check
+/speckit.information                # Dialogue trees, knowledge gaps, secrets
+/speckit.continuity                 # Final cross-branch check + state space
 /speckit.polish                     # Line-edit
 /speckit.compile --all-engines      # Build
 ```
@@ -1468,7 +1436,7 @@ MECHANIC:inventory:add keycard
 Output: `output/sugarcube/story.html`
 
 **What happens**:
-1. Finds all `draft/squ/*.twee` files
+1. Finds all `draft/sugarcube/*.twee` files
 2. Combines with `themes/story.css`
 3. Translates `MECHANIC:` hooks to `<<set>>` syntax
 4. Runs Tweego to compile `.twee` → `.html`
@@ -1530,12 +1498,11 @@ Both read from same `draft/shared/` prose, just different syntax in `draft/squ/`
 The validators build on each other. Run in this order:
 
 1. **speckit.analyze** — Structural gates (pre-requisite for all others)
-2. **speckit.agency** — Player agency (affects choice design)
-3. **speckit.consequences** — Choice outcomes (affects agency)
-4. **speckit.continuity** — Cross-branch consistency (affects state logic)
-5. **speckit.pacing** — Beat spacing (affects narrative flow)
-6. **speckit.accessibility** — Reading level (affects prose revision)
-7. **All others** — Can run in any order
+2. **speckit.branching** — Branch structure, consequences, agency (affects choice design)
+3. **speckit.continuity** — Cross-branch consistency + state space (affects state logic)
+4. **speckit.readability** — Beat spacing, emotional tempo, tone (affects narrative flow)
+5. **speckit.accessibility** — Reading level (affects prose revision)
+6. **All others** — Can run in any order
 
 ### Interpretation Guide
 

@@ -13,7 +13,6 @@ The `game-narrative-writing` preset has been refocused from **"RPG/Point-and-Cli
 ### New Direction (v0.2)
 - **Narrative design validation** (story structure, branching, dialogue)
 - **SugarCube/Twine export** (rapid prototyping, browser testing)
-- **Core mechanics only** (flags, counters, inventory, attributes)
 - **Designer-friendly** (focuses on story, not engine details)
 
 ---
@@ -152,7 +151,6 @@ THEN: External Engines (Optional)
 **Old focus:** "I want to design an RPG campaign"
 → **New approach:** Use the **RPG preset** (`game-rpg-narrative-writing`) instead, with caveats about scope
 
-**Old focus:** "I want to design a point-and-click adventure"
 → **New approach:** Use **narrative preset** with SugarCube export; then port to Escoria/Godot if needed
 
 **Old focus:** "I want a tool to write branching stories"
@@ -173,7 +171,6 @@ During `speckit export --engine sugarcube`, these become Twee (SugarCube) code:
 
 | Mechanic | Twee Output |
 |---|---|
-| `[MECHANIC:FLAG set=quest_done value=true]` | `<<set $flags.quest_done to true>>` |
 | `[MECHANIC:ATTRIBUTE modify=wisdom delta=+1]` | `<<set $character.wisdom += 1>>` |
 | `[MECHANIC:INVENTORY check=amulet]` | `<<if $inventory.amulet>>...{{</if>>` |
 | Dialogue choice with gate | `[[Choice|NODE-X]] <!-- requires: wisdom >= 6 -->` |
@@ -212,9 +209,7 @@ If you have an existing narrative game using the old preset:
 - ✅ NOT game-specific (can export to Ink, Ren'Py, Yarn, custom engines)
 
 **Core mechanics are narrative-only:**
-- Dialogue branching (gated by attributes, flags, inventory)
 - Character progression (attribute changes from choices)
-- Consequence tracking (flags, counters, outcomes)
 - State validation (no narrative logical errors)
 
 **This positions Spec Kit as:**

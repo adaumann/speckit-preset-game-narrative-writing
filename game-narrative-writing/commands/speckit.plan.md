@@ -22,7 +22,6 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-Optional flags:
 - `--update` ï¿½ revise existing flowmap without overwriting approved sections
 - `--act [N]` ï¿½ regenerate a specific act only
 
@@ -72,13 +71,13 @@ Optional flags:
 > **Pre-fill rule**: Every supporting document MUST be written with actual game-specific content inferred from `spec.md` and `constitution.md`. Replace every `[placeholder]` marker with real content. Only write `[NEEDS CLARIFICATION: reason]` when a field genuinely cannot be inferred.
 > **Language Rule**: All supporting documents (plan.md, variables.md, mechanics.md, character profiles, endings.md, glossary.md, world-building.md) MUST be generated in English (`en`) by default, regardless of any `[LANGUAGE]` setting in the constitution.
 
-- Generate `specs/[FEATURE_DIR]/variables.md`: register every state variable identified across the narrative design doc and game bible ï¿½ variable name, type, default value, description, which nodes read/write it, which endings gate on it. Group by category: trust, flags, inventory, attributes, counters.
 
-- Generate `specs/[FEATURE_DIR]/mechanics.md`: one schema entry per mechanic type active in the game bible. For each:
+- Generate `specs/[FEATURE_DIR]/mechanics.md` using `templates/mechanics-template.md` as the base format: one schema entry per mechanic type enabled in the constitution's Active Mechanics Table. For each:
   - Mechanic name, tier (1/2), hook syntax (engine-specific)
   - Trigger condition, effect, failure state
   - Which nodes use it (populated from narrative design doc Key Nodes list)
   - Cross-reference to `specs/[FEATURE_DIR]/variables.md` entry
+  - Only generate entries for mechanics checked as enabled in the constitution — do not include disabled or unlisted mechanics
 
 - Generate character profiles: one file per key NPC at `specs/[FEATURE_DIR]/characters/[npc-name].md` using `characters-template.md` (use the character's name in lowercase-kebab-case, e.g., `specs/[FEATURE_DIR]/characters/mira-voss.md`). For each character, populate all sections:
   - **I. Core Identity**: dominant trait, strength, flaw, drive, fear, background foundation, internal arc (wound / want / need / transformation ? range of ending states)
@@ -179,10 +178,7 @@ Optional flags:
 11. **Stop and report**: Report: `specs/[FEATURE_DIR]/plan.md` path, total nodes generated, total endings mapped, branch health status, any remaining `[NEEDS CLARIFICATION]` markers, open threads count.
 
 12. **Build search index** (large projects):
-    - Check whether `scripts/python/index.py` exists.
-    - If it exists, run: `python scripts/python/index.py build` from the project root.
     - This indexes all supporting documents generated in Phase 0 for semantic search during drafting.
-    - If the script is absent or fails, skip silently and note: `?? Search index not built ï¿½ run python scripts/python/index.py build manually when ready.`
 
 13. **Check for extension hooks** (after planning): check `hooks.after_plan` and process as standard hook block.
 

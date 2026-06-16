@@ -39,7 +39,6 @@ Accepted arguments:
 - `questionnaire` — generate the new-game questionnaire for importing state from a previous entry
 - `delta` — compute the world state delta between two entries given a carry-over import
 
-Optional flags:
 - `--entry [N]` — scope to a specific entry number
 - `--ending [END-ID]` — assume a specific ending as the import state for `questionnaire` or `delta`
 - `--canonical` — use the canonical ending (from `series-bible.md`) for `delta`

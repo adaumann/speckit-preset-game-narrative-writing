@@ -1,9 +1,9 @@
 ---
-description: Targeted node revision � rewrites only the failing passages identified by speckit.checklist, speckit.analyze, or speckit.continuity without touching passing content. Produces a versioned node file with a diff summary.
+description: Targeted node revision — rewrites only the failing passages identified by speckit.verify, speckit.analyze, or speckit.continuity without touching passing content. Produces a versioned node file with a diff summary.
 handoffs:
-  - label: Re-run Checklist
-    agent: speckit.checklist
-    prompt: Re-run the checklist on the revised node
+  - label: Re-run Verification
+    agent: speckit.verify
+    prompt: Re-run verification on the revised node
     send: true
   - label: Run Continuity Check
     agent: speckit.continuity
@@ -32,7 +32,6 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
 - `NODE-003 "dead-end branch after choice B"` � revise from a quoted description
 - *(no argument)* � revise the node with the most recent open checklist failure
 
-Optional flags:
 - `--checklist` � auto-load all open checklist failures for the node
 - `--feedback [ID]` � load a specific feedback issue from `feedback.md`
 - `--full` � full redraft (not targeted revision); requires confirmation
@@ -220,7 +219,7 @@ Optional flags:
 
    Revised node: draft/ink/NODE-003_v2.ink
    Status reset to DRAFT � polish invalidated (revise removes polished: field); re-review and set status: APPROVED before next drafting run.
-   Recommendations: (1) Run `speckit.checklist NODE-003` on the revised node to confirm all items pass. (2) Run `speckit.polish NODE-003` to re-polish after structural revisions complete. (3) Run `speckit.continuity --check dialogue,glossary,locations` if any dialogue/glossary/location changes made.
+   Recommendations: (1) Run `speckit.verify NODE-003` on the revised node to confirm all items pass. (2) Run `speckit.polish NODE-003` to re-polish after structural revisions complete. (3) Run `speckit.continuity --check dialogue,glossary,locations` if any dialogue/glossary/location changes made.
    ```
    **RPG-Specific Report Notes** (if `SESSION.is_rpg = true`):
    - **Tabletop**: If TR/DR/PR2/SR items fixed, note session # and encounter impact; if campaign-guide.md updated, note "Player introduction revised: ruleset house rules updated"
@@ -252,7 +251,6 @@ Optional flags:
 
 ## Key Principles for RPG Revision
 
-**Auto-Detection**: No flags required. Revision automatically detects platform/ruleset from `constitution.md`. RPG-specific guidance activates based on detected context.
 
 **Tabletop Campaign Introduction Model**:
 - On first SESSION-1 node revision: Generate/update `draft/campaign-guide.md` with:

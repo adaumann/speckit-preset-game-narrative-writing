@@ -13,6 +13,8 @@ handoffs:
     agent: speckit.outline
     prompt: Regenerate outlines (e.g., to add more nodes or revise structure)
     send: false
+scripts:
+  py: scripts/python/export.py --spec $SPECNAME --engine $ENGINE
 ---
 
 # speckit.export
@@ -140,7 +142,6 @@ For each [MECHANIC:...] hook found in drafted nodes:
 **Node files** — Copy drafted nodes:
 
 ```twee
-:: [NodeTitle] [tags_from_outline]
   {- Node ID: [NODE_ID] -}
   {- Variables Read: [list from outline] -}
   {- Variables Set: [list from outline] -}

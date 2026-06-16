@@ -22,7 +22,6 @@ I built a **Game Narrative Writing preset** for Spec Kit that brings that rigor 
 - Built a quest tree so complex you can't remember what's reachable
 - Manually tested every branch combination by hand
 - Tried to export to multiple engines (SugarCube, Ink, Ren'py) and hit format friction
-- Planned also for point-and-click adventures
 
 ...this preset is for you.
 
@@ -321,7 +320,6 @@ Same framework for **film and television scripts**.
   - **Visual storytelling** — Show-don't-tell, action line brevity, blocking clarity
   - **Pacing** — Page count targets, scene duration, cut timing
   - **Series continuity** — Episode arcs (single-episode payoff vs. season arc)
-  - **Production feasibility** — Location reuse, cast size, effects budget flags
 - Multi-format export: Industry-standard screenplay (.fountain), PDF, production breakdown sheets
 - Series management: Season bibles, episode arcs, character episodic tracking
 - Shooting script generation (with numbering, revisions, department breakdowns)

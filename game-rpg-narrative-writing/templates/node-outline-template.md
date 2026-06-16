@@ -141,7 +141,6 @@ status: DRAFT
   - Example: `visited=player_visited_sanctuary`
   - Use when: Player should remember reaching this location
 
-- [ ] **FLAG** — Set or check boolean state flags
   - Example: `flag=door_unlocked` or check `flag=knows_combination`
   - Use when: Binary state needs to persist (learned fact, completed task)
 

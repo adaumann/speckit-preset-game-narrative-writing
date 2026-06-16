@@ -176,7 +176,6 @@ Commands available at any time:
 ---------------------------------------------
 ```
 
-Initialise an **Insight Log** � ordered list of Q&A pairs plus derived insight and any conflict flags.
 
 ---
 
@@ -423,7 +422,6 @@ Select the most valuable questions based on what is already known � do not ask
 - What `$region_*` variables track per-Region progression (unlocked, faction dominant, quest stage)?
 - What `$area_*` variables track per-Area state (explored, cleared, unlocked, closed)?
 - What `$loc_*` variables track per-Location state (visited, intact/damaged/destroyed, NPC roster)?
-- Are there campaign-wide (`$world_*`) flags driven by spatial events (e.g., a Region falls, a war zone expands)?
 
 **Challenge mode additions** *(asked if `challenge` flag set)*:
 - Pick the Region that would hurt most to cut — now justify why it can't be merged with an adjacent Region.

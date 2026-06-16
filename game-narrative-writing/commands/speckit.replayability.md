@@ -1,12 +1,12 @@
 ---
 description: Replayability metrics — measure unique content per playthrough, branch coverage, variation in dialogue/prose, and content reuse across paths.
 handoffs:
-  - label: Check Agency
-    agent: speckit.agency
+  - label: Check Branching
+    agent: speckit.branching
     prompt: After measuring replayability, verify choices provide meaningful variations.
     send: true
-  - label: Analyze Complexity
-    agent: speckit.complexity
+  - label: Analyze Branching
+    agent: speckit.branching
     prompt: Review branch structure to optimize replayability coverage.
     send: true
 ---
@@ -43,7 +43,6 @@ Accepted input:
 - `--branch [BRANCH_ID]` — analyze replayability within one branch only
 - `--content` — focus on unique prose content per branch
 
-Optional flags:
 - `--strict` — flag >50% content reuse as excessive
 - `--show-coverage` — ASCII grid of which branches see which content
 - `--show-variance` — display variant prose per branch
@@ -248,7 +247,6 @@ Problem: 87% reuse is excessive
 Status: 🟡 EXCESSIVE REUSE
 
 Example: If reuse is >70%, the question becomes:
-         "Am I really playing a different game, or just the same game with different flags?"
 
 Fix options:
   1. Expand branch-specific content (write more unique scenes)

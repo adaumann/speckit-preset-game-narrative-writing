@@ -22,7 +22,6 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-Optional flags:
 - `--update` ï¿½ revise existing flowmap without overwriting approved sections
 - `--act [N]` ï¿½ regenerate a specific act only
 
@@ -80,14 +79,14 @@ Optional flags:
 > **Pre-fill rule**: Every supporting document MUST be written with actual game-specific content inferred from `spec.md` and `constitution.md`. Replace every `[placeholder]` marker with real content. Only write `[NEEDS CLARIFICATION: reason]` when a field genuinely cannot be inferred.
 > **Language Rule**: All supporting documents (plan.md, variables.md, mechanics.md, character profiles, endings.md, glossary.md, world-building.md, items.md, bestiary.md, quests.md, locations.md, themes.md, world-map.md) MUST be generated in English (`en`) by default, regardless of any `[LANGUAGE]` setting in the constitution.
 
-- Generate `specs/[FEATURE_DIR]/variables.md`: register every state variable identified across the narrative design doc and game bible ï¿½ variable name, type, default value, description, which nodes read/write it, which endings gate on it. Group by category: trust, flags, inventory, attributes, counters.   - **For Tabletop RPGs**: Add section for **Faction Reputation Variables** (one entry per faction: faction name, variable name, range, starting value, usage nodes). Add section for **Companion Approval Variables** (one entry per companion: companion name, variable name, range, starting value, recruitment threshold, ending-lock thresholds).
    - **For Computer Game RPGs**: Add section for **Character Progression Variables** (protagonist/party member name, level, experience points, ability unlock gates).
    - **For D&D 5e**: Add section for **Ruleset-Specific Variables** (party level, CR targets, difficulty setting if applicable, XP counter by session).
-- Generate `specs/[FEATURE_DIR]/mechanics.md`: one schema entry per mechanic type active in the game bible. For each:
+- Generate `specs/[FEATURE_DIR]/mechanics.md` using `templates/mechanics-template.md` (or `templates/mechanics-[RULESET_ABBREV].md` if available) as the base format: one schema entry per mechanic type enabled in the constitution's Active Mechanics Table. For each:
   - Mechanic name, tier (1/2), hook syntax (engine-specific)
   - Trigger condition, effect, failure state
   - Which nodes use it (populated from narrative design doc Key Nodes list)
   - Cross-reference to `specs/[FEATURE_DIR]/variables.md` entry
+  - Only generate entries for mechanics checked as enabled in the constitution — do not include disabled or unlisted mechanics
    - **For Tabletop RPGs**: Add entries for:
      - **Faction Reputation Mechanic**: trigger (choices, quest completion), effect (change faction rep by N), failure state (rep cap at -100/+100), nodes using it. Include table of choices per faction and their rep impact.
      - **Companion Approval Mechanic**: trigger (dialogue choices, quest completion, story events), effect (change companion approval by N), failure state (approval cap, recruitment gate). Include recruitment thresholds and approval-gated dialogue.
@@ -406,7 +405,6 @@ Optional flags:
      - **For Encounters** `[ENCOUNTER]`: enemy types and count, expected party level, CR rating, treasure on victory (coin amount, magic items), XP award, special mechanics (lair actions, legendary actions, etc.). Include a stat block reference for each enemy type.
      - **For Skill Checks** `[SKILL-CHECK]`: ability required, DC, success outcome, failure outcome (does player get retries? does failure close a branch?), alternative abilities (can Intimidation replace Perception?)
      - **For Faction Mechanics** `[FACTION]`: faction name, reputation change (Â±N), node branches visible only if rep >= threshold (for faction-gated content)
-     - **For Companion Mechanics** `[APPROVAL]**: companion name, approval change (Â±N), romance/trust flags triggered, node branches visible only if approval >= threshold
      - **For Tabletop Session Nodes** `[SESSION-X]`: which session this node occurs in, expected party level at node entry, encounters/skill checks expected, companion arcs this session   - Flag narrative obligations from Key Scenes: mark nodes that fulfill a required beat with `[REQUIRED: fulfills KEY-SCENE-N]`
 
 11. **Stop and report**: Report: `specs/[FEATURE_DIR]/plan.md` path, total nodes generated, total endings mapped, branch health status, any remaining `[NEEDS CLARIFICATION]` markers, open threads count.
@@ -481,10 +479,7 @@ Optional flags:
 - For Computer Game: verify difficulty scaling is consistent across all enemy types (Hard doesn't scale some but not others)
 
 12. **Build search index** (large projects):
-    - Check whether `scripts/python/index.py` exists.
-    - If it exists, run: `python scripts/python/index.py build` from the project root.
     - This indexes all supporting documents generated in Phase 0 for semantic search during drafting.
-    - If the script is absent or fails, skip silently and note: `?? Search index not built ï¿½ run python scripts/python/index.py build manually when ready.`
 
 13. **Check for extension hooks** (after planning): check `hooks.after_plan` and process as standard hook block.
 
@@ -884,7 +879,6 @@ For tabletop campaigns, maintain a treasure registry tracking all loot distribut
 - [ ] Consumable items (potions, scrolls) are available early for item flexibility
 - [ ] Coin distribution sufficient for player agency (can PCs afford to craft/enchant items?)
 
-**Red Flags**:
 - âš ï¸ Party accumulates 2000+ gp and no major magic items by level 5 â†’ loot distribution too coin-heavy
 - âš ï¸ Single rare item acquired, then no magic items for 5 sessions â†’ uneven distribution
 - âš ï¸ Boss encounters award less loot than standard encounters â†’ incentivizes avoiding boss fights
@@ -1242,7 +1236,6 @@ Accessibility: Motor accessibility: timer can extend to 30 sec (50% increase), d
 | $companion_approval | Array | Companion loyalty locked | [Riana: 50, Theron: 30, Mira: -10] |
 | $faction_reputation | Array | Faction standing locked | [Temple: 25, Guard: -15, Thieves: 50] |
 | $items_collected | Array | Inventory immutable | [Amulet, Sword+1, Potion] |
-| $story_flags | Array | Story events locked in | [sanctuary_visited=true, betrayal_discovered=true] |
 | $accessibility_settings | Object | Player preferences locked | {colorblind_mode: true, audio_mode: false, motor_assist: true} |
 
 ## Variables That Reset on Load (Except at Hard Saves)
@@ -1277,7 +1270,6 @@ Accessibility: Motor accessibility: timer can extend to 30 sec (50% increase), d
       "Thieves": -10
     },
     "items_collected": ["Sword+1", "Shield+1", "Amulet"],
-    "story_flags": ["ch1_faction_chosen", "ch2_route_committed"],
     "accessibility_settings": {
       "colorblind_mode": true,
       "audio_mode": false,

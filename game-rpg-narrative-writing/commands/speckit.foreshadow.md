@@ -46,7 +46,6 @@ Accepted input:
 - `--branch [BRANCH_ID]` — audit clues in one story branch only
 - `--clue-only` — show only placement issues (ignore payoff timing)
 
-Optional flags:
 - `--strict` — flag any clue not placed before payoff (even if obvious)
 - `--show-paths` — display clue → payoff chain for each mystery
 - `--check-accessibility` — verify clues reachable in all branches
@@ -448,7 +447,6 @@ Output `foreshadow-audit.md` with:
 **Companion Loyalty Foreshadowing**:
 - Companion personality clues should appear before major loyalty shifts
 - Example: If Theron's loyalty will drop when party chooses to help Thieves Guild, his strong Temple alignment should be shown in SESSION-2-3 dialogue
-- Red flags:
   - Loyalty shift happens without preceding personality/value hints
   - Companion suddenly cares about something never mentioned before
   - No dialogue opportunity to predict companion reaction to choice
@@ -457,7 +455,6 @@ Output `foreshadow-audit.md` with:
 **Faction Reputation Foreshadowing**:
 - Faction goals and values should be hinted before major reputation choices
 - Example: If Temple has strict code against stealing, this value should be established in SESSION-1-2 encounters before SESSION-3 theft dilemma
-- Red flags:
   - Faction suddenly opposes action that contradicts values established earlier
   - Faction's stance feels arbitrary (no prior indication of their principles)
   - Multiple factions with identical values (no way to predict which will approve/disapprove)
@@ -466,7 +463,6 @@ Output `foreshadow-audit.md` with:
 **Session-to-Session Mystery Continuity**:
 - Mysteries that span multiple sessions need clue reinforcement in each session
 - Example: "Who is Marcus working for?" mystery introduced SESSION-2 should have reinforcing clues in SESSION-3, SESSION-4 (not just SESSION-2)
-- Red flags:
   - Mystery introduced SESSION-2, clues only in SESSION-2, revelation SESSION-9 (too long between clue and payoff)
   - SESSION-5 players might forget SESSION-2 clues; needs reminder
 - Testing approach: For multi-session mysteries, verify clues appear in at least 3 different sessions, not just introduction session
@@ -474,7 +470,6 @@ Output `foreshadow-audit.md` with:
 **NPC Backstory Foreshadowing**:
 - NPC secrets should have hints before major reveal
 - Example: If companion is secretly nobility in hiding, hints about refined manners/speech patterns should appear in SESSION-2-4 before SESSION-8 revelation
-- Red flags:
   - NPC backstory reveal feels like surprise with no prior hints
   - Hints exist but are vague (requires replay to notice)
   - Hints contradict revealed backstory (e.g., hints at wealth but revealed as peasant)
@@ -511,7 +506,6 @@ Output `foreshadow-audit.md` with:
   - Stealth route: Shadow passage visible but unexplored, NPC mentions "sneaking past guards worked"
   - Combat route: Combat encounter with satisfying victory, loot from defeated enemies
   - Diplomacy route: Negotiation that prevents conflict, NPC praising your words
-- Red flags:
   - One route has obvious foreshadowing, others don't (creates bias toward that route)
   - Route hints don't appear until CHAPTER-2 (too late, player already confused)
   - Route commitment feels random (no prior context about what each route offers)
@@ -519,14 +513,12 @@ Output `foreshadow-audit.md` with:
 **Route-Exclusive Foreshadowing**:
 - Mysteries that only resolve in one route should have hints only accessible in that route
 - Example: Stealth route mystery "How to infiltrate undetected?" should have lock-picking clues, vent locations, timing hints (don't have those in Combat route)
-- Red flags:
   - Combat route can solve Stealth-only mystery (confusing, blurs route distinctions)
   - Mystery hinted in all routes but only solvable in one (unfair)
 
 **Accessibility Variant Foreshadowing**:
 - If accessibility modes are meant to provide alternative interpretations, hint at this early
 - Example: If colorblind mode shows different visual puzzle solutions, CHAPTER-1 should have scene acknowledging visual variants exist
-- Red flags:
   - Accessibility mode treated as "cheat" rather than valid interpretation
   - No foreshadowing that accessibility modes exist
   - Accessibility mysteries too obscure without prior hints
@@ -534,7 +526,6 @@ Output `foreshadow-audit.md` with:
 **Chapter-to-Chapter Carry-Over**:
 - CHAPTER-2 foreshadowing should carry through CHAPTER-3-4 payoffs
 - Example: If CHAPTER-2 hints at NPC betrayal, CHAPTER-3-4 should reinforce suspicion (not let player forget)
-- Red flags:
   - CHAPTER-2 clues never mentioned again in CHAPTER-3-4
   - Major revelation in CHAPTER-4 lacks clues from CHAPTER-2-3
   - Player could forget CHAPTER-2 foreshadowing by CHAPTER-4 payoff
@@ -545,7 +536,6 @@ Output `foreshadow-audit.md` with:
   - Stealth route mystery: "Guard patrol timing?" (clues: light changes, NPC mentions schedule, clock shows times) — solvable
   - Combat route mystery: "Guard strength?" (clues: earlier encounters show similar guards, equipment visible, NPC mentions rank) — equally solvable
   - Diplomacy route mystery: "Guard commander's fears?" (clues: dialogue reveals worries, NPC background hints, previous conversation shows vulnerabilities) — equally solvable
-- Red flags:
   - Stealth route mysteries obvious, Combat route mysteries obscure
   - One route has 5+ clues per mystery, another has 1-2
   - Different routes require different "player skill" to solve (not fair comparison)

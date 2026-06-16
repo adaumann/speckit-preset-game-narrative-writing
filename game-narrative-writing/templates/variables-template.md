@@ -19,7 +19,6 @@ Each entry:
 
 ---
 
-## Visited Flags
 
 <!-- Auto-set when a node is entered. Used to prevent repeated intro text,
      unlock lore options, or track exploration. -->
@@ -31,7 +30,6 @@ Each entry:
 
 ---
 
-## Boolean Flags
 
 <!-- Simple true/false state. Use for events that happen once. -->
 
@@ -59,7 +57,6 @@ Each entry:
 |---|---|---|---|---|---|---|
 | inv_[item_name] | inventory | global | false | [ITEM_DESCRIPTION] | `$inv_[item_name]` (boolean flag) | `~ inv_[item_name]` |
 
-<!-- Export pattern: individual boolean flags per item — `$inv_item = true/false`.
      Sugarcube array alternative (manual): `<<set $inv.push("item")>>` / `<<if $inv.includes("item")>>`
      Use the array alternative only if you need to iterate or count items; write it as raw prose markup. -->
 

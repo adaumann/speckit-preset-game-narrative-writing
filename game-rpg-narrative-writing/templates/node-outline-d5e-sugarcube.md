@@ -697,7 +697,6 @@ speckit.compile --engine sugarcube
 
 ## Integration Checklist (SugarCube)
 
-- [ ] All nodes follow `:: NodeName [tags]` format
 - [ ] Skill checks use `<<random(1, 20)>>` for actual dice rolls
 - [ ] Companion approval tracked with `<<set $approval += N>>`
 - [ ] Faction reputation gates use `<<if $faction gte N>>`

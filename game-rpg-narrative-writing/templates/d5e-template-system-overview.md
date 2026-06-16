@@ -153,7 +153,6 @@ party_level_range: "[5-8]"
 - Skill modifiers (derived from ability + proficiency)
 - Companion approval (-100 to +100 scale, 3 companions)
 - Faction reputation (-100 to +100 scale, 3-4 factions)
-- Plot flags (conspiracy_discovered, ending_reached, etc.)
 - Quest items (evidence_ledger, temple_key, etc.)
 - Combat state (HP tracking, spell slots, damage taken)
 - Currency (party_gold, spending tracked)
@@ -322,7 +321,6 @@ Investigation theme:
   - constitution-template.md variables → campaign ratios
   - plan-d5e → session breakdown
   - variables-d5e → faction reputation progression
-  - mechanics-d5e → quest items & flags
   - endings-d5e → ending gate calculation
 - Comparison table showing how different themes instantiate identically
 - AI generation process (Template → Customization → Instantiation)

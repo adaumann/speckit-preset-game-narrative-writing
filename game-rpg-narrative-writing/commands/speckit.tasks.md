@@ -42,7 +42,6 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
 - `--update` � add new tasks or update status of existing tasks
 - `--phase [N]` � regenerate a specific phase only
 
-Optional flags:
 - `--update` � revise existing `tasks.md` without regenerating completed tasks
 - `--phase [0�9]` � scope regeneration to a single phase
 
@@ -106,7 +105,11 @@ Then:
      - Computer Game-specific: Playstyle routing validation, Difficulty scaling consistency check
      - D&D 5e-specific: Spell/ability limits audit, Magic item distribution check, Skill DC reasonableness validation
      - All tasks sequential (dependency chain: CR calibration → Faction consistency → Companion validation → Skill audit)
-   - Phase 7 Continuity Verify tasks: sequential checks for dialogue, glossary, locations, NPC state, variables, series, timeline, thematic. Re-polish tasks for failures.
+   - Phase 7a Readability tasks: sequential `speckit.readability` across all branches
+   - Phase 7b Branching tasks: sequential `speckit.branching` across all branches
+   - Phase 7c Information tasks: sequential `speckit.information` for all NPCs and secrets
+   - Phase 7d Narrative Arc tasks: sequential `speckit.narrative-arc` for all characters, subplots, and endings
+   - Phase 7e Continuity Verify tasks: sequential checks for dialogue, glossary, locations, NPC state, variables, series, timeline, thematic. Re-polish tasks for failures.
    - Phase 8 Compilation tasks: sequential compile for each target engine (SugarCube, Ink, Ren'Py, etc.) from themes to story files
    - Phase 9 Export tasks: sequential validation of compiled output, version tagging, release preparation
    - QA and export tasks (Phases 3.5, 7–9) are always sequential, never parallel
@@ -151,7 +154,7 @@ Then:
 - Phase 4: Draft all nodes in Act 2 (after outlines AND Phase 3.5 RPG validation approved)
 - Phase 5: Outline and draft remaining acts (Acts 3+)
 - Each phase pairs outline ? draft to ensure structural approval before prose generation
-- Checkpoint per act: All node drafts reach `status: APPROVED` per checklist
+- Checkpoint per act: All node drafts reach `status: APPROVED` per verify
 
 **Phase 6b: Polish**
 - One task per node in draft/[ENGINE]/ with `status: APPROVED`
@@ -159,10 +162,34 @@ Then:
 - Each node must be polished to completion: `polished: [YYYY-MM-DD]` field added
 - Checkpoint: All nodes have `polished: [date]` in frontmatter; no FAIL status on polish audit
 
-**Phase 7: Continuity Verify**
+**Phase 7a: Readability**
+- Run `speckit.readability` across all branches (sequential)
+- Create revision tasks for flagged pacing/tone issues via `speckit.revise`
+- Re-run `speckit.readability` after fixes until clean
+- Checkpoint: All branches pass readability audit
+
+**Phase 7b: Branching**
+- Run `speckit.branching` across all branches (sequential)
+- Create revision tasks for forced choices, orphaned branches, or agency issues via `speckit.revise`
+- Re-run `speckit.branching` after fixes until clean
+- Checkpoint: All choices have meaningful consequences; no forced branches
+
+**Phase 7c: Information**
+- Run `speckit.information` for all NPCs and secrets (sequential)
+- Create revision tasks for dialogue gaps, unrealistic NPC knowledge, or unreachable secrets via `speckit.revise`
+- Re-run `speckit.information` after fixes until clean
+- Checkpoint: All NPC dialogue reachable; secrets discoverable; information asymmetry healthy
+
+**Phase 7d: Narrative Arc**
+- Run `speckit.narrative-arc` for all characters, subplots, and endings (sequential)
+- Create revision tasks for flat characters, dangling subplots, or unsatisfying endings via `speckit.revise`
+- Re-run `speckit.narrative-arc` after fixes until clean
+- Checkpoint: All characters have arcs; all subplots resolve; endings satisfy criteria
+
+**Phase 7e: Continuity Verify**
 - Run `speckit.continuity --check dialogue,glossary,locations,npc,variables,series,timeline,thematic` (sequential)
 - For each failed check, create revision task(s) via `speckit.revise`
-- After revisions pass checklist, run `speckit.polish` again to re-polish
+- After revisions pass verify, run `speckit.polish` again to re-polish
 - Checkpoint: All continuity checks pass; nodes re-polished after any revisions
 
 **Phase 8: Compilation**
@@ -175,7 +202,6 @@ Then:
 - Test compiled output in each engine environment (Twine player for SugarCube, Ink web player for Ink, etc.)
 - Version tagging and changelog updates
 - Package final distribution (playable files, theme assets, README)
-- Checkpoint: All compiled versions tested playable; version tags and metadata complete
 
 ---
 

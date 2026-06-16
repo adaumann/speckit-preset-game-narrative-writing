@@ -1,12 +1,12 @@
 ---
 description: Replayability metrics — measure unique content per playthrough, branch coverage, variation in dialogue/prose, and content reuse across paths. For RPG campaigns (tabletop D&D/Pathfinder/Shadowrun and computer game), measures companion loyalty paths, faction outcomes, session variants, playstyle route distinctness, and ruleset-specific mechanical variation.
 handoffs:
-  - label: Check Agency
-    agent: speckit.agency
+  - label: Check Branching
+    agent: speckit.branching
     prompt: After measuring replayability, verify choices provide meaningful variations.
     send: true
-  - label: Analyze Complexity
-    agent: speckit.complexity
+  - label: Analyze Branching
+    agent: speckit.branching
     prompt: Review branch structure to optimize replayability coverage.
     send: true
 ---
@@ -58,7 +58,6 @@ Accepted input:
 - `--branch [BRANCH_ID]` — analyze replayability within one branch only
 - `--content` — focus on unique prose content per branch
 
-Optional flags:
 - `--strict` — flag >50% content reuse as excessive
 - `--show-coverage` — ASCII grid of which branches see which content
 - `--show-variance` — display variant prose per branch
@@ -271,7 +270,6 @@ Problem: 87% reuse is excessive
 Status: 🟡 EXCESSIVE REUSE
 
 Example: If reuse is >70%, the question becomes:
-         "Am I really playing a different game, or just the same game with different flags?"
 
 Fix options:
   1. Expand branch-specific content (write more unique scenes)
@@ -526,7 +524,6 @@ Design for at least 1–2 of these motivations to maximize replayability.
 - Example: Loyal party (all companions at +3 loyalty) → ACCESS SESSION-5A (final ritual with full party)
            Mixed loyalty (some high, some low) → ACCESS SESSION-5B (fractured party, some companions absent)
            All low loyalty → ACCESS SESSION-5C (solo campaign, companions abandoned you)
-- Red flags:
   - Loyalty changes don't affect which SESSION-N variants appear
   - Companion roster is identical regardless of loyalty scores
   - No prose differences reflecting loyalty relationships
@@ -538,7 +535,6 @@ Design for at least 1–2 of these motivations to maximize replayability.
 - Example: Temple victory → SESSION-3 onwards has Temple NPC support, FINALE has Temple blessing mechanic
            Thieves Guild victory → SESSION-3 has underground passages, FINALE has guild safehouse as base
            Neutral → SESSION-3 has freelancer quests, FINALE has no faction aid
-- Red flags:
   - Faction victory mentioned but doesn't change gameplay or encounters
   - All three faction endings lead to same finale (faction choice cosmetic)
   - Faction-specific NPCs appear regardless of faction standing
@@ -549,10 +545,8 @@ Design for at least 1–2 of these motivations to maximize replayability.
 - Earlier session choices should branch into multiple possible SESSION-N structures
 - Example: SESSION-2 choice to ally with Militia → affects SESSION-3-5 encounters, NPC availability, final confrontation
            SESSION-2 choice to betray Militia → different SESSION-3-5 structure (militia becomes enemies)
-- Red flags:
   - SESSION-2 choice never mentioned again after SESSION-2
   - All sessions follow same structure regardless of earlier choices
-  - Session encounters are identical (only dialogue changes based on flags)
 - Best practice: Each major SESSION-N choice point locks in distinct SESSION-(N+1) structure; verify 2-3 session lookahead consequences
 - Measurement: For each session divergence point, calculate word count delta between branches (should be 10-20% different content per branch)
 
@@ -583,7 +577,6 @@ Design for at least 1–2 of these motivations to maximize replayability.
   - Stealth-exclusive: 25% (lock-picking scenes, shadow detection encounters)
   - Combat-exclusive: 25% (martial encounters, weapon tactics scenes)
   - Diplomacy-exclusive: 25% (negotiation scenes, relationship-building encounters)
-- Red flags:
   - One route has <15% unique content (feels same as others)
   - One route has >60% unique content (feels disconnected from main story)
   - Routes converge too early (all differences erased by CHAPTER-3)
@@ -593,7 +586,6 @@ Design for at least 1–2 of these motivations to maximize replayability.
 **Route-Exclusive Content Measurement**:
 - Hidden content in one route shouldn't penalize players in other routes
 - Example: Stealth route hidden scene (blacksmith's backstory) should NOT be required for Diplomacy route finale
-- Red flags:
   - Critical story information locked to one route
   - One route has significantly more hidden content than others
   - Route-exclusive content contradicts shared story
@@ -604,7 +596,6 @@ Design for at least 1–2 of these motivations to maximize replayability.
 - Accessibility modes (colorblind/audio/motor) should provide distinct experiences without difficulty advantage
 - Example: Colorblind mode uses pattern + color for puzzles; Audio mode uses spatial + visual for puzzles
            Neither should be "easier", just different presentation
-- Red flags:
   - Colorblind mode solves puzzles faster than normal (unfair advantage)
   - Audio mode disables story content (accessibility as punishment)
   - Accessibility variants treated as difficulty levels
@@ -615,7 +606,6 @@ Design for at least 1–2 of these motivations to maximize replayability.
 - CHAPTER-2 route commitment should lock in distinct CHAPTER-3-5 structures
 - Example: Stealth route in CHAPTER-2 → CHAPTER-3-5 have shadow mechanics, infiltration encounters, stealth-only bosses
            Combat route → different boss encounters (direct confrontation vs evasion)
-- Red flags:
   - Route choice never mechanically affects encounters after CHAPTER-2
   - All chapters have identical encounter structure with different prose
   - Route commitment feels cosmetic
@@ -629,7 +619,6 @@ Design for at least 1–2 of these motivations to maximize replayability.
   - Combat route: heroic final battle with reinforcements
   - Diplomacy route: negotiate surrender, convince enemies to stand down
   - All lead to same boss defeat but mechanically different
-- Red flags:
   - Routes reconverge too early (lose route distinctness)
   - Routes never reconverge (three separate games, not variants)
   - Convergence creates plot holes (route-exclusive events ignored)
@@ -661,6 +650,5 @@ Design for at least 1–2 of these motivations to maximize replayability.
 - Hidden content should be bonus (20-30% of players find it), not required
 - Prose variation between branches should be noticeable (not just variable substitution)
 - Content reuse should be 40-60% (balances consistency with distinctness)
-- Test by playing through each branch: Each playthrough should feel meaningfully different, not like replaying same content with different flags
 - Calculate actual replayability: (unique_content_per_branch / total_content_per_branch) × 100 should be 30-50%
 

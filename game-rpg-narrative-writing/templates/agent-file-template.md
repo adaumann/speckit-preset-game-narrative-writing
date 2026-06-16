@@ -22,7 +22,6 @@
 <!-- Current values of all active variables. Updated after each drafting session.
      This is the "current playthrough state" at the active node. -->
 
-### Flags
 | Variable | Current Value |
 |---|---|
 | $flag_[name] | true / false |

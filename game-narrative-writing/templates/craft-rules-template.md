@@ -66,7 +66,6 @@ Each named NPC MUST have a documented voice profile in their `characters/[name].
 - Deflection strategy (how do they avoid difficult topics?)
 - Speech tics or recurring phrases (if any)
 
-**Voice Homogeneity Warning**: If a scene's dialogue could plausibly be reassigned to a different character without the name tags, rewrite until it cannot.
 
 ### Oblique Dialogue
 NPCs MUST NOT answer directly first. They deflect, misinterpret, dodge, or use silence strategically. The honest answer arrives last, not first.

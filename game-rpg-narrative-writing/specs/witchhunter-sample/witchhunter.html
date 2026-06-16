@@ -100,7 +100,7 @@ var saveAs=saveAs||navigator.msSaveBlob&&navigator.msSaveBlob.bind(navigator)||f
 		<div id="init-lacking">Your browser lacks required capabilities. Please upgrade it or switch to another to continue.</div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<!-- UUID://D674C58C-DEFA-4F70-B7A2-27742230C8B0// --><tw-storydata name="The Witchhunter&#39;s Road" startnode="23" creator="Tweego" creator-version="2.1.1+81d1d71" ifid="D674C58C-DEFA-4F70-B7A2-27742230C8B0" zoom="1" format="SugarCube" format-version="2.30.0" options="" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* ── Global ─────────────────────────────────────────── */
+	<!-- UUID://D674C58C-DEFA-4F70-B7A2-27742230C8B0// --><tw-storydata name="The Witchhunter&#39;s Road" startnode="5" creator="Tweego" creator-version="2.1.1+81d1d71" ifid="D674C58C-DEFA-4F70-B7A2-27742230C8B0" zoom="1" format="SugarCube" format-version="2.30.0" options="" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* ── Global ─────────────────────────────────────────── */
 body { background: #1a1614; color: #d4c9b8; font-family: Georgia, serif; }
 #story { max-width: 780px; margin: 0 auto; padding: 1.5em; }
 #sidebar { background: #211e1b; border-right: 1px solid #3a342e; padding: 1em; }
@@ -1826,7 +1826,1075 @@ D5e.registerEnemy("goblin_patrol", {
     thematic: &quot;Awareness transcends strength: the one who reads the forest&#39;s language walks its paths with impunity.&quot;,
     description: &quot;You spotted the goblin markers when others would have missed them. That attention to detail has marked you in Thorngate&#39;s memory. When you leave, it&#39;s not as a sellsword, but as a ranger — someone who reads the land itself. Even Elder Henne watches you with something that might be reverence.&quot;
   }
-]&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="AllWidgets" tags="widget" position="225,100" size="100,100">/* ══════════════════════════════════════════════════════════════════════════
+]&gt;&gt;</tw-passagedata><tw-passagedata pid="2" name="LOC-Thorngate" tags="hub location" position="225,100" size="100,100">/* First-visit */
+&lt;&lt;if not $loc_Thorngate_visited&gt;&gt;
+  &lt;&lt;set $loc_Thorngate_visited to true&gt;&gt;
+  &lt;&lt;set $region_Thornwood_visited to true&gt;&gt;
+  &lt;&lt;set $area_Riverside_visited to true&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+/* Location chain breadcrumb */
+&lt;nav class=&quot;loc-breadcrumb&quot;&gt;
+  &lt;&lt;link &quot;World Map&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  › &lt;&lt;link &quot;Thornwood&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  › &lt;span class=&quot;loc-breadcrumb-current&quot;&gt;Thorngate Village&lt;/span&gt;
+&lt;/nav&gt;
+
+&lt;h2&gt;Thorngate Village&lt;/h2&gt;
+
+&lt;p class=&quot;loc-desc&quot;&gt;The village smells of woodsmoke and wet thatch. Chickens scatter across the mud. To the north, the Thornwood presses close — dark pines that seem to lean inward regardless of the wind.&lt;/p&gt;
+
+&lt;&lt;if $loc_Thorngate_state is &quot;hostile&quot;&gt;&gt;
+  &lt;p style=&quot;color:#e07070&quot;&gt;&lt;em&gt;The villagers watch you with suspicion. Hands rest on tools a little too deliberately.&lt;/em&gt;&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;h3&gt;What do you do?&lt;/h3&gt;
+&lt;&lt;hubScene &quot;NODE-002_TavernMira&quot; &quot;Head to the Drunk Griffin Inn&quot;&gt;&gt;
+&lt;&lt;hubScene &quot;NODE-003_GoblinAmbush&quot; &quot;Follow the north road toward the Thornwood&quot; &quot;$quest_clear_goblin_lair_state is &#39;active&#39;&quot;&gt;&gt;
+&lt;&lt;hubGuard &quot;$quest_clear_goblin_lair_state is not &#39;active&#39;&quot; &quot;You don&#39;t have reason to venture north yet.&quot;&gt;&gt;
+
+&lt;h3&gt;Leave&lt;/h3&gt;
+&lt;&lt;hubTravel &quot;LOC-DrunkGriffin&quot; &quot;Enter the Drunk Griffin Inn&quot;&gt;&gt;
+
+&lt;p style=&quot;margin-top:1.5em;font-size:.85em&quot;&gt;
+  [[World Map|WorldMap]] · [[Character|CharacterSheet]] · [[Quests|QuestJournal]]
+&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LOC-DrunkGriffin — The Drunk Griffin Inn
+   parent_area:   AREA-Riverside
+   parent_region: REGION-Thornwood
+   passage_name:  LOC-DrunkGriffin
+   Scenes: NODE-002_TavernMira, NODE-005_InnRest, Elara&#39;s shop (stub)
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="3" name="LOC-DrunkGriffin" tags="hub location" position="350,100" size="100,100">/* First-visit */
+&lt;&lt;if not $loc_DrunkGriffin_visited&gt;&gt;
+  &lt;&lt;set $loc_DrunkGriffin_visited to true&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+/* Location chain breadcrumb */
+&lt;nav class=&quot;loc-breadcrumb&quot;&gt;
+  &lt;&lt;link &quot;World Map&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  › &lt;&lt;link &quot;Thornwood&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  › &lt;&lt;link &quot;Thorngate&quot; &quot;LOC-Thorngate&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  › &lt;span class=&quot;loc-breadcrumb-current&quot;&gt;The Drunk Griffin Inn&lt;/span&gt;
+&lt;/nav&gt;
+
+&lt;h2&gt;The Drunk Griffin Inn&lt;/h2&gt;
+
+&lt;p class=&quot;loc-desc&quot;&gt;Lantern smoke and old beer. A fire in the hearth, half the village crammed around it. Somewhere near the bar, a woman in a travel-worn robe is reading with the focused intensity of someone trying very hard not to make eye contact with the locals.&lt;/p&gt;
+
+&lt;h3&gt;What do you do?&lt;/h3&gt;
+&lt;&lt;hubScene &quot;NODE-002_TavernMira&quot; &quot;Approach the woman at the bar&quot; &quot;not $flag_mira_intro_seen or not $mira_recruited&quot;&gt;&gt;
+&lt;&lt;hubScene &quot;NODE-006_QuestComplete&quot; &quot;Find Elder Henne&quot; &quot;$quest_clear_goblin_lair_stage gte 3&quot;&gt;&gt;
+&lt;&lt;hubScene &quot;NODE-005_InnRest&quot; &quot;Rent a room for the night&quot; &quot;$gold gte 5&quot;&gt;&gt;
+&lt;&lt;hubGuard &quot;$gold lt 5&quot; &quot;Not enough gold to rent a room (need 5 gp).&quot;&gt;&gt;
+&lt;&lt;hubScene &quot;ElaraShop&quot; &quot;Browse Elara&#39;s wares&quot;&gt;&gt;
+
+&lt;h3&gt;Leave&lt;/h3&gt;
+&lt;&lt;hubTravel &quot;LOC-Thorngate&quot; &quot;Back to the village gate&quot;&gt;&gt;
+
+&lt;p style=&quot;margin-top:1.5em;font-size:.85em&quot;&gt;
+  [[World Map|WorldMap]] · [[Character|CharacterSheet]] · [[Quests|QuestJournal]]
+&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SHOP STUB — Elara&#39;s Sundries
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="4" name="ElaraShop" tags="" position="475,100" size="100,100">&lt;&lt;set _here to passage()&gt;&gt;
+&lt;h2&gt;Elara&#39;s Sundries&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&quot;I&#39;m out of most things. The last merchant through here took everything useful. Try back after you&#39;ve cleared those goblins — the road was my only supply route.&quot;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Healing Potion — &lt;strong&gt;50 gp&lt;/strong&gt;
+&lt;&lt;if $gold gte 50&gt;&gt;
+  &lt;&lt;button &quot;[Buy]&quot;&gt;&gt;&lt;&lt;set $gold to $gold - 50&gt;&gt;&lt;&lt;pickupItem &quot;healing_potion&quot; &quot;Healing Potion&quot;&gt;&gt;&lt;&lt;goto _here&gt;&gt;&lt;&lt;/button&gt;&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;em style=&quot;color:#6a5e50&quot;&gt;(not enough gold)&lt;/em&gt;
+&lt;&lt;/if&gt;&gt;&lt;/p&gt;
+
+&lt;p&gt;Torch (5) — &lt;strong&gt;1 gp&lt;/strong&gt;
+&lt;&lt;if $gold gte 1&gt;&gt;
+  &lt;&lt;button &quot;[Buy]&quot;&gt;&gt;&lt;&lt;set $gold to $gold - 1&gt;&gt;&lt;&lt;pickupItem &quot;torch&quot; &quot;Torch&quot;&gt;&gt;&lt;&lt;goto _here&gt;&gt;&lt;&lt;/button&gt;&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;em style=&quot;color:#6a5e50&quot;&gt;(not enough gold)&lt;/em&gt;
+&lt;&lt;/if&gt;&gt;&lt;/p&gt;
+
+&lt;&lt;back &quot;← Back to inn&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="5" name="Start" tags="" position="600,100" size="100,100">&lt;&lt;goto &quot;NODE-001_RoadToThorn&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="6" name="NODE-001_RoadToThorn" tags="" position="725,100" size="100,100">&lt;h2&gt;The North Road&lt;/h2&gt;
+
+&lt;p&gt;The road out of Ashenvale is packed earth and pine needles, narrowing as it climbs into the Thornwood proper. Your pack sits heavy. The commission from Elder Henne sits heavier — sixty gold for clearing out a goblin den that&#39;s been bleeding the village for three seasons. You&#39;ve taken worse work for less.&lt;/p&gt;
+
+&lt;p&gt;The pines close in. Light comes through in long, angled columns, cold even at midday. Somewhere above, a raven makes a sound like a door being shut.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;The Thornwood feels like it&#39;s waiting to see what kind of person you are.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h3&gt;What do you notice?&lt;/h3&gt;
+
+&lt;&lt;skillCheck &quot;perception&quot; 12&gt;&gt;
+&lt;&lt;if $last_skill_success&gt;&gt;
+  &lt;p class=&quot;perception-success&quot;&gt;&lt;strong&gt;Perception check: Success!&lt;/strong&gt; (&lt;&lt;= $last_skill_roll&gt;&gt; vs DC 12)&lt;/p&gt;
+  &lt;p&gt;Your eyes catch something off in the forest floor. Boot prints, recent — booted feet don&#39;t belong to farmers. Following the trail with your eyes, you spot something else: a crude marker tied to a sapling. Three notches, fresh. The goblins are marking territory.&lt;/p&gt;
+  &lt;&lt;set $goblin_marker_found to true&gt;&gt;
+  &lt;&lt;link &quot;Continue north, forewarned&quot; &quot;NODE-001b_SkillCheckResult&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;p class=&quot;perception-fail&quot;&gt;&lt;strong&gt;Perception check: Failed.&lt;/strong&gt; (&lt;&lt;= $last_skill_roll&gt;&gt; vs DC 12)&lt;/p&gt;
+  &lt;p&gt;You scan the treeline but see nothing out of the ordinary. The forest looks quiet enough. You continue on, watchful but not alarmed.&lt;/p&gt;
+  &lt;&lt;set $goblin_marker_found to false&gt;&gt;
+  &lt;&lt;link &quot;Continue north&quot; &quot;NODE-001b_SkillCheckResult&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="7" name="NODE-001b_SkillCheckResult" tags="" position="850,100" size="100,100">&lt;&lt;if $goblin_marker_found&gt;&gt;
+  /* If perception succeeded, offer advantage on next encounter */
+  &lt;&lt;if $travel_encounter_result is &quot;goblin_patrol&quot;&gt;&gt;
+    &lt;p&gt;The goblins come from the trees exactly where you expected them. Your foreknowledge lets you plant your feet firmly, hand on your sword hilt. They notice you&#39;re ready — something flickers in their yellow eyes. Respect, maybe. Or concern.&lt;/p&gt;
+  &lt;&lt;else&gt;&gt;
+    &lt;p&gt;Your alertness serves you well as you travel. The forest feels less like it&#39;s watching you and more like you&#39;re watching back.&lt;/p&gt;
+  &lt;&lt;/if&gt;&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;p&gt;You continue on, unaware of the markers being left on the trees.&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+/* MECHANIC:TRAVEL_ENCOUNTER region=REGION-Thornwood return=LOC-Thorngate */
+&lt;&lt;travelRoll &quot;REGION-Thornwood&quot; &quot;LOC-Thorngate&quot;&gt;&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NODE-002_TavernMira
+   scene_type: dialogue
+   parent_location: LOC-DrunkGriffin
+   passage_name:    NODE-002_TavernMira
+   hooks: MECHANIC:COMPANION id=mira action=recruit
+          MECHANIC:COMPANION id=mira approval=+10
+          MECHANIC:QUEST id=clear_goblin_lair action=accept
+          MECHANIC:QUEST id=alchemist_reagents action=accept
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="8" name="NODE-002_TavernMira" tags="" position="975,100" size="100,100">&lt;&lt;set $flag_mira_intro_seen to true&gt;&gt;
+&lt;&lt;set $loc_DrunkGriffin_visited to true&gt;&gt;
+
+&lt;h2&gt;The Woman at the Bar&lt;/h2&gt;
+
+&lt;p&gt;She&#39;s reading a codex propped against her ale mug, making notes in the margins with a charcoal stick. Her robe was expensive once — you can still see the quality of the stitching under the travel stains. She doesn&#39;t look up when you sit down.&lt;/p&gt;
+
+&lt;p&gt;&quot;The barkeep charges double if you use his chair without buying something first,&quot; she says, without looking at you. &quot;I&#39;d recommend the ale. The stew is a lie.&quot;&lt;/p&gt;
+
+&lt;p&gt;Her name is Mira Ashveil, as it turns out — and she has a professional problem. She&#39;s been mapping the Thornwood&#39;s ley-line network, and the goblins have made the northern quadrant impassable. She was about to hire someone.&lt;/p&gt;
+
+&lt;p&gt;&lt;&lt;link &quot;Talk to Mira&quot;&gt;&gt;
+  &lt;&lt;dialogue &quot;mira&quot; &quot;meet&quot;&gt;&gt;
+&lt;&lt;/link&gt;&gt;&lt;/p&gt;
+
+&lt;&lt;if $mira_in_party and $quest_clear_goblin_lair_stage gte 2&gt;&gt;
+  &lt;p&gt;With Mira at your side and the quest ahead, you prepare to move forward.&lt;/p&gt;
+  &lt;p&gt;&lt;&lt;link &quot;Head to the Goblin Lair&quot; &quot;NODE-003_GoblinAmbush&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="9" name="NODE-002b_MiraJoins" tags="" position="1100,100" size="100,100">&lt;p&gt;Her grip is firm. She goes back to her codex immediately, but there&#39;s a slight upward twitch at the corner of her mouth.&lt;/p&gt;
+
+&lt;p&gt;&quot;Good. We leave at first light. The lair entrance is about three hours north — there&#39;s a rocky outcrop shaped like a broken tooth. You&#39;ll know it when you see it.&quot;&lt;/p&gt;
+
+&lt;p&gt;She slides a second mug across the bar without ceremony.&lt;/p&gt;
+
+&lt;&lt;companionReact &quot;mira&quot; 5 &quot;\&quot;I&#39;ll buy the round,\&quot; she adds. \&quot;This once.\&quot;&quot; &quot;She doesn&#39;t offer to split the tab.&quot;&gt;&gt;
+
+&lt;&lt;link &quot;Get some rest (return to inn)&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="10" name="NODE-002c_MiraDeclined" tags="" position="1225,100" size="100,100">&lt;p&gt;She shrugs, closes her codex, and goes back to her ale. &quot;Suit yourself. The offer stands if you change your mind.&quot; She sounds entirely unbothered, which somehow makes it worse.&lt;/p&gt;
+
+&lt;p&gt;You&#39;ve accepted the commission. The lair is north, according to the elder — rocky outcrop, broken-tooth shape. Hard to miss.&lt;/p&gt;
+
+&lt;&lt;link &quot;Return to the inn&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NODE-003_GoblinAmbush
+   scene_type: combat
+   parent_location: LOC-Thorngate
+   passage_name:    NODE-003_GoblinAmbush
+   hooks: MECHANIC:COMBAT enemies=[goblin×2] return=NODE-004_AlchemyBench
+          MECHANIC:LOOT container=goblin_sack (post-combat, handled by CombatBody)
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="11" name="NODE-003_GoblinAmbush" tags="" position="100,225" size="100,100">&lt;h2&gt;The Lair Entrance&lt;/h2&gt;
+
+&lt;p&gt;The broken-tooth rock is exactly where Mira said it would be. So are the goblins.&lt;/p&gt;
+
+&lt;p&gt;Two of them are crouched by a fire, arguing in their own language over what appears to be a boot. They see you at roughly the same moment you see them. There is a half-second of perfect silence.&lt;/p&gt;
+
+&lt;p&gt;Then one of them throws the boot at you and the other charges.&lt;/p&gt;
+
+&lt;&lt;if $mira_in_party&gt;&gt;
+  &lt;p&gt;&lt;em&gt;Mira steps left, already muttering the syllables of a force-bolt. &quot;Two of them,&quot; she says. &quot;How delightful.&quot;&lt;/em&gt;&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;p&gt;
+  &lt;&lt;button &quot;Fight&quot;&gt;&gt;
+    &lt;&lt;initiateCombat &quot;goblin_lair&quot; &quot;NODE-004_AlchemyBench&quot; &quot;goblin_sack&quot;&gt;&gt;
+  &lt;&lt;/button&gt;&gt;
+&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NODE-004_AlchemyBench
+   scene_type: exploration
+   parent_location: LOC-Thorngate
+   passage_name:    NODE-004_AlchemyBench
+   hooks: MECHANIC:CRAFT station=alchemy_bench return=LOC-DrunkGriffin
+          MECHANIC:FLAG flag=lair_cleared value=true
+          MECHANIC:QUEST id=clear_goblin_lair action=advance (stage 3)
+          MECHANIC:COMPANION id=mira approval=+5
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="12" name="NODE-004_AlchemyBench" tags="" position="225,225" size="100,100">&lt;&lt;if not $flag_lair_cleared&gt;&gt;
+  &lt;&lt;set $flag_lair_cleared to true&gt;&gt;
+  &lt;&lt;questAdvance &quot;clear_goblin_lair&quot;&gt;&gt;
+  /* Now at stage 3: return to Henne */
+  &lt;&lt;companionApproval &quot;mira&quot; +5&gt;&gt;
+  /* Faction reputation changes */
+  &lt;&lt;factionRep &quot;city_guard&quot; 10&gt;&gt;
+  &lt;&lt;factionRep &quot;temple_order&quot; 5&gt;&gt;
+  &lt;&lt;factionRep &quot;dark_syndicate&quot; -3&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;h2&gt;Inside the Lair&lt;/h2&gt;
+
+&lt;p&gt;Past the entrance, the lair is three chambers of low ceilings and stolen goods. The goblins had a taste for brass candlesticks, apparently, and a concerning quantity of rope. In the back room, wedged between a pile of boots and a wooden crate, you find a small alchemist&#39;s bench — the portable kind, folded flat. Someone&#39;s been using it recently.&lt;/p&gt;
+
+&lt;&lt;if $mira_in_party&gt;&gt;
+  &lt;p&gt;Mira crouches over the bench, turns one of the jars over in her hands, and sniffs the cork. &quot;Moonleaf extract. Not refined, but workable.&quot; She glances at you. &quot;You could make a field poultice with this if you have the cloth.&quot;&lt;/p&gt;
+  &lt;p&gt;&lt;em&gt;Mira approves of finding the bench: she marks something in her codex.&lt;/em&gt;&lt;/p&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;p&gt;A small reference card is tucked under the bench. The handwriting is careful, technical. Someone knew what they were doing. You recognize the drawing of moonleaf — a common enough wound herb.&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;&lt;set _hasBandage to $inventory.some(function(i){ return i.item === &quot;bandage_cloth&quot; and i.qty gte 2; })&gt;&gt;
+&lt;&lt;set _hasMoonleaf to $inventory.some(function(i){ return i.item === &quot;moonleaf&quot; and i.qty gte 1; })&gt;&gt;
+
+&lt;&lt;if _hasBandage and _hasMoonleaf&gt;&gt;
+  &lt;p&gt;You have what you need to use the bench.&lt;/p&gt;
+  &lt;p&gt;&lt;&lt;button &quot;Use the alchemy bench&quot;&gt;&gt;&lt;&lt;craftStation &quot;alchemy_bench&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;p style=&quot;color:#6a5e50&quot;&gt;&lt;em&gt;You don&#39;t have the ingredients to use the bench right now. (Need: Bandage Cloth ×2, Moonleaf ×1)&lt;/em&gt;&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;p&gt;The lair is clear. Time to collect the reward.&lt;/p&gt;
+[[Head back to Thorngate|LOC-DrunkGriffin]]
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NODE-005_InnRest
+   scene_type: rest
+   parent_location: LOC-DrunkGriffin
+   passage_name:    NODE-005_InnRest
+   hooks: MECHANIC:REST type=long return=LOC-DrunkGriffin
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="13" name="NODE-005_InnRest" tags="" position="350,225" size="100,100">/* One-shot payment — only charge once per rest session */
+&lt;&lt;if not $inn_paid&gt;&gt;
+  &lt;&lt;set $inn_paid to true&gt;&gt;
+  &lt;&lt;if $gold gte 5&gt;&gt;&lt;&lt;set $gold to $gold - 5&gt;&gt;&lt;&lt;/if&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;h2&gt;A Room at the Griffin&lt;/h2&gt;
+
+&lt;p&gt;The room is small and smells like wood resin and whatever the previous guest was cooking. The mattress is stuffed with pine needles. It is, nevertheless, a bed.&lt;/p&gt;
+
+&lt;&lt;if $mira_in_party&gt;&gt;
+  &lt;p&gt;Mira takes the chair by the door without comment. Her codex is open across her knees within thirty seconds. She doesn&#39;t sleep so much as pause—though you notice her lips moving faintly as she traces runes in the air, renewing the magical formulae in her mind. By morning, her spells will be ready again.&lt;/p&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;p&gt;You&#39;re alone. The fire dies down in the hearth downstairs. Outside, the Thornwood breathes — wind through the pines, slow and deliberate.&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;p&gt;You close your eyes. Tomorrow the commission gets paid.&lt;/p&gt;
+
+/* MECHANIC:REST type=long return=LOC-DrunkGriffin */
+/* &lt;&lt;longRestScene&gt;&gt; must be the last statement — it handles navigation */
+&lt;&lt;longRestScene &quot;The Drunk Griffin Inn&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NODE-006_QuestComplete
+   scene_type: quest_event
+   parent_location: LOC-DrunkGriffin
+   passage_name:    NODE-006_QuestComplete
+   hooks: MECHANIC:QUEST id=clear_goblin_lair action=complete
+          MECHANIC:LOOT container=elder_chest (quest reward)
+          MECHANIC:COMPANION id=mira approval=+15
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="14" name="NODE-006_QuestComplete" tags="" position="475,225" size="100,100">&lt;h2&gt;Elder Henne&#39;s Table&lt;/h2&gt;
+
+&lt;p&gt;Elder Henne is a compact woman in her sixties with the handshake of someone who spent forty years splitting wood. She listens to your report — the goblins, the lair, the alchemist&#39;s bench — with the focused attention of someone who has been waiting for this news for a long time.&lt;/p&gt;
+
+&lt;p&gt;&quot;Three seasons,&quot; she says, when you finish. &quot;Three seasons and four head of livestock and my nephew&#39;s left ear.&quot; She reaches under the table and sets a lockbox down. &quot;Sixty gold, as agreed. And the ear was his own fault, but the thought is appreciated.&quot;&lt;/p&gt;
+
+&lt;&lt;if $mira_in_party&gt;&gt;
+  &lt;p&gt;Mira accepts her share without ceremony — a quarter of the total — and immediately puts it somewhere inside her robe. &quot;The ley-line survey will take another week,&quot; she says. &quot;I&#39;ll be at the Griffin if you need someone with sense in your corner.&quot;&lt;/p&gt;
+  /* MECHANIC:COMPANION id=mira approval=+15 */
+  &lt;&lt;companionApproval &quot;mira&quot; +15&gt;&gt;
+  &lt;&lt;companionReact &quot;mira&quot; 60 &quot;&lt;em&gt;She gives you a small, precise nod. It is, from Mira, effusive praise.&lt;/em&gt;&quot; &quot;&lt;em&gt;She tucks her share away and goes back to her codex. Business concluded.&lt;/em&gt;&quot;&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+/* MECHANIC:QUEST id=clear_goblin_lair action=complete */
+&lt;&lt;questReward &quot;clear_goblin_lair&quot; 300&gt;&gt;
+&lt;&lt;set $gold to $gold + 60&gt;&gt;
+
+&lt;p style=&quot;color:#c4a862&quot;&gt;+60 gold · +300 XP&lt;/p&gt;
+
+&lt;p&gt;&quot;There&#39;s one more thing,&quot; Henne says, and pushes a small chest across the table. &quot;My grandmother&#39;s. She&#39;d want it with someone who can use it.&quot;&lt;/p&gt;
+
+&lt;&lt;lootContainer &quot;elder_chest&quot; &quot;NODE-006b_Ending&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="15" name="NODE-006b_Ending" tags="" position="600,225" size="100,100">&lt;h2&gt;The Road Ahead&lt;/h2&gt;
+
+&lt;&lt;questAdvance &quot;clear_goblin_lair&quot;&gt;&gt;
+/* Quest now at final stage — complete */
+
+&lt;p&gt;Outside, Thorngate looks the same as it did when you arrived. The pines press close; the smoke smells of woodsmoke; the chickens scatter. The difference is that the north road is open again.&lt;/p&gt;
+
+&lt;&lt;if $goblin_marker_found&gt;&gt;
+  /* SECRET ENDING: High Perception discovered the markers */
+  &lt;&lt;endingSlide &quot;END-C&quot;&gt;&gt;
+  
+  &lt;p&gt;Mira falls into step beside you without being asked — but not as a follower. She sees the way your eyes move across the forest, reading signs the average traveler would miss. She recognizes something: not a warrior, but a &lt;em&gt;reader&lt;/em&gt; of wild places.&lt;/p&gt;
+  
+  &lt;p&gt;&quot;You spotted the markers,&quot; she says. Not a question. &quot;Most would have walked past them. Most do.&quot;&lt;/p&gt;
+  
+  &lt;p&gt;She pulls out her codex and makes a note. &quot;The ley-lines are interesting around here, but you... you&#39;re interesting in a different way. I don&#39;t think I&#39;m done knowing you.&quot;&lt;/p&gt;
+  
+  &lt;p style=&quot;margin-top:1.5em&quot;&gt;
+    &lt;&lt;link &quot;↩ Play again&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
+    &lt;&lt;link &quot;Character&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
+    &lt;&lt;link &quot;Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  &lt;/p&gt;
+
+&lt;&lt;elseif $mira_in_party&gt;&gt;
+  /* GOOD ENDING: Recruited Mira */
+  &lt;&lt;endingSlide &quot;END-B&quot;&gt;&gt;
+  
+  &lt;p&gt;Mira falls into step beside you without being asked. She has a new page open in her codex.&lt;/p&gt;
+  
+  &lt;p&gt;&lt;em&gt;&quot;The Thornwood connects to the Ashfall Highlands about forty miles north,&quot; she says. &quot;The ley-lines get interesting up there. I was thinking of going, once my survey here is done.&quot;&lt;/em&gt;&lt;/p&gt;
+  
+  &lt;p&gt;She doesn&#39;t ask. She doesn&#39;t have to. The partnership is already sealed — forged in combat, solidified by shared victory.&lt;/p&gt;
+  
+  &lt;p&gt;The road ahead stretches longer and less lonely than it did before.&lt;/p&gt;
+  
+  &lt;p style=&quot;margin-top:1.5em&quot;&gt;
+    &lt;&lt;link &quot;↩ Play again&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
+    &lt;&lt;link &quot;Character&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
+    &lt;&lt;link &quot;Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  &lt;/p&gt;
+
+&lt;&lt;else&gt;&gt;
+  /* NEUTRAL ENDING: Solo hero */
+  &lt;&lt;endingSlide &quot;END-A&quot;&gt;&gt;
+  
+  &lt;p&gt;The road ahead is empty. That&#39;s fine. Empty roads have their own kind of quiet.&lt;/p&gt;
+  
+  &lt;p&gt;You return to your solitary path as you&#39;ve always walked it — tested by the Thornwood and found sufficient. The village respects that. Elder Henne respects that most of all.&lt;/p&gt;
+  
+  &lt;p&gt;Somewhere north, the Ashfall Highlands rise. Another contract awaits. Another road to walk alone.&lt;/p&gt;
+  
+  &lt;p style=&quot;margin-top:1.5em&quot;&gt;
+    &lt;&lt;link &quot;↩ Play again&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
+    &lt;&lt;link &quot;Character&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
+    &lt;&lt;link &quot;Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  &lt;/p&gt;
+
+&lt;&lt;/if&gt;&gt;
+
+&lt;hr&gt;
+
+&lt;p style=&quot;text-align:center;color:#7a6e60;font-size:.9em&quot;&gt;
+  &lt;em&gt;End of sample. Thank you for playing The Witchhunter&#39;s Road.&lt;/em&gt;&lt;br&gt;
+  &lt;small&gt;A speckit-preset-game-narrative-writing demo · D&amp;D 5e · SugarCube 2.x&lt;/small&gt;
+&lt;/p&gt;</tw-passagedata><tw-passagedata pid="16" name="StoryMenu" tags="" position="725,225" size="100,100">&lt;&lt;link &quot;⚔ Character&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;&lt;link &quot;📜 Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;&lt;link &quot;👥 Party&quot; &quot;PartyRoster&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;&lt;link &quot;✨ Spells&quot; &quot;SpellsUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;&lt;link &quot;⚔ Factions&quot; &quot;FactionUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;&lt;link &quot;🗺 World Map&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;&lt;link &quot;🎒 Inventory&quot; &quot;InventoryUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="17" name="StoryCaption" tags="" position="850,225" size="100,100">/* HP bar */
+&lt;div id=&quot;sc-hp&quot;&gt;
+  &lt;span class=&quot;sc-label&quot;&gt;HP&lt;/span&gt;
+  &lt;&lt;= &#39;&lt;meter value=&quot;&#39; + $partyCurrentHP + &#39;&quot; max=&quot;&#39; + $partyMaxHP + &#39;&quot; low=&quot;8&quot; optimum=&quot;&#39; + $partyMaxHP + &#39;&quot;&gt;&lt;/meter&gt;&#39;&gt;&gt;
+  &lt;&lt;= $partyCurrentHP&gt;&gt;/&lt;&lt;= $partyMaxHP&gt;&gt;
+&lt;/div&gt;
+
+/* Gold */
+&lt;div id=&quot;sc-gold&quot;&gt;💰 &lt;&lt;= $gold&gt;&gt; gp&lt;/div&gt;
+
+/* Active quest */
+&lt;&lt;set _aq to $quest_registry.find(function(q){ return State.variables[&quot;quest_&quot;+q.id+&quot;_state&quot;] === &quot;active&quot;; })&gt;&gt;
+&lt;&lt;if _aq&gt;&gt;
+&lt;div id=&quot;sc-quest&quot;&gt;
+  📜 &lt;&lt;= _aq.display&gt;&gt;&lt;br&gt;
+  &lt;em&gt;&lt;&lt;= _aq.stages[State.variables[&quot;quest_&quot;+_aq.id+&quot;_stage&quot;]] || &quot;&quot;&gt;&gt;&lt;/em&gt;
+&lt;/div&gt;
+&lt;&lt;/if&gt;&gt;
+
+/* Party members */
+&lt;&lt;set _partyList to $companion_registry.filter(function(c){ return State.variables[c.id+&quot;_in_party&quot;] and State.variables[c.id+&quot;_alive&quot;] !== false; })&gt;&gt;
+&lt;&lt;if _partyList.length gt 0&gt;&gt;
+&lt;div id=&quot;sc-party&quot;&gt;
+  &lt;&lt;for _pi = 0; _pi lt _partyList.length; _pi++&gt;&gt;
+    &lt;&lt;set _pe to _partyList[_pi]&gt;&gt;
+    👤 &lt;&lt;= _pe.display&gt;&gt; &lt;em class=&quot;tier-&lt;&lt;= State.variables[_pe.id+&quot;_tier&quot;]&gt;&gt;&quot;&gt;(&lt;&lt;= State.variables[_pe.id+&quot;_tier&quot;]&gt;&gt;)&lt;/em&gt;&lt;br&gt;
+  &lt;&lt;/for&gt;&gt;
+&lt;/div&gt;
+&lt;&lt;/if&gt;&gt;
+
+/* Faction tier-change notifications (shown for one turn) */
+&lt;&lt;if $faction_tier_notifications.length gt 0&gt;&gt;
+&lt;div class=&quot;faction-notifications&quot;&gt;
+  &lt;&lt;for _ni, _notif range $faction_tier_notifications&gt;&gt;
+    &lt;div class=&quot;faction-notif faction-notif-&lt;&lt;= _notif.to&gt;&gt;&quot;&gt;
+      ★ &lt;&lt;= _notif.display&gt;&gt;: &lt;&lt;= _notif.from&gt;&gt; → &lt;&lt;= _notif.to&gt;&gt;
+    &lt;/div&gt;
+  &lt;&lt;/for&gt;&gt;
+&lt;/div&gt;
+&lt;&lt;set $faction_tier_notifications to []&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+/* Faction standings (summary) */
+&lt;&lt;set _visibleFactions to $faction_registry.filter(function(f) { return !f.hidden; })&gt;&gt;
+&lt;&lt;if _visibleFactions.length gt 0&gt;&gt;
+&lt;div id=&quot;sc-factions&quot;&gt;
+  &lt;&lt;for _fi, _fac range _visibleFactions&gt;&gt;
+    &lt;&lt;set _tier to State.variables[&quot;faction_&quot; + _fac.id + &quot;_tier&quot;] || &quot;neutral&quot;&gt;&gt;
+    &lt;&lt;= _fac.icon&gt;&gt; &lt;&lt;= _fac.display&gt;&gt;: &lt;&lt;= _tier&gt;&gt;&lt;br&gt;
+  &lt;&lt;/for&gt;&gt;
+&lt;/div&gt;
+&lt;&lt;/if&gt;&gt;
+
+/* Day counter */
+&lt;div id=&quot;sc-day&quot;&gt;Day &lt;&lt;= $day_counter&gt;&gt;&lt;/div&gt;
+
+/* Navigation */
+&lt;div id=&quot;sc-nav&quot;&gt;
+  &lt;&lt;link &quot;🎒 Inv&quot; &quot;InventoryUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; �
+  &lt;&lt;link &quot;⚔ Char&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; �
+  &lt;&lt;link &quot;📜 Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; �
+  &lt;&lt;link &quot;🗺 Map&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="18" name="CharacterSheet" tags="" position="975,225" size="100,100">&lt;h2&gt;&lt;&lt;= $playerName&gt;&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;&lt;= $playerRace&gt;&gt; &lt;&lt;= $playerClass&gt;&gt; � Level &lt;&lt;= $partyLevel&gt;&gt; � &lt;&lt;= $playerBackground&gt;&gt;&lt;/p&gt;
+&lt;p&gt;XP: &lt;&lt;= $partyXP&gt;&gt; / &lt;&lt;= (window._xpTable[$partyLevel+1] ? window._xpTable[$partyLevel+1].xp : &quot;MAX&quot;)&gt;&gt;&lt;/p&gt;
+
+&lt;div class=&quot;sheet-section&quot;&gt;
+&lt;strong&gt;Hit Points&lt;/strong&gt;&lt;br&gt;
+&lt;&lt;= $partyCurrentHP&gt;&gt; / &lt;&lt;= $partyMaxHP&gt;&gt;
+&lt;&lt;if $playerTempHP gt 0&gt;&gt; (+&lt;&lt;= $playerTempHP&gt;&gt; temp)&lt;&lt;/if&gt;&gt;
+&lt;br&gt;
+&lt;strong&gt;AC&lt;/strong&gt; &lt;&lt;= $partyAC&gt;&gt; &amp;nbsp; &lt;strong&gt;Prof&lt;/strong&gt; +&lt;&lt;= $playerProfBonus&gt;&gt; &amp;nbsp;
+&lt;strong&gt;Hit Dice&lt;/strong&gt; &lt;&lt;= $playerCurrentHitDice&gt;&gt;/&lt;&lt;= $playerMaxHitDice&gt;&gt;&lt;&lt;= $playerHitDiceType&gt;&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;sheet-section&quot;&gt;
+&lt;strong&gt;Ability Scores&lt;/strong&gt;&lt;br&gt;
+&lt;&lt;for _ab, _data range [{name:&quot;STR&quot;,score:$playerStrScore,mod:$playerStrMod},{name:&quot;DEX&quot;,score:$playerDexScore,mod:$playerDexMod},{name:&quot;CON&quot;,score:$playerConScore,mod:$playerConMod},{name:&quot;INT&quot;,score:$playerIntScore,mod:$playerIntMod},{name:&quot;WIS&quot;,score:$playerWisScore,mod:$playerWisMod},{name:&quot;CHA&quot;,score:$playerChaScore,mod:$playerChaMod}]&gt;&gt;
+  &lt;div class=&quot;sheet-ability&quot;&gt;
+    &lt;div class=&quot;mod&quot;&gt;&lt;&lt;= (_data.mod gte 0 ? &quot;+&quot; : &quot;&quot;) + _data.mod&gt;&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;&lt;= _data.name&gt;&gt;&lt;/div&gt;
+    &lt;div&gt;&lt;small&gt;&lt;&lt;= _data.score&gt;&gt;&lt;/small&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;&lt;/for&gt;&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;sheet-section&quot;&gt;
+&lt;strong&gt;Class Features&lt;/strong&gt;&lt;br&gt;
+Action Surge: &lt;&lt;if $action_surge_used&gt;&gt;Used (recover on short rest)&lt;&lt;else&gt;&gt;Available&lt;&lt;/if&gt;&gt;&lt;br&gt;
+Second Wind: &lt;&lt;if $second_wind_used&gt;&gt;Used&lt;&lt;else&gt;&gt;Available (bonus action, 1d10+&lt;&lt;= $partyLevel&gt;&gt; HP)&lt;&lt;/if&gt;&gt;&lt;br&gt;
+Potions: &lt;&lt;= $playerPotions&gt;&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;sheet-section&quot;&gt;
+&lt;strong&gt;Saving Throws&lt;/strong&gt;&lt;br&gt;
+STR &lt;&lt;if $playerProfSaveStr&gt;&gt;+&lt;&lt;= $playerStrMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerStrMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
+DEX &lt;&lt;if $playerProfSaveDex&gt;&gt;+&lt;&lt;= $playerDexMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerDexMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
+CON &lt;&lt;if $playerProfSaveCon&gt;&gt;+&lt;&lt;= $playerConMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerConMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
+INT &lt;&lt;if $playerProfSaveInt&gt;&gt;+&lt;&lt;= $playerIntMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerIntMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
+WIS &lt;&lt;if $playerProfSaveWis&gt;&gt;+&lt;&lt;= $playerWisMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerWisMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
+CHA &lt;&lt;if $playerProfSaveCha&gt;&gt;+&lt;&lt;= $playerChaMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerChaMod&gt;&gt;&lt;&lt;/if&gt;&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   INVENTORY UI
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="19" name="InventoryUI" tags="" position="1100,225" size="100,100">&lt;h2&gt;Inventory&lt;/h2&gt;
+&lt;p&gt;Gold: &lt;strong&gt;&lt;&lt;= $gold&gt;&gt; gp&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3&gt;Equipped&lt;/h3&gt;
+&lt;div style=&quot;background:#2a2520;border:1px solid #3a342e;padding:.6em;margin:.5em 0;&quot;&gt;
+  &lt;p&gt;&lt;strong&gt;Weapon:&lt;/strong&gt; 
+    &lt;&lt;if $equipped_weapon&gt;&gt;
+      &lt;&lt;= $equipped_weapon&gt;&gt;
+      [[Unequip|InventoryUI][$equipped_weapon to &quot;&quot;]]
+    &lt;&lt;else&gt;&gt;
+      &lt;em&gt;none&lt;/em&gt;
+    &lt;&lt;/if&gt;&gt;
+  &lt;/p&gt;
+  &lt;p&gt;&lt;strong&gt;Armor:&lt;/strong&gt; 
+    &lt;&lt;if $equipped_armor&gt;&gt;
+      &lt;&lt;= $equipped_armor&gt;&gt;
+      [[Unequip|InventoryUI][$equipped_armor to &quot;&quot;]]
+    &lt;&lt;else&gt;&gt;
+      &lt;em&gt;none&lt;/em&gt;
+    &lt;&lt;/if&gt;&gt;
+  &lt;/p&gt;
+&lt;/div&gt;
+
+&lt;h3&gt;Items in Pack&lt;/h3&gt;
+&lt;&lt;if $inventory.length eq 0&gt;&gt;
+  &lt;p&gt;&lt;em&gt;Nothing in your pack.&lt;/em&gt;&lt;/p&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;&lt;for _ii = 0; _ii lt $inventory.length; _ii++&gt;&gt;
+    &lt;&lt;set _ie to $inventory[_ii]&gt;&gt;
+    &lt;div class=&quot;inv-item&quot; style=&quot;border:1px solid #3a342e;padding:.5em;margin:.3em 0;display:flex;justify-content:space-between;align-items:center;&quot;&gt;
+      &lt;div&gt;
+        &lt;strong&gt;&lt;&lt;= _ie.name&gt;&gt;&lt;/strong&gt;
+        &lt;br&gt;
+        &lt;small style=&quot;color:#7a6e60&quot;&gt;&lt;&lt;= _ie.qty&gt;&gt;× · &lt;&lt;= _ie.type&gt;&gt;&lt;/small&gt;
+      &lt;/div&gt;
+      &lt;div style=&quot;text-align:right;&quot;&gt;
+        &lt;&lt;if _ie.type is &quot;weapon&quot;&gt;&gt;
+          [[Equip|InventoryUI][$equipped_weapon to _ie.item]]
+        &lt;&lt;elseif _ie.type is &quot;armor&quot;&gt;&gt;
+          [[Equip|InventoryUI][$equipped_armor to _ie.item]]
+        &lt;&lt;elseif _ie.type is &quot;consumable&quot;&gt;&gt;
+          [[Use|InventoryUI][$gold to $gold + 1; $inventory[_ii].qty -= 1]]
+        &lt;&lt;/if&gt;&gt;
+        [[Drop|InventoryUI][$inventory.splice(_ii, 1)]]
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;&lt;/for&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   QUEST JOURNAL
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="20" name="QuestJournal" tags="" position="1225,225" size="100,100">&lt;h2&gt;Quest Journal&lt;/h2&gt;
+&lt;p&gt;
+  &lt;&lt;link &quot;Active&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;set $quest_active_tab to &quot;active&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; |
+  &lt;&lt;link &quot;Complete&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;set $quest_active_tab to &quot;complete&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; |
+  &lt;&lt;link &quot;Failed&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;set $quest_active_tab to &quot;failed&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+&lt;/p&gt;
+
+&lt;&lt;set _tabState to $quest_active_tab&gt;&gt;
+&lt;&lt;set _shown to 0&gt;&gt;
+&lt;&lt;for _qi = 0; _qi lt $quest_registry.length; _qi++&gt;&gt;
+  &lt;&lt;set _qe to $quest_registry[_qi]&gt;&gt;
+  &lt;&lt;set _qstate to State.variables[&quot;quest_&quot; + _qe.id + &quot;_state&quot;]&gt;&gt;
+  &lt;&lt;set _qstage to (State.variables[&quot;quest_&quot; + _qe.id + &quot;_stage&quot;] || 0)&gt;&gt;
+  &lt;&lt;if (_tabState is &quot;active&quot; and _qstate is &quot;active&quot;) or (_tabState is &quot;complete&quot; and _qstate is &quot;complete&quot;) or (_tabState is &quot;failed&quot; and _qstate is &quot;failed&quot;)&gt;&gt;
+    &lt;&lt;set _shown to _shown + 1&gt;&gt;
+    &lt;div style=&quot;border:1px solid #3a342e;padding:.6em;margin:.5em 0;&quot;&gt;
+      &lt;strong&gt;&lt;&lt;= _qe.display&gt;&gt;&lt;/strong&gt;
+      &lt;span style=&quot;color:#7a6e60;float:right&quot;&gt;&lt;&lt;= _qe.tier&gt;&gt;&lt;/span&gt;&lt;br&gt;
+      &lt;em style=&quot;font-size:.85em&quot;&gt;&lt;&lt;= _qe.hook&gt;&gt;&lt;/em&gt;
+      &lt;&lt;if _qstate is &quot;active&quot; and _qstage gt 0&gt;&gt;
+        &lt;p style=&quot;margin:.4em 0 0&quot;&gt;▸ &lt;&lt;= _qe.stages[_qstage] || &quot;&quot;&gt;&gt;&lt;/p&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;/div&gt;
+  &lt;&lt;/if&gt;&gt;
+&lt;&lt;/for&gt;&gt;
+&lt;&lt;if _shown eq 0&gt;&gt;&lt;p&gt;&lt;em&gt;Nothing here.&lt;/em&gt;&lt;/p&gt;&lt;&lt;/if&gt;&gt;
+
+&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PARTY ROSTER
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="21" name="PartyRoster" tags="" position="100,350" size="100,100">&lt;h2&gt;Party&lt;/h2&gt;
+
+&lt;&lt;set _anyRecruited to false&gt;&gt;
+&lt;&lt;for _ci = 0; _ci lt $companion_registry.length; _ci++&gt;&gt;
+  &lt;&lt;set _ce to $companion_registry[_ci]&gt;&gt;
+  &lt;&lt;set _rid to _ce.id&gt;&gt;
+  &lt;&lt;if State.variables[_rid + &quot;_recruited&quot;]&gt;&gt;
+    &lt;&lt;set _anyRecruited to true&gt;&gt;
+    &lt;&lt;set _tier to (State.variables[_rid + &quot;_tier&quot;] || &quot;neutral&quot;)&gt;&gt;
+    &lt;&lt;set _app  to (State.variables[_rid + &quot;_approval&quot;] || 0)&gt;&gt;
+    &lt;&lt;set _alive to (State.variables[_rid + &quot;_alive&quot;] !== false)&gt;&gt;
+    &lt;&lt;set _inParty to (State.variables[_rid + &quot;_in_party&quot;] || false)&gt;&gt;
+    &lt;div style=&quot;border:1px solid #3a342e;padding:.6em;margin:.5em 0&quot; class=&quot;tier-&lt;&lt;= _tier&gt;&gt;&quot;&gt;
+      &lt;strong&gt;&lt;&lt;= _ce.display&gt;&gt;&lt;/strong&gt;
+      &lt;small style=&quot;float:right&quot;&gt;&lt;&lt;= _ce.class&gt;&gt; � &lt;&lt;= _ce.role&gt;&gt;&lt;/small&gt;&lt;br&gt;
+      Approval: &lt;&lt;= _app&gt;&gt; (&lt;em&gt;&lt;&lt;= _tier&gt;&gt;&lt;/em&gt;)
+      &lt;&lt;if State.variables[_rid + &quot;_romance_active&quot;]&gt;&gt; � Romance unlocked&lt;&lt;/if&gt;&gt;&lt;br&gt;
+      Status: &lt;&lt;if not _alive&gt;&gt;Fallen&lt;&lt;elseif not _inParty&gt;&gt;Not in party&lt;&lt;else&gt;&gt;Active&lt;&lt;/if&gt;&gt;
+    &lt;/div&gt;
+  &lt;&lt;/if&gt;&gt;
+&lt;&lt;/for&gt;&gt;
+&lt;&lt;if not _anyRecruited&gt;&gt;&lt;p&gt;&lt;em&gt;No companions recruited yet.&lt;/em&gt;&lt;/p&gt;&lt;&lt;/if&gt;&gt;
+
+&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DIALOGUE SYSTEM
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="22" name="DialogueUI" tags="" position="225,350" size="100,100">&lt;div class=&quot;dialogue-npc&quot;&gt;
+  &lt;h3&gt;&lt;&lt;= $current_dialogue.npcName&gt;&gt;&lt;/h3&gt;
+  &lt;p&gt;&lt;&lt;= $current_dialogue.npcLine&gt;&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;&lt;if $current_dialogue.choices and $current_dialogue.choices.length gt 0&gt;&gt;
+  &lt;div class=&quot;dialogue-choices&quot;&gt;
+    &lt;&lt;for _ci = 0; _ci lt $current_dialogue.choices.length; _ci++&gt;&gt;
+      &lt;&lt;set _choice to $current_dialogue.choices[_ci]&gt;&gt;
+      &lt;&lt;if _choice.condition()&gt;&gt;
+        &lt;&lt;button _choice.text&gt;&gt;
+          /* Execute choice effects */
+          &lt;&lt;run _choice.effects()&gt;&gt;
+          
+          /* Move to next node or return */
+          &lt;&lt;if _choice.next&gt;&gt;
+            &lt;&lt;dialogue $current_dialogue.npc _choice.next&gt;&gt;
+          &lt;&lt;else&gt;&gt;
+            &lt;&lt;previous&gt;&gt;
+          &lt;&lt;/if&gt;&gt;
+        &lt;&lt;/button&gt;&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;&lt;/for&gt;&gt;
+  &lt;/div&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;p&gt;&lt;&lt;back &quot;Close conversation&quot;&gt;&gt;&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SPELL SYSTEM UI
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="23" name="MiraSpellSelect" tags="" position="350,350" size="100,100">&lt;h3&gt;✨ Mira&#39;s Spellbook&lt;/h3&gt;
+&lt;p&gt;Mira mutters an incantation. Which spell should she cast?&lt;/p&gt;
+
+&lt;div style=&quot;margin:1.5em 0;&quot;&gt;
+  &lt;&lt;for _si = 0; _si lt $mira_available_spells.length; _si++&gt;&gt;
+    &lt;&lt;set _spell_id to $mira_available_spells[_si].id&gt;&gt;
+    &lt;&lt;set _spell to $spell_registry[_spell_id]&gt;&gt;
+    &lt;&lt;set _slot_info to (_spell.level gt 0 ? &quot; (&quot; + $mira_spell_slots[_spell.level].current + &quot; slots)&quot; : &quot; (cantrip)&quot;)&gt;&gt;
+    
+    &lt;&lt;button _spell.name + _slot_info&gt;&gt;
+      &lt;&lt;castSpell _spell_id&gt;&gt;
+      &lt;&lt;if not $tactical_fight_end&gt;&gt;
+        &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
+      &lt;&lt;else&gt;&gt;
+        &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+  &lt;&lt;/for&gt;&gt;
+  
+  &lt;&lt;button &quot;Cancel&quot;&gt;&gt;
+    &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
+  &lt;&lt;/button&gt;&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="24" name="SpellsUI" tags="" position="475,350" size="100,100">&lt;h2&gt;✨ Spellbook&lt;/h2&gt;
+
+&lt;&lt;if $mira_in_party&gt;&gt;
+  &lt;div style=&quot;background:#2a2520;border:1px solid #3a342e;padding:1em;margin:1em 0;&quot;&gt;
+    &lt;h3&gt;Mira Ashveil — Wizard&lt;/h3&gt;
+    
+    &lt;h4 style=&quot;color:#e8c87a;margin-top:0;&quot;&gt;Cantrips (at will)&lt;/h4&gt;
+    &lt;&lt;for _si = 0; _si lt $mira_spells_known.length; _si++&gt;&gt;
+      &lt;&lt;set _spell_id to $mira_spells_known[_si]&gt;&gt;
+      &lt;&lt;set _spell to $spell_registry[_spell_id]&gt;&gt;
+      &lt;&lt;if _spell.level is 0&gt;&gt;
+        &lt;div class=&quot;spellbook-entry&quot;&gt;
+          &lt;strong&gt;&lt;&lt;= _spell.name&gt;&gt;&lt;/strong&gt; &lt;em&gt;&lt;&lt;= _spell.school&gt;&gt;&lt;/em&gt;&lt;br&gt;
+          &lt;small&gt;&lt;&lt;= _spell.description&gt;&gt;&lt;/small&gt;
+        &lt;/div&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;&lt;/for&gt;&gt;
+    
+    &lt;&lt;for _level = 1; _level lte 2; _level++&gt;&gt;
+      &lt;&lt;set _levelSpells to []&gt;&gt;
+      &lt;&lt;for _si = 0; _si lt $mira_spells_known.length; _si++&gt;&gt;
+        &lt;&lt;set _spell_id to $mira_spells_known[_si]&gt;&gt;
+        &lt;&lt;set _spell to $spell_registry[_spell_id]&gt;&gt;
+        &lt;&lt;if _spell.level is _level&gt;&gt;
+          &lt;&lt;run _levelSpells.push({id: _spell_id, spell: _spell})&gt;&gt;
+        &lt;&lt;/if&gt;&gt;
+      &lt;&lt;/for&gt;&gt;
+      
+      &lt;&lt;if _levelSpells.length gt 0&gt;&gt;
+        &lt;h4 style=&quot;color:#e8c87a;margin-top:1em;&quot;&gt;Level &lt;&lt;= _level&gt;&gt; Spells &lt;span class=&quot;spell-slot-info&quot;&gt;(&lt;&lt;= $mira_spell_slots[_level].current&gt;&gt;/&lt;&lt;= $mira_spell_slots[_level].max&gt;&gt; slots)&lt;/span&gt;&lt;/h4&gt;
+        &lt;&lt;for _spell_info of _levelSpells&gt;&gt;
+          &lt;div class=&quot;spellbook-entry&quot;&gt;
+            &lt;strong&gt;&lt;&lt;= _spell_info.spell.name&gt;&gt;&lt;/strong&gt; &lt;em&gt;&lt;&lt;= _spell_info.spell.school&gt;&gt;&lt;/em&gt;&lt;br&gt;
+            &lt;small&gt;&lt;&lt;= _spell_info.spell.description&gt;&gt;&lt;/small&gt;
+          &lt;/div&gt;
+        &lt;&lt;/for&gt;&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;&lt;/for&gt;&gt;
+  &lt;/div&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;p&gt;&lt;em&gt;No spellcasters in the party yet.&lt;/em&gt;&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FACTION &amp; REPUTATION UI
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="25" name="FactionUI" tags="" position="600,350" size="100,100">&lt;h2&gt;⚔ Factions &amp; Reputation&lt;/h2&gt;
+
+&lt;&lt;for _fi, _fac range $faction_registry&gt;&gt;
+  &lt;&lt;if not _fac.hidden&gt;&gt;
+    &lt;&lt;set _rep   to State.variables[&quot;faction_&quot; + _fac.id + &quot;_rep&quot;]  || 0&gt;&gt;
+    &lt;&lt;set _tier  to State.variables[&quot;faction_&quot; + _fac.id + &quot;_tier&quot;] || &quot;neutral&quot;&gt;&gt;
+    &lt;&lt;set _min   to _fac.minRep&gt;&gt;
+    &lt;&lt;set _max   to _fac.maxRep&gt;&gt;
+
+    &lt;div class=&quot;faction-card faction-tier-&lt;&lt;= _tier&gt;&gt;&quot;&gt;
+      &lt;div class=&quot;faction-card-header&quot;&gt;
+        &lt;span class=&quot;faction-icon-lg&quot;&gt;&lt;&lt;= _fac.icon&gt;&gt;&lt;/span&gt;
+        &lt;div class=&quot;faction-card-title&quot;&gt;
+          &lt;span class=&quot;faction-card-name&quot;&gt;&lt;&lt;= _fac.display&gt;&gt;&lt;/span&gt;
+          &lt;span class=&quot;faction-tier-label&quot;&gt;&lt;&lt;= _tier.charAt(0).toUpperCase() + _tier.slice(1)&gt;&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;span class=&quot;faction-rep-score&quot;&gt;&lt;&lt;if _rep gte 0&gt;&gt;+&lt;&lt;/if&gt;&gt;&lt;&lt;= _rep&gt;&gt;&lt;/span&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;faction-rep-bar-wrap&quot;&gt;
+        &lt;div class=&quot;faction-rep-midpoint&quot;&gt;&lt;/div&gt;
+        &lt;&lt;if _rep lt 0&gt;&gt;
+          &lt;&lt;set _negPct to Math.round((Math.abs(_rep) / Math.abs(_min)) * 50)&gt;&gt;
+          &lt;div class=&quot;faction-rep-fill faction-rep-neg&quot; style=&quot;width:&lt;&lt;= _negPct&gt;&gt;%; right:50%; position:absolute; top:0; bottom:0;&quot;&gt;&lt;/div&gt;
+        &lt;&lt;elseif _rep gt 0&gt;&gt;
+          &lt;&lt;set _posPct to Math.round((_rep / _max) * 50)&gt;&gt;
+          &lt;div class=&quot;faction-rep-fill faction-rep-pos&quot; style=&quot;width:&lt;&lt;= _posPct&gt;&gt;%; left:50%; position:absolute; top:0; bottom:0;&quot;&gt;&lt;/div&gt;
+        &lt;&lt;/if&gt;&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;faction-tier-markers&quot;&gt;
+        &lt;span class=&quot;tier-mark tier-hostile&quot;    title=&quot;Hostile&quot;&gt;    ✦&lt;/span&gt;
+        &lt;span class=&quot;tier-mark tier-unfriendly&quot; title=&quot;Unfriendly&quot;&gt; ✦&lt;/span&gt;
+        &lt;span class=&quot;tier-mark tier-neutral&quot;    title=&quot;Neutral&quot;&gt;    ✦&lt;/span&gt;
+        &lt;span class=&quot;tier-mark tier-friendly&quot;   title=&quot;Friendly&quot;&gt;   ✦&lt;/span&gt;
+        &lt;span class=&quot;tier-mark tier-allied&quot;     title=&quot;Allied&quot;&gt;     ✦&lt;/span&gt;
+        &lt;span class=&quot;tier-mark tier-exalted&quot;    title=&quot;Exalted&quot;&gt;    ✦&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;&lt;/if&gt;&gt;
+&lt;&lt;/for&gt;&gt;
+
+&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   WORLD MAP
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="26" name="WorldMap" tags="" position="725,350" size="100,100">&lt;h2&gt;World Map&lt;/h2&gt;
+&lt;p style=&quot;color:#7a6e60;font-size:.85em&quot;&gt;Locations you have visited are shown. Unknown locations are hidden.&lt;/p&gt;
+
+&lt;&lt;wmRegion &quot;REGION-Thornwood&quot; &quot;The Thornwood&quot;&gt;&gt;
+&lt;div style=&quot;margin-left:1em&quot;&gt;
+  &lt;em&gt;Area: Riverside&lt;/em&gt;&lt;br&gt;
+  &lt;&lt;wmLoc &quot;LOC-Thorngate&quot;    &quot;Thorngate Village&quot;    &quot;LOC-Thorngate&quot;&gt;&gt;
+  &lt;&lt;wmLoc &quot;LOC-DrunkGriffin&quot; &quot;The Drunk Griffin Inn&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COMBAT OUTCOME (D5e resolved combat � D5e.combat.start() navigates here)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Template pattern:
+   1. Call &lt;&lt;combat &quot;enemy_id&quot; &quot;CombatOutcome&quot;&gt;&gt; from any button/passage
+   2. Set $combat_return_passage before calling
+   3. Set $travel_pending_loot if loot should drop on win
+   Results: $lastCombatOutcome (&quot;player_won&quot;|&quot;player_lost&quot;|&quot;player_retreated&quot;)
+            $lastCombatXP, $lastCombatLoot, $lastCombatLog, $lastEnemyName
+*/</tw-passagedata><tw-passagedata pid="27" name="CombatOutcome" tags="" position="850,350" size="100,100">&lt;h2&gt;Combat � &lt;&lt;= $lastEnemyName&gt;&gt;&lt;/h2&gt;
+
+&lt;&lt;if $combat_mode is &quot;tactical&quot;&gt;&gt;
+  &lt;!-- Tactical Combat Result --&gt;
+  &lt;&lt;if $tactical_player_won&gt;&gt;
+    &lt;p style=&quot;color:#7ec87e&quot;&gt;&lt;strong&gt;⚔️ Victory!&lt;/strong&gt;&lt;/p&gt;
+    &lt;p&gt;You have defeated all your enemies.&lt;/p&gt;
+    
+    &lt;!-- Calculate XP from defeated enemies (use D5e.xp field) --&gt;
+    &lt;&lt;set _totalXP to 0&gt;&gt;
+    &lt;&lt;for _ei = 0; _ei lt $tactical_enemies.length; _ei++&gt;&gt;
+      &lt;&lt;set _totalXP += ($tactical_enemies[_ei].xp || 50)&gt;&gt;
+    &lt;&lt;/for&gt;&gt;
+    
+    &lt;&lt;if _totalXP gt 0&gt;&gt;
+      &lt;p class=&quot;xp-gain&quot;&gt;+&lt;&lt;= _totalXP&gt;&gt; XP&lt;/p&gt;
+      &lt;&lt;xpGain _totalXP&gt;&gt;
+    &lt;&lt;/if&gt;&gt;
+    
+    &lt;!-- Loot drop if applicable --&gt;
+    &lt;&lt;if $travel_pending_loot isnot &quot;&quot;&gt;&gt;
+      &lt;p&gt;You search the bodies.&lt;/p&gt;
+      &lt;&lt;lootDrop $travel_pending_loot $combat_return_passage&gt;&gt;
+      &lt;&lt;set $travel_pending_loot to &quot;&quot;&gt;&gt;
+    &lt;&lt;else&gt;&gt;
+      &lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;
+    &lt;&lt;/if&gt;&gt;
+  &lt;&lt;elseif $lastCombatOutcome is &quot;player_fled&quot;&gt;&gt;
+    &lt;p style=&quot;color:#c4a862&quot;&gt;You managed to escape from combat.&lt;/p&gt;
+    &lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;
+  &lt;&lt;else&gt;&gt;
+    &lt;p style=&quot;color:#e07070&quot;&gt;&lt;strong&gt;You have been defeated.&lt;/strong&gt;&lt;/p&gt;
+    &lt;&lt;link &quot;↩ Restart&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  &lt;&lt;/if&gt;&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;!-- Automatic Combat Result (D5e.combat.start) --&gt;
+  &lt;&lt;set $lastEnemyName to &quot;Goblins&quot;&gt;&gt;
+  
+  &lt;&lt;if $lastCombatOutcome is &quot;player_won&quot;&gt;&gt;
+    &lt;p style=&quot;color:#7ec87e&quot;&gt;&lt;strong&gt;Victory!&lt;/strong&gt;&lt;/p&gt;
+    &lt;&lt;if $lastEnemySurrendered&gt;&gt;
+      &lt;p&gt;&lt;em&gt;Your enemy throws down their weapon and yields.&lt;/em&gt;&lt;/p&gt;
+    &lt;&lt;/if&gt;&gt;
+    &lt;&lt;if $lastCombatXP gt 0&gt;&gt;
+      &lt;p class=&quot;xp-gain&quot;&gt;+&lt;&lt;= $lastCombatXP&gt;&gt; XP&lt;/p&gt;
+      &lt;&lt;run D5e.checkLevelUp()&gt;&gt;
+      &lt;&lt;if $partyLeveledUp&gt;&gt;
+        &lt;p style=&quot;color:#c4a862&quot;&gt;&lt;strong&gt;⬆ Level Up!&lt;/strong&gt; You are now level &lt;&lt;= $partyNewLevel&gt;&gt;.&lt;/p&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;&lt;/if&gt;&gt;
+    &lt;&lt;if $lastCombatLoot.length gt 0&gt;&gt;
+      &lt;p&gt;Loot found: &lt;&lt;= $lastCombatLoot.join(&quot;, &quot;)&gt;&gt;&lt;/p&gt;
+    &lt;&lt;/if&gt;&gt;
+    &lt;&lt;if $travel_pending_loot isnot &quot;&quot;&gt;&gt;
+      &lt;p&gt;You search the bodies.&lt;/p&gt;
+      &lt;&lt;lootDrop $travel_pending_loot $combat_return_passage&gt;&gt;
+      &lt;&lt;set $travel_pending_loot to &quot;&quot;&gt;&gt;
+    &lt;&lt;else&gt;&gt;
+      &lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;
+    &lt;&lt;/if&gt;&gt;
+  &lt;&lt;elseif $lastCombatOutcome is &quot;player_lost&quot;&gt;&gt;
+    &lt;p style=&quot;color:#e07070&quot;&gt;&lt;strong&gt;You have fallen.&lt;/strong&gt;&lt;/p&gt;
+    &lt;&lt;link &quot;↩ Restart&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+  &lt;&lt;else&gt;&gt;
+    &lt;p style=&quot;color:#c4a862&quot;&gt;You escaped.&lt;/p&gt;
+    &lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;
+  &lt;&lt;/if&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;&lt;combatlog&gt;&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COMBAT MODE SELECTOR (hybrid automatic/tactical)
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="28" name="CombatModeSelect" tags="" position="975,350" size="100,100">&lt;h2&gt;Combat Approach&lt;/h2&gt;
+&lt;p&gt;How do you want to handle this fight?&lt;/p&gt;
+
+&lt;div style=&quot;background:#2a2520;border:2px solid #3a342e;padding:1.5em;margin:1.5em 0;&quot;&gt;
+  &lt;h3&gt;Automatic Combat&lt;/h3&gt;
+  &lt;p style=&quot;color:#b8aa98&quot;&gt;The fight plays out according to D&amp;D 5e rules. Fast-paced and narratively focused. You&#39;ll see the outcome without choosing each action.&lt;/p&gt;
+  &lt;p&gt;&lt;&lt;button &quot;Fight Automatically&quot;&gt;&gt;
+    &lt;&lt;set $combat_mode to &quot;automatic&quot;&gt;&gt;
+    &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
+  &lt;&lt;/button&gt;&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div style=&quot;background:#2a2520;border:2px solid #3a342e;padding:1.5em;margin:1.5em 0;&quot;&gt;
+  &lt;h3&gt;Tactical Combat (Turn-Based)&lt;/h3&gt;
+  &lt;p style=&quot;color:#b8aa98&quot;&gt;You choose your action each round: Attack, Defend, Use a Skill, or Flee. Slow and strategic.&lt;/p&gt;
+  &lt;p&gt;&lt;&lt;button &quot;Fight Tactically&quot;&gt;&gt;
+    &lt;&lt;set $combat_mode to &quot;tactical&quot;&gt;&gt;
+    &lt;&lt;set $tactical_round to 0&gt;&gt;
+    &lt;&lt;set $tactical_log to []&gt;&gt;
+    &lt;&lt;set $tactical_fight_end to false&gt;&gt;
+    &lt;&lt;set $tactical_player_won to false&gt;&gt;
+    &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
+  &lt;&lt;/button&gt;&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TACTICAL COMBAT UI — turn-by-turn interface
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="29" name="TacticalCombatUI" tags="" position="1100,350" size="100,100">&lt;h2&gt;Tactical Combat&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;&lt;&lt;= $playerName&gt;&gt;&lt;/strong&gt; vs 
+&lt;&lt;for _ei = 0; _ei lt $tactical_enemies.length; _ei++&gt;&gt;
+  &lt;&lt;if _ei gt 0&gt;&gt;, &lt;&lt;/if&gt;&gt;&lt;&lt;= $tactical_enemies[_ei].name&gt;&gt;
+&lt;&lt;/for&gt;&gt;&lt;/p&gt;
+
+&lt;div style=&quot;background:#1e1b18;border:1px solid #3a342e;padding:1em;margin:1em 0;&quot;&gt;
+  &lt;h3&gt;Enemy Status&lt;/h3&gt;
+  &lt;&lt;tacticalEnemyStatus&gt;&gt;
+  
+  &lt;p style=&quot;margin-top:1em;color:#7a6e60&quot;&gt;
+    &lt;strong&gt;Your HP:&lt;/strong&gt; &lt;&lt;= $partyCurrentHP&gt;&gt;/&lt;&lt;= $partyMaxHP&gt;&gt; · 
+    &lt;strong&gt;AC:&lt;/strong&gt; &lt;&lt;= $partyAC&gt;&gt; · 
+    &lt;strong&gt;Round:&lt;/strong&gt; &lt;&lt;= ($tactical_round + 1)&gt;&gt;
+  &lt;/p&gt;
+&lt;/div&gt;
+
+&lt;&lt;if not $tactical_fight_end&gt;&gt;
+  &lt;h3&gt;Your Action&lt;/h3&gt;
+  &lt;p&gt;What do you do?&lt;/p&gt;
+  
+  &lt;div style=&quot;margin:1em 0;&quot;&gt;
+    &lt;&lt;button &quot;⚔️ Attack&quot;&gt;&gt;
+      &lt;&lt;set $tactical_player_action to &quot;attack&quot;&gt;&gt;
+      &lt;&lt;set $tactical_selected_enemy to 0&gt;&gt;
+      &lt;&lt;tacticalRound&gt;&gt;
+      &lt;&lt;if not $tactical_fight_end&gt;&gt;
+        &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
+      &lt;&lt;else&gt;&gt;
+        &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+    
+    &lt;&lt;button &quot;🛡️ Defend&quot;&gt;&gt;
+      &lt;&lt;set $tactical_player_action to &quot;defend&quot;&gt;&gt;
+      &lt;&lt;tacticalRound&gt;&gt;
+      &lt;&lt;if not $tactical_fight_end&gt;&gt;
+        &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
+      &lt;&lt;else&gt;&gt;
+        &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+    
+    &lt;&lt;button &quot;🧪 Use Potion&quot;&gt;&gt;
+      &lt;&lt;usePotionTactical&gt;&gt;
+      &lt;&lt;if not $tactical_fight_end&gt;&gt;
+        &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
+      &lt;&lt;else&gt;&gt;
+        &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+    
+    &lt;&lt;if $mira_in_party&gt;&gt;
+      &lt;&lt;button &quot;✨ Mira Casts Spell&quot;&gt;&gt;
+        &lt;&lt;getMiraAvailableSpells&gt;&gt;
+        &lt;&lt;if $mira_available_spells and $mira_available_spells.length gt 0&gt;&gt;
+          &lt;&lt;goto &quot;MiraSpellSelect&quot;&gt;&gt;
+        &lt;&lt;else&gt;&gt;
+          &lt;p style=&quot;color:#e07070&quot;&gt;&lt;em&gt;Mira has no spells available!&lt;/em&gt;&lt;/p&gt;
+        &lt;&lt;/if&gt;&gt;
+      &lt;&lt;/button&gt;&gt;
+    &lt;&lt;/if&gt;&gt;
+    
+    &lt;&lt;button &quot;💨 Flee&quot;&gt;&gt;
+      &lt;&lt;set $tactical_player_action to &quot;flee&quot;&gt;&gt;
+      &lt;&lt;tacticalRound&gt;&gt;
+      &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
+    &lt;&lt;/button&gt;&gt;
+  &lt;/div&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;div style=&quot;background:#2a2520;border:2px solid #3a342e;padding:1em;margin:1em 0;&quot;&gt;
+    &lt;h3&gt;&lt;&lt;if $tactical_player_won&gt;&gt;⚔️ Victory!&lt;&lt;else&gt;&gt;💀 Defeated&lt;&lt;/if&gt;&gt;&lt;/h3&gt;
+    &lt;&lt;if $tactical_player_won&gt;&gt;
+      &lt;p&gt;The last enemy falls. Combat is over.&lt;/p&gt;
+    &lt;&lt;else&gt;&gt;
+      &lt;p&gt;You have been vanquished. The fight is lost.&lt;/p&gt;
+    &lt;&lt;/if&gt;&gt;
+  &lt;/div&gt;
+  
+  &lt;p style=&quot;margin-top:1em&quot;&gt;&lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;h3&gt;Combat Log&lt;/h3&gt;
+&lt;div style=&quot;background:#1e1b18;border:1px solid #3a342e;padding:.8em;height:6em;overflow-y:auto;font-size:.85em;line-height:1.4;&quot;&gt;
+  &lt;&lt;for _li = $tactical_log.length - 1; _li gte Math.max(0, $tactical_log.length - 6); _li--&gt;&gt;
+    &lt;&lt;if _li lt $tactical_log.length&gt;&gt;
+      &lt;div&gt;&lt;&lt;= $tactical_log[_li]&gt;&gt;&lt;/div&gt;
+    &lt;&lt;/if&gt;&gt;
+  &lt;&lt;/for&gt;&gt;
+&lt;/div&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LOOT CONTAINER UI
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="30" name="LootContainer" tags="" position="1225,350" size="100,100">&lt;&lt;if $loot_active_container&gt;&gt;
+  &lt;&lt;set _table to $loot_table_registry[$loot_active_container]&gt;&gt;
+  &lt;&lt;if _table&gt;&gt;
+    &lt;&lt;goto &quot;LootContainerUI&quot;&gt;&gt;
+  &lt;&lt;/if&gt;&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="31" name="LootContainerUI" tags="" position="100,475" size="100,100">&lt;h2&gt;&lt;&lt;= $loot_table_registry[$loot_active_container].label&gt;&gt;&lt;/h2&gt;
+
+&lt;&lt;set _openKey to &quot;loot_opened_&quot; + $loot_active_container&gt;&gt;
+&lt;&lt;if State.variables[_openKey]&gt;&gt;
+  &lt;p&gt;&lt;em&gt;The container is empty.&lt;/em&gt;&lt;/p&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;&lt;set _table to $loot_table_registry[$loot_active_container]&gt;&gt;
+  &lt;&lt;if _table.gold_min gt 0 or _table.gold_max gt 0&gt;&gt;
+    &lt;p&gt;Coins glint in the bottom. Take the gold?
+    &lt;&lt;button &quot;[Take all gold]&quot;&gt;&gt;
+      &lt;&lt;if not State.variables[_openKey]&gt;&gt;
+        &lt;&lt;set _g to Math.floor(Math.random() * (_table.gold_max - _table.gold_min + 1)) + _table.gold_min&gt;&gt;
+        &lt;&lt;lootGold _g&gt;&gt;
+        &lt;&lt;run State.variables[_openKey] = true&gt;&gt;
+      &lt;&lt;/if&gt;&gt;
+      &lt;&lt;run Engine.play(&quot;LootContainerUI&quot;, true);&gt;&gt;
+    &lt;&lt;/button&gt;&gt;&lt;/p&gt;
+  &lt;&lt;/if&gt;&gt;
+  &lt;&lt;for _li = 0; _li lt _table.items.length; _li++&gt;&gt;
+    &lt;&lt;set _le to _table.items[_li]&gt;&gt;
+    &lt;p&gt;&lt;&lt;= _le.name&gt;&gt;
+    &lt;&lt;button &quot;[Take]&quot;&gt;&gt;
+      &lt;&lt;if not State.variables[_openKey]&gt;&gt;&lt;&lt;pickupItem _le.item _le.name&gt;&gt;&lt;&lt;run State.variables[_openKey] = true&gt;&gt;&lt;&lt;/if&gt;&gt;
+      &lt;&lt;run Engine.play(&quot;LootContainerUI&quot;, true);&gt;&gt;
+    &lt;&lt;/button&gt;&gt;&lt;/p&gt;
+  &lt;&lt;/for&gt;&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;&lt;link &quot;← Leave&quot; $loot_container_return&gt;&gt;&lt;&lt;/link&gt;&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CRAFT UI
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="32" name="CraftUI" tags="" position="225,475" size="100,100">&lt;h2&gt;Crafting � &lt;&lt;= $craft_active_station&gt;&gt;&lt;/h2&gt;
+
+&lt;&lt;for _ri = 0; _ri lt $craft_registry.length; _ri++&gt;&gt;
+  &lt;&lt;set _re to $craft_registry[_ri]&gt;&gt;
+  &lt;&lt;if _re.station is $craft_active_station or _re.station is &quot;any&quot;&gt;&gt;
+    &lt;div class=&quot;craft-recipe&quot;&gt;
+      &lt;strong&gt;&lt;&lt;= _re.display&gt;&gt;&lt;/strong&gt;&lt;br&gt;
+      &lt;em style=&quot;font-size:.85em&quot;&gt;&lt;&lt;= _re.notes&gt;&gt;&lt;/em&gt;&lt;br&gt;
+      &lt;small&gt;Ingredients:
+        &lt;&lt;craftCheck _re.id&gt;&gt;
+        &lt;&lt;for _ii = 0; _ii lt _re.ingredients.length; _ii++&gt;&gt;
+          &lt;&lt;set _ie to _re.ingredients[_ii]&gt;&gt;
+          &lt;&lt;set _inv to $inventory.find(function(i){ return i.item === _ie.item; })&gt;&gt;
+          &lt;span class=&quot;&lt;&lt;if _inv and _inv.qty gte _ie.qty&gt;&gt;craft-ok&lt;&lt;else&gt;&gt;craft-missing&lt;&lt;/if&gt;&gt;&quot;&gt;
+            &lt;&lt;= _ie.name&gt;&gt; �&lt;&lt;= _ie.qty&gt;&gt; (have &lt;&lt;= (_inv ? _inv.qty : 0)&gt;&gt;)
+          &lt;/span&gt;
+        &lt;&lt;/for&gt;&gt;
+      &lt;/small&gt;&lt;br&gt;
+      &lt;&lt;if $craft_can_make&gt;&gt;
+        &lt;&lt;link &quot;[Craft]&quot; &quot;CraftResultUI&quot;&gt;&gt;&lt;&lt;craftAttempt _re.id&gt;&gt;&lt;&lt;set $craft_last_recipe to _re.id&gt;&gt;&lt;&lt;/link&gt;&gt;
+      &lt;&lt;else&gt;&gt;
+        &lt;span class=&quot;craft-missing&quot;&gt;Missing: &lt;&lt;= $craft_missing_items.join(&quot;, &quot;)&gt;&gt;&lt;/span&gt;
+      &lt;&lt;/if&gt;&gt;
+    &lt;/div&gt;
+  &lt;&lt;/if&gt;&gt;
+&lt;&lt;/for&gt;&gt;
+
+&lt;&lt;link &quot;← Leave&quot; $craft_station_return&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="33" name="CraftResultUI" tags="" position="350,475" size="100,100">&lt;h2&gt;Crafting Result&lt;/h2&gt;
+
+&lt;&lt;set _rec to $craft_registry.find(function(r){ return r.id === $craft_last_recipe; })&gt;&gt;
+&lt;&lt;if $last_craft_success&gt;&gt;
+  &lt;p style=&quot;color:#7ec87e&quot;&gt;✓ You craft &lt;strong&gt;&lt;&lt;= _rec.result_name&gt;&gt;&lt;/strong&gt;.&lt;/p&gt;
+  &lt;&lt;if _rec.result_heal and _rec.result_heal gt 0&gt;&gt;
+    &lt;p class=&quot;rest-heal&quot;&gt;You apply the poultice immediately. +&lt;&lt;= _rec.result_heal&gt;&gt; HP.&lt;/p&gt;
+  &lt;&lt;/if&gt;&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;p style=&quot;color:#e07070&quot;&gt;✗ The attempt fails.&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;
+
+&lt;&lt;link &quot;Continue&quot; $craft_station_return&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
+&lt;&lt;link &quot;Craft another&quot; &quot;CraftUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   REST UI
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="34" name="RestUI" tags="" position="475,475" size="100,100">&lt;h2&gt;Long Rest&lt;/h2&gt;
+&lt;p&gt;You spend the night at &lt;&lt;= $rest_type_last is &quot;long&quot; ? &quot;the inn&quot; : &quot;camp&quot;&gt;&gt;. The fire dies to embers.&lt;/p&gt;
+&lt;p style=&quot;color:#7ec87e&quot;&gt;HP fully restored: &lt;&lt;= $partyMaxHP&gt;&gt;/&lt;&lt;= $partyMaxHP&gt;&gt;&lt;br&gt;
+Hit dice recovered: &lt;&lt;= $playerMaxHitDice&gt;&gt;/&lt;&lt;= $playerMaxHitDice&gt;&gt;&lt;&lt;= $playerHitDiceType&gt;&gt;&lt;br&gt;
+Action Surge and Second Wind available.&lt;/p&gt;
+&lt;p style=&quot;color:#7a6e60;font-size:.85em&quot;&gt;Day &lt;&lt;= $day_counter - 1&gt;&gt; ends. Day &lt;&lt;= $day_counter&gt;&gt; begins.&lt;/p&gt;
+
+&lt;&lt;link &quot;Wake up →&quot; $rest_return_passage&gt;&gt;&lt;&lt;set $inn_paid to false&gt;&gt;&lt;&lt;/link&gt;&gt;
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TRAVEL ENCOUNTER TRANSITION
+   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="35" name="TravelEncounterTransition" tags="" position="600,475" size="100,100">&lt;&lt;set _enc to $travel_active_encounter&gt;&gt;
+&lt;div style=&quot;background:#211e1b;border:1px solid #6a3a2e;padding:1em;margin:1em 0&quot;&gt;
+  &lt;strong&gt;⚠ &lt;&lt;= _enc.display&gt;&gt;&lt;/strong&gt;&lt;br&gt;
+  &lt;em&gt;&lt;&lt;= _enc.intro&gt;&gt;&lt;/em&gt;
+&lt;/div&gt;
+
+&lt;&lt;if _enc.type is &quot;combat&quot;&gt;&gt;
+  &lt;p&gt;&lt;&lt;button &quot;Fight&quot;&gt;&gt;&lt;&lt;travelEncounterResult&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
+&lt;&lt;elseif _enc.type is &quot;discovery&quot;&gt;&gt;
+  &lt;p&gt;&lt;&lt;button &quot;Investigate&quot;&gt;&gt;&lt;&lt;travelEncounterResult&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
+&lt;&lt;elseif _enc.type is &quot;hazard&quot;&gt;&gt;
+  &lt;p&gt;&lt;&lt;button &quot;Take the hit&quot;&gt;&gt;&lt;&lt;travelEncounterResult&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
+&lt;&lt;else&gt;&gt;
+  &lt;p&gt;&lt;&lt;button &quot;Investigate&quot;&gt;&gt;&lt;&lt;travelEncounterResult&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
+&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="36" name="AllWidgets" tags="widget" position="725,475" size="100,100">/* ══════════════════════════════════════════════════════════════════════════
    CHARACTER WIDGETS
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -2839,1075 +3907,7 @@ D5e.registerEnemy("goblin_patrol", {
     &lt;&lt;set $skill_last_result to &quot;fail&quot;&gt;&gt;
     &lt;&lt;goto _fail&gt;&gt;
   &lt;&lt;/if&gt;&gt;
-&lt;&lt;/widget&gt;&gt;</tw-passagedata><tw-passagedata pid="3" name="StoryMenu" tags="" position="350,100" size="100,100">&lt;&lt;link &quot;⚔ Character&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;&lt;link &quot;📜 Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;&lt;link &quot;👥 Party&quot; &quot;PartyRoster&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;&lt;link &quot;✨ Spells&quot; &quot;SpellsUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;&lt;link &quot;⚔ Factions&quot; &quot;FactionUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;&lt;link &quot;🗺 World Map&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;&lt;link &quot;🎒 Inventory&quot; &quot;InventoryUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="4" name="StoryCaption" tags="" position="475,100" size="100,100">/* HP bar */
-&lt;div id=&quot;sc-hp&quot;&gt;
-  &lt;span class=&quot;sc-label&quot;&gt;HP&lt;/span&gt;
-  &lt;&lt;= &#39;&lt;meter value=&quot;&#39; + $partyCurrentHP + &#39;&quot; max=&quot;&#39; + $partyMaxHP + &#39;&quot; low=&quot;8&quot; optimum=&quot;&#39; + $partyMaxHP + &#39;&quot;&gt;&lt;/meter&gt;&#39;&gt;&gt;
-  &lt;&lt;= $partyCurrentHP&gt;&gt;/&lt;&lt;= $partyMaxHP&gt;&gt;
-&lt;/div&gt;
-
-/* Gold */
-&lt;div id=&quot;sc-gold&quot;&gt;💰 &lt;&lt;= $gold&gt;&gt; gp&lt;/div&gt;
-
-/* Active quest */
-&lt;&lt;set _aq to $quest_registry.find(function(q){ return State.variables[&quot;quest_&quot;+q.id+&quot;_state&quot;] === &quot;active&quot;; })&gt;&gt;
-&lt;&lt;if _aq&gt;&gt;
-&lt;div id=&quot;sc-quest&quot;&gt;
-  📜 &lt;&lt;= _aq.display&gt;&gt;&lt;br&gt;
-  &lt;em&gt;&lt;&lt;= _aq.stages[State.variables[&quot;quest_&quot;+_aq.id+&quot;_stage&quot;]] || &quot;&quot;&gt;&gt;&lt;/em&gt;
-&lt;/div&gt;
-&lt;&lt;/if&gt;&gt;
-
-/* Party members */
-&lt;&lt;set _partyList to $companion_registry.filter(function(c){ return State.variables[c.id+&quot;_in_party&quot;] and State.variables[c.id+&quot;_alive&quot;] !== false; })&gt;&gt;
-&lt;&lt;if _partyList.length gt 0&gt;&gt;
-&lt;div id=&quot;sc-party&quot;&gt;
-  &lt;&lt;for _pi = 0; _pi lt _partyList.length; _pi++&gt;&gt;
-    &lt;&lt;set _pe to _partyList[_pi]&gt;&gt;
-    👤 &lt;&lt;= _pe.display&gt;&gt; &lt;em class=&quot;tier-&lt;&lt;= State.variables[_pe.id+&quot;_tier&quot;]&gt;&gt;&quot;&gt;(&lt;&lt;= State.variables[_pe.id+&quot;_tier&quot;]&gt;&gt;)&lt;/em&gt;&lt;br&gt;
-  &lt;&lt;/for&gt;&gt;
-&lt;/div&gt;
-&lt;&lt;/if&gt;&gt;
-
-/* Faction tier-change notifications (shown for one turn) */
-&lt;&lt;if $faction_tier_notifications.length gt 0&gt;&gt;
-&lt;div class=&quot;faction-notifications&quot;&gt;
-  &lt;&lt;for _ni, _notif range $faction_tier_notifications&gt;&gt;
-    &lt;div class=&quot;faction-notif faction-notif-&lt;&lt;= _notif.to&gt;&gt;&quot;&gt;
-      ★ &lt;&lt;= _notif.display&gt;&gt;: &lt;&lt;= _notif.from&gt;&gt; → &lt;&lt;= _notif.to&gt;&gt;
-    &lt;/div&gt;
-  &lt;&lt;/for&gt;&gt;
-&lt;/div&gt;
-&lt;&lt;set $faction_tier_notifications to []&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-
-/* Faction standings (summary) */
-&lt;&lt;set _visibleFactions to $faction_registry.filter(function(f) { return !f.hidden; })&gt;&gt;
-&lt;&lt;if _visibleFactions.length gt 0&gt;&gt;
-&lt;div id=&quot;sc-factions&quot;&gt;
-  &lt;&lt;for _fi, _fac range _visibleFactions&gt;&gt;
-    &lt;&lt;set _tier to State.variables[&quot;faction_&quot; + _fac.id + &quot;_tier&quot;] || &quot;neutral&quot;&gt;&gt;
-    &lt;&lt;= _fac.icon&gt;&gt; &lt;&lt;= _fac.display&gt;&gt;: &lt;&lt;= _tier&gt;&gt;&lt;br&gt;
-  &lt;&lt;/for&gt;&gt;
-&lt;/div&gt;
-&lt;&lt;/if&gt;&gt;
-
-/* Day counter */
-&lt;div id=&quot;sc-day&quot;&gt;Day &lt;&lt;= $day_counter&gt;&gt;&lt;/div&gt;
-
-/* Navigation */
-&lt;div id=&quot;sc-nav&quot;&gt;
-  &lt;&lt;link &quot;🎒 Inv&quot; &quot;InventoryUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; �
-  &lt;&lt;link &quot;⚔ Char&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; �
-  &lt;&lt;link &quot;📜 Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; �
-  &lt;&lt;link &quot;🗺 Map&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;/div&gt;</tw-passagedata><tw-passagedata pid="5" name="CharacterSheet" tags="" position="600,100" size="100,100">&lt;h2&gt;&lt;&lt;= $playerName&gt;&gt;&lt;/h2&gt;
-&lt;p&gt;&lt;&lt;= $playerRace&gt;&gt; &lt;&lt;= $playerClass&gt;&gt; � Level &lt;&lt;= $partyLevel&gt;&gt; � &lt;&lt;= $playerBackground&gt;&gt;&lt;/p&gt;
-&lt;p&gt;XP: &lt;&lt;= $partyXP&gt;&gt; / &lt;&lt;= (window._xpTable[$partyLevel+1] ? window._xpTable[$partyLevel+1].xp : &quot;MAX&quot;)&gt;&gt;&lt;/p&gt;
-
-&lt;div class=&quot;sheet-section&quot;&gt;
-&lt;strong&gt;Hit Points&lt;/strong&gt;&lt;br&gt;
-&lt;&lt;= $partyCurrentHP&gt;&gt; / &lt;&lt;= $partyMaxHP&gt;&gt;
-&lt;&lt;if $playerTempHP gt 0&gt;&gt; (+&lt;&lt;= $playerTempHP&gt;&gt; temp)&lt;&lt;/if&gt;&gt;
-&lt;br&gt;
-&lt;strong&gt;AC&lt;/strong&gt; &lt;&lt;= $partyAC&gt;&gt; &amp;nbsp; &lt;strong&gt;Prof&lt;/strong&gt; +&lt;&lt;= $playerProfBonus&gt;&gt; &amp;nbsp;
-&lt;strong&gt;Hit Dice&lt;/strong&gt; &lt;&lt;= $playerCurrentHitDice&gt;&gt;/&lt;&lt;= $playerMaxHitDice&gt;&gt;&lt;&lt;= $playerHitDiceType&gt;&gt;
-&lt;/div&gt;
-
-&lt;div class=&quot;sheet-section&quot;&gt;
-&lt;strong&gt;Ability Scores&lt;/strong&gt;&lt;br&gt;
-&lt;&lt;for _ab, _data range [{name:&quot;STR&quot;,score:$playerStrScore,mod:$playerStrMod},{name:&quot;DEX&quot;,score:$playerDexScore,mod:$playerDexMod},{name:&quot;CON&quot;,score:$playerConScore,mod:$playerConMod},{name:&quot;INT&quot;,score:$playerIntScore,mod:$playerIntMod},{name:&quot;WIS&quot;,score:$playerWisScore,mod:$playerWisMod},{name:&quot;CHA&quot;,score:$playerChaScore,mod:$playerChaMod}]&gt;&gt;
-  &lt;div class=&quot;sheet-ability&quot;&gt;
-    &lt;div class=&quot;mod&quot;&gt;&lt;&lt;= (_data.mod gte 0 ? &quot;+&quot; : &quot;&quot;) + _data.mod&gt;&gt;&lt;/div&gt;
-    &lt;div&gt;&lt;&lt;= _data.name&gt;&gt;&lt;/div&gt;
-    &lt;div&gt;&lt;small&gt;&lt;&lt;= _data.score&gt;&gt;&lt;/small&gt;&lt;/div&gt;
-  &lt;/div&gt;
-&lt;&lt;/for&gt;&gt;
-&lt;/div&gt;
-
-&lt;div class=&quot;sheet-section&quot;&gt;
-&lt;strong&gt;Class Features&lt;/strong&gt;&lt;br&gt;
-Action Surge: &lt;&lt;if $action_surge_used&gt;&gt;Used (recover on short rest)&lt;&lt;else&gt;&gt;Available&lt;&lt;/if&gt;&gt;&lt;br&gt;
-Second Wind: &lt;&lt;if $second_wind_used&gt;&gt;Used&lt;&lt;else&gt;&gt;Available (bonus action, 1d10+&lt;&lt;= $partyLevel&gt;&gt; HP)&lt;&lt;/if&gt;&gt;&lt;br&gt;
-Potions: &lt;&lt;= $playerPotions&gt;&gt;
-&lt;/div&gt;
-
-&lt;div class=&quot;sheet-section&quot;&gt;
-&lt;strong&gt;Saving Throws&lt;/strong&gt;&lt;br&gt;
-STR &lt;&lt;if $playerProfSaveStr&gt;&gt;+&lt;&lt;= $playerStrMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerStrMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
-DEX &lt;&lt;if $playerProfSaveDex&gt;&gt;+&lt;&lt;= $playerDexMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerDexMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
-CON &lt;&lt;if $playerProfSaveCon&gt;&gt;+&lt;&lt;= $playerConMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerConMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
-INT &lt;&lt;if $playerProfSaveInt&gt;&gt;+&lt;&lt;= $playerIntMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerIntMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
-WIS &lt;&lt;if $playerProfSaveWis&gt;&gt;+&lt;&lt;= $playerWisMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerWisMod&gt;&gt;&lt;&lt;/if&gt;&gt; &amp;nbsp;
-CHA &lt;&lt;if $playerProfSaveCha&gt;&gt;+&lt;&lt;= $playerChaMod + $playerProfBonus&gt;&gt;✓&lt;&lt;else&gt;&gt;+&lt;&lt;= $playerChaMod&gt;&gt;&lt;&lt;/if&gt;&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   INVENTORY UI
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="6" name="InventoryUI" tags="" position="725,100" size="100,100">&lt;h2&gt;Inventory&lt;/h2&gt;
-&lt;p&gt;Gold: &lt;strong&gt;&lt;&lt;= $gold&gt;&gt; gp&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3&gt;Equipped&lt;/h3&gt;
-&lt;div style=&quot;background:#2a2520;border:1px solid #3a342e;padding:.6em;margin:.5em 0;&quot;&gt;
-  &lt;p&gt;&lt;strong&gt;Weapon:&lt;/strong&gt; 
-    &lt;&lt;if $equipped_weapon&gt;&gt;
-      &lt;&lt;= $equipped_weapon&gt;&gt;
-      [[Unequip|InventoryUI][$equipped_weapon to &quot;&quot;]]
-    &lt;&lt;else&gt;&gt;
-      &lt;em&gt;none&lt;/em&gt;
-    &lt;&lt;/if&gt;&gt;
-  &lt;/p&gt;
-  &lt;p&gt;&lt;strong&gt;Armor:&lt;/strong&gt; 
-    &lt;&lt;if $equipped_armor&gt;&gt;
-      &lt;&lt;= $equipped_armor&gt;&gt;
-      [[Unequip|InventoryUI][$equipped_armor to &quot;&quot;]]
-    &lt;&lt;else&gt;&gt;
-      &lt;em&gt;none&lt;/em&gt;
-    &lt;&lt;/if&gt;&gt;
-  &lt;/p&gt;
-&lt;/div&gt;
-
-&lt;h3&gt;Items in Pack&lt;/h3&gt;
-&lt;&lt;if $inventory.length eq 0&gt;&gt;
-  &lt;p&gt;&lt;em&gt;Nothing in your pack.&lt;/em&gt;&lt;/p&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;&lt;for _ii = 0; _ii lt $inventory.length; _ii++&gt;&gt;
-    &lt;&lt;set _ie to $inventory[_ii]&gt;&gt;
-    &lt;div class=&quot;inv-item&quot; style=&quot;border:1px solid #3a342e;padding:.5em;margin:.3em 0;display:flex;justify-content:space-between;align-items:center;&quot;&gt;
-      &lt;div&gt;
-        &lt;strong&gt;&lt;&lt;= _ie.name&gt;&gt;&lt;/strong&gt;
-        &lt;br&gt;
-        &lt;small style=&quot;color:#7a6e60&quot;&gt;&lt;&lt;= _ie.qty&gt;&gt;× · &lt;&lt;= _ie.type&gt;&gt;&lt;/small&gt;
-      &lt;/div&gt;
-      &lt;div style=&quot;text-align:right;&quot;&gt;
-        &lt;&lt;if _ie.type is &quot;weapon&quot;&gt;&gt;
-          [[Equip|InventoryUI][$equipped_weapon to _ie.item]]
-        &lt;&lt;elseif _ie.type is &quot;armor&quot;&gt;&gt;
-          [[Equip|InventoryUI][$equipped_armor to _ie.item]]
-        &lt;&lt;elseif _ie.type is &quot;consumable&quot;&gt;&gt;
-          [[Use|InventoryUI][$gold to $gold + 1; $inventory[_ii].qty -= 1]]
-        &lt;&lt;/if&gt;&gt;
-        [[Drop|InventoryUI][$inventory.splice(_ii, 1)]]
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;&lt;/for&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   QUEST JOURNAL
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="7" name="QuestJournal" tags="" position="850,100" size="100,100">&lt;h2&gt;Quest Journal&lt;/h2&gt;
-&lt;p&gt;
-  &lt;&lt;link &quot;Active&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;set $quest_active_tab to &quot;active&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; |
-  &lt;&lt;link &quot;Complete&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;set $quest_active_tab to &quot;complete&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; |
-  &lt;&lt;link &quot;Failed&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;set $quest_active_tab to &quot;failed&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;/p&gt;
-
-&lt;&lt;set _tabState to $quest_active_tab&gt;&gt;
-&lt;&lt;set _shown to 0&gt;&gt;
-&lt;&lt;for _qi = 0; _qi lt $quest_registry.length; _qi++&gt;&gt;
-  &lt;&lt;set _qe to $quest_registry[_qi]&gt;&gt;
-  &lt;&lt;set _qstate to State.variables[&quot;quest_&quot; + _qe.id + &quot;_state&quot;]&gt;&gt;
-  &lt;&lt;set _qstage to (State.variables[&quot;quest_&quot; + _qe.id + &quot;_stage&quot;] || 0)&gt;&gt;
-  &lt;&lt;if (_tabState is &quot;active&quot; and _qstate is &quot;active&quot;) or (_tabState is &quot;complete&quot; and _qstate is &quot;complete&quot;) or (_tabState is &quot;failed&quot; and _qstate is &quot;failed&quot;)&gt;&gt;
-    &lt;&lt;set _shown to _shown + 1&gt;&gt;
-    &lt;div style=&quot;border:1px solid #3a342e;padding:.6em;margin:.5em 0;&quot;&gt;
-      &lt;strong&gt;&lt;&lt;= _qe.display&gt;&gt;&lt;/strong&gt;
-      &lt;span style=&quot;color:#7a6e60;float:right&quot;&gt;&lt;&lt;= _qe.tier&gt;&gt;&lt;/span&gt;&lt;br&gt;
-      &lt;em style=&quot;font-size:.85em&quot;&gt;&lt;&lt;= _qe.hook&gt;&gt;&lt;/em&gt;
-      &lt;&lt;if _qstate is &quot;active&quot; and _qstage gt 0&gt;&gt;
-        &lt;p style=&quot;margin:.4em 0 0&quot;&gt;▸ &lt;&lt;= _qe.stages[_qstage] || &quot;&quot;&gt;&gt;&lt;/p&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;/div&gt;
-  &lt;&lt;/if&gt;&gt;
-&lt;&lt;/for&gt;&gt;
-&lt;&lt;if _shown eq 0&gt;&gt;&lt;p&gt;&lt;em&gt;Nothing here.&lt;/em&gt;&lt;/p&gt;&lt;&lt;/if&gt;&gt;
-
-&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   PARTY ROSTER
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="8" name="PartyRoster" tags="" position="975,100" size="100,100">&lt;h2&gt;Party&lt;/h2&gt;
-
-&lt;&lt;set _anyRecruited to false&gt;&gt;
-&lt;&lt;for _ci = 0; _ci lt $companion_registry.length; _ci++&gt;&gt;
-  &lt;&lt;set _ce to $companion_registry[_ci]&gt;&gt;
-  &lt;&lt;set _rid to _ce.id&gt;&gt;
-  &lt;&lt;if State.variables[_rid + &quot;_recruited&quot;]&gt;&gt;
-    &lt;&lt;set _anyRecruited to true&gt;&gt;
-    &lt;&lt;set _tier to (State.variables[_rid + &quot;_tier&quot;] || &quot;neutral&quot;)&gt;&gt;
-    &lt;&lt;set _app  to (State.variables[_rid + &quot;_approval&quot;] || 0)&gt;&gt;
-    &lt;&lt;set _alive to (State.variables[_rid + &quot;_alive&quot;] !== false)&gt;&gt;
-    &lt;&lt;set _inParty to (State.variables[_rid + &quot;_in_party&quot;] || false)&gt;&gt;
-    &lt;div style=&quot;border:1px solid #3a342e;padding:.6em;margin:.5em 0&quot; class=&quot;tier-&lt;&lt;= _tier&gt;&gt;&quot;&gt;
-      &lt;strong&gt;&lt;&lt;= _ce.display&gt;&gt;&lt;/strong&gt;
-      &lt;small style=&quot;float:right&quot;&gt;&lt;&lt;= _ce.class&gt;&gt; � &lt;&lt;= _ce.role&gt;&gt;&lt;/small&gt;&lt;br&gt;
-      Approval: &lt;&lt;= _app&gt;&gt; (&lt;em&gt;&lt;&lt;= _tier&gt;&gt;&lt;/em&gt;)
-      &lt;&lt;if State.variables[_rid + &quot;_romance_active&quot;]&gt;&gt; � Romance unlocked&lt;&lt;/if&gt;&gt;&lt;br&gt;
-      Status: &lt;&lt;if not _alive&gt;&gt;Fallen&lt;&lt;elseif not _inParty&gt;&gt;Not in party&lt;&lt;else&gt;&gt;Active&lt;&lt;/if&gt;&gt;
-    &lt;/div&gt;
-  &lt;&lt;/if&gt;&gt;
-&lt;&lt;/for&gt;&gt;
-&lt;&lt;if not _anyRecruited&gt;&gt;&lt;p&gt;&lt;em&gt;No companions recruited yet.&lt;/em&gt;&lt;/p&gt;&lt;&lt;/if&gt;&gt;
-
-&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   DIALOGUE SYSTEM
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="9" name="DialogueUI" tags="" position="1100,100" size="100,100">&lt;div class=&quot;dialogue-npc&quot;&gt;
-  &lt;h3&gt;&lt;&lt;= $current_dialogue.npcName&gt;&gt;&lt;/h3&gt;
-  &lt;p&gt;&lt;&lt;= $current_dialogue.npcLine&gt;&gt;&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;&lt;if $current_dialogue.choices and $current_dialogue.choices.length gt 0&gt;&gt;
-  &lt;div class=&quot;dialogue-choices&quot;&gt;
-    &lt;&lt;for _ci = 0; _ci lt $current_dialogue.choices.length; _ci++&gt;&gt;
-      &lt;&lt;set _choice to $current_dialogue.choices[_ci]&gt;&gt;
-      &lt;&lt;if _choice.condition()&gt;&gt;
-        &lt;&lt;button _choice.text&gt;&gt;
-          /* Execute choice effects */
-          &lt;&lt;run _choice.effects()&gt;&gt;
-          
-          /* Move to next node or return */
-          &lt;&lt;if _choice.next&gt;&gt;
-            &lt;&lt;dialogue $current_dialogue.npc _choice.next&gt;&gt;
-          &lt;&lt;else&gt;&gt;
-            &lt;&lt;previous&gt;&gt;
-          &lt;&lt;/if&gt;&gt;
-        &lt;&lt;/button&gt;&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/for&gt;&gt;
-  &lt;/div&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;p&gt;&lt;&lt;back &quot;Close conversation&quot;&gt;&gt;&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   SPELL SYSTEM UI
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="10" name="MiraSpellSelect" tags="" position="1225,100" size="100,100">&lt;h3&gt;✨ Mira&#39;s Spellbook&lt;/h3&gt;
-&lt;p&gt;Mira mutters an incantation. Which spell should she cast?&lt;/p&gt;
-
-&lt;div style=&quot;margin:1.5em 0;&quot;&gt;
-  &lt;&lt;for _si = 0; _si lt $mira_available_spells.length; _si++&gt;&gt;
-    &lt;&lt;set _spell_id to $mira_available_spells[_si].id&gt;&gt;
-    &lt;&lt;set _spell to $spell_registry[_spell_id]&gt;&gt;
-    &lt;&lt;set _slot_info to (_spell.level gt 0 ? &quot; (&quot; + $mira_spell_slots[_spell.level].current + &quot; slots)&quot; : &quot; (cantrip)&quot;)&gt;&gt;
-    
-    &lt;&lt;button _spell.name + _slot_info&gt;&gt;
-      &lt;&lt;castSpell _spell_id&gt;&gt;
-      &lt;&lt;if not $tactical_fight_end&gt;&gt;
-        &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
-      &lt;&lt;else&gt;&gt;
-        &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/button&gt;&gt;
-  &lt;&lt;/for&gt;&gt;
-  
-  &lt;&lt;button &quot;Cancel&quot;&gt;&gt;
-    &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
-  &lt;&lt;/button&gt;&gt;
-&lt;/div&gt;</tw-passagedata><tw-passagedata pid="11" name="SpellsUI" tags="" position="100,225" size="100,100">&lt;h2&gt;✨ Spellbook&lt;/h2&gt;
-
-&lt;&lt;if $mira_in_party&gt;&gt;
-  &lt;div style=&quot;background:#2a2520;border:1px solid #3a342e;padding:1em;margin:1em 0;&quot;&gt;
-    &lt;h3&gt;Mira Ashveil — Wizard&lt;/h3&gt;
-    
-    &lt;h4 style=&quot;color:#e8c87a;margin-top:0;&quot;&gt;Cantrips (at will)&lt;/h4&gt;
-    &lt;&lt;for _si = 0; _si lt $mira_spells_known.length; _si++&gt;&gt;
-      &lt;&lt;set _spell_id to $mira_spells_known[_si]&gt;&gt;
-      &lt;&lt;set _spell to $spell_registry[_spell_id]&gt;&gt;
-      &lt;&lt;if _spell.level is 0&gt;&gt;
-        &lt;div class=&quot;spellbook-entry&quot;&gt;
-          &lt;strong&gt;&lt;&lt;= _spell.name&gt;&gt;&lt;/strong&gt; &lt;em&gt;&lt;&lt;= _spell.school&gt;&gt;&lt;/em&gt;&lt;br&gt;
-          &lt;small&gt;&lt;&lt;= _spell.description&gt;&gt;&lt;/small&gt;
-        &lt;/div&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/for&gt;&gt;
-    
-    &lt;&lt;for _level = 1; _level lte 2; _level++&gt;&gt;
-      &lt;&lt;set _levelSpells to []&gt;&gt;
-      &lt;&lt;for _si = 0; _si lt $mira_spells_known.length; _si++&gt;&gt;
-        &lt;&lt;set _spell_id to $mira_spells_known[_si]&gt;&gt;
-        &lt;&lt;set _spell to $spell_registry[_spell_id]&gt;&gt;
-        &lt;&lt;if _spell.level is _level&gt;&gt;
-          &lt;&lt;run _levelSpells.push({id: _spell_id, spell: _spell})&gt;&gt;
-        &lt;&lt;/if&gt;&gt;
-      &lt;&lt;/for&gt;&gt;
-      
-      &lt;&lt;if _levelSpells.length gt 0&gt;&gt;
-        &lt;h4 style=&quot;color:#e8c87a;margin-top:1em;&quot;&gt;Level &lt;&lt;= _level&gt;&gt; Spells &lt;span class=&quot;spell-slot-info&quot;&gt;(&lt;&lt;= $mira_spell_slots[_level].current&gt;&gt;/&lt;&lt;= $mira_spell_slots[_level].max&gt;&gt; slots)&lt;/span&gt;&lt;/h4&gt;
-        &lt;&lt;for _spell_info of _levelSpells&gt;&gt;
-          &lt;div class=&quot;spellbook-entry&quot;&gt;
-            &lt;strong&gt;&lt;&lt;= _spell_info.spell.name&gt;&gt;&lt;/strong&gt; &lt;em&gt;&lt;&lt;= _spell_info.spell.school&gt;&gt;&lt;/em&gt;&lt;br&gt;
-            &lt;small&gt;&lt;&lt;= _spell_info.spell.description&gt;&gt;&lt;/small&gt;
-          &lt;/div&gt;
-        &lt;&lt;/for&gt;&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/for&gt;&gt;
-  &lt;/div&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;p&gt;&lt;em&gt;No spellcasters in the party yet.&lt;/em&gt;&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   FACTION &amp; REPUTATION UI
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="12" name="FactionUI" tags="" position="225,225" size="100,100">&lt;h2&gt;⚔ Factions &amp; Reputation&lt;/h2&gt;
-
-&lt;&lt;for _fi, _fac range $faction_registry&gt;&gt;
-  &lt;&lt;if not _fac.hidden&gt;&gt;
-    &lt;&lt;set _rep   to State.variables[&quot;faction_&quot; + _fac.id + &quot;_rep&quot;]  || 0&gt;&gt;
-    &lt;&lt;set _tier  to State.variables[&quot;faction_&quot; + _fac.id + &quot;_tier&quot;] || &quot;neutral&quot;&gt;&gt;
-    &lt;&lt;set _min   to _fac.minRep&gt;&gt;
-    &lt;&lt;set _max   to _fac.maxRep&gt;&gt;
-
-    &lt;div class=&quot;faction-card faction-tier-&lt;&lt;= _tier&gt;&gt;&quot;&gt;
-      &lt;div class=&quot;faction-card-header&quot;&gt;
-        &lt;span class=&quot;faction-icon-lg&quot;&gt;&lt;&lt;= _fac.icon&gt;&gt;&lt;/span&gt;
-        &lt;div class=&quot;faction-card-title&quot;&gt;
-          &lt;span class=&quot;faction-card-name&quot;&gt;&lt;&lt;= _fac.display&gt;&gt;&lt;/span&gt;
-          &lt;span class=&quot;faction-tier-label&quot;&gt;&lt;&lt;= _tier.charAt(0).toUpperCase() + _tier.slice(1)&gt;&gt;&lt;/span&gt;
-        &lt;/div&gt;
-        &lt;span class=&quot;faction-rep-score&quot;&gt;&lt;&lt;if _rep gte 0&gt;&gt;+&lt;&lt;/if&gt;&gt;&lt;&lt;= _rep&gt;&gt;&lt;/span&gt;
-      &lt;/div&gt;
-
-      &lt;div class=&quot;faction-rep-bar-wrap&quot;&gt;
-        &lt;div class=&quot;faction-rep-midpoint&quot;&gt;&lt;/div&gt;
-        &lt;&lt;if _rep lt 0&gt;&gt;
-          &lt;&lt;set _negPct to Math.round((Math.abs(_rep) / Math.abs(_min)) * 50)&gt;&gt;
-          &lt;div class=&quot;faction-rep-fill faction-rep-neg&quot; style=&quot;width:&lt;&lt;= _negPct&gt;&gt;%; right:50%; position:absolute; top:0; bottom:0;&quot;&gt;&lt;/div&gt;
-        &lt;&lt;elseif _rep gt 0&gt;&gt;
-          &lt;&lt;set _posPct to Math.round((_rep / _max) * 50)&gt;&gt;
-          &lt;div class=&quot;faction-rep-fill faction-rep-pos&quot; style=&quot;width:&lt;&lt;= _posPct&gt;&gt;%; left:50%; position:absolute; top:0; bottom:0;&quot;&gt;&lt;/div&gt;
-        &lt;&lt;/if&gt;&gt;
-      &lt;/div&gt;
-
-      &lt;div class=&quot;faction-tier-markers&quot;&gt;
-        &lt;span class=&quot;tier-mark tier-hostile&quot;    title=&quot;Hostile&quot;&gt;    ✦&lt;/span&gt;
-        &lt;span class=&quot;tier-mark tier-unfriendly&quot; title=&quot;Unfriendly&quot;&gt; ✦&lt;/span&gt;
-        &lt;span class=&quot;tier-mark tier-neutral&quot;    title=&quot;Neutral&quot;&gt;    ✦&lt;/span&gt;
-        &lt;span class=&quot;tier-mark tier-friendly&quot;   title=&quot;Friendly&quot;&gt;   ✦&lt;/span&gt;
-        &lt;span class=&quot;tier-mark tier-allied&quot;     title=&quot;Allied&quot;&gt;     ✦&lt;/span&gt;
-        &lt;span class=&quot;tier-mark tier-exalted&quot;    title=&quot;Exalted&quot;&gt;    ✦&lt;/span&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;&lt;/if&gt;&gt;
-&lt;&lt;/for&gt;&gt;
-
-&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   WORLD MAP
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="13" name="WorldMap" tags="" position="350,225" size="100,100">&lt;h2&gt;World Map&lt;/h2&gt;
-&lt;p style=&quot;color:#7a6e60;font-size:.85em&quot;&gt;Locations you have visited are shown. Unknown locations are hidden.&lt;/p&gt;
-
-&lt;&lt;wmRegion &quot;REGION-Thornwood&quot; &quot;The Thornwood&quot;&gt;&gt;
-&lt;div style=&quot;margin-left:1em&quot;&gt;
-  &lt;em&gt;Area: Riverside&lt;/em&gt;&lt;br&gt;
-  &lt;&lt;wmLoc &quot;LOC-Thorngate&quot;    &quot;Thorngate Village&quot;    &quot;LOC-Thorngate&quot;&gt;&gt;
-  &lt;&lt;wmLoc &quot;LOC-DrunkGriffin&quot; &quot;The Drunk Griffin Inn&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;&lt;back &quot;Back&quot;&gt;&gt;&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   COMBAT OUTCOME (D5e resolved combat � D5e.combat.start() navigates here)
-   ══════════════════════════════════════════════════════════════════════════ */
-
-/* Template pattern:
-   1. Call &lt;&lt;combat &quot;enemy_id&quot; &quot;CombatOutcome&quot;&gt;&gt; from any button/passage
-   2. Set $combat_return_passage before calling
-   3. Set $travel_pending_loot if loot should drop on win
-   Results: $lastCombatOutcome (&quot;player_won&quot;|&quot;player_lost&quot;|&quot;player_retreated&quot;)
-            $lastCombatXP, $lastCombatLoot, $lastCombatLog, $lastEnemyName
-*/</tw-passagedata><tw-passagedata pid="14" name="CombatOutcome" tags="" position="475,225" size="100,100">&lt;h2&gt;Combat � &lt;&lt;= $lastEnemyName&gt;&gt;&lt;/h2&gt;
-
-&lt;&lt;if $combat_mode is &quot;tactical&quot;&gt;&gt;
-  &lt;!-- Tactical Combat Result --&gt;
-  &lt;&lt;if $tactical_player_won&gt;&gt;
-    &lt;p style=&quot;color:#7ec87e&quot;&gt;&lt;strong&gt;⚔️ Victory!&lt;/strong&gt;&lt;/p&gt;
-    &lt;p&gt;You have defeated all your enemies.&lt;/p&gt;
-    
-    &lt;!-- Calculate XP from defeated enemies (use D5e.xp field) --&gt;
-    &lt;&lt;set _totalXP to 0&gt;&gt;
-    &lt;&lt;for _ei = 0; _ei lt $tactical_enemies.length; _ei++&gt;&gt;
-      &lt;&lt;set _totalXP += ($tactical_enemies[_ei].xp || 50)&gt;&gt;
-    &lt;&lt;/for&gt;&gt;
-    
-    &lt;&lt;if _totalXP gt 0&gt;&gt;
-      &lt;p class=&quot;xp-gain&quot;&gt;+&lt;&lt;= _totalXP&gt;&gt; XP&lt;/p&gt;
-      &lt;&lt;xpGain _totalXP&gt;&gt;
-    &lt;&lt;/if&gt;&gt;
-    
-    &lt;!-- Loot drop if applicable --&gt;
-    &lt;&lt;if $travel_pending_loot isnot &quot;&quot;&gt;&gt;
-      &lt;p&gt;You search the bodies.&lt;/p&gt;
-      &lt;&lt;lootDrop $travel_pending_loot $combat_return_passage&gt;&gt;
-      &lt;&lt;set $travel_pending_loot to &quot;&quot;&gt;&gt;
-    &lt;&lt;else&gt;&gt;
-      &lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;
-    &lt;&lt;/if&gt;&gt;
-  &lt;&lt;elseif $lastCombatOutcome is &quot;player_fled&quot;&gt;&gt;
-    &lt;p style=&quot;color:#c4a862&quot;&gt;You managed to escape from combat.&lt;/p&gt;
-    &lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;
-  &lt;&lt;else&gt;&gt;
-    &lt;p style=&quot;color:#e07070&quot;&gt;&lt;strong&gt;You have been defeated.&lt;/strong&gt;&lt;/p&gt;
-    &lt;&lt;link &quot;↩ Restart&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  &lt;&lt;/if&gt;&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;!-- Automatic Combat Result (D5e.combat.start) --&gt;
-  &lt;&lt;set $lastEnemyName to &quot;Goblins&quot;&gt;&gt;
-  
-  &lt;&lt;if $lastCombatOutcome is &quot;player_won&quot;&gt;&gt;
-    &lt;p style=&quot;color:#7ec87e&quot;&gt;&lt;strong&gt;Victory!&lt;/strong&gt;&lt;/p&gt;
-    &lt;&lt;if $lastEnemySurrendered&gt;&gt;
-      &lt;p&gt;&lt;em&gt;Your enemy throws down their weapon and yields.&lt;/em&gt;&lt;/p&gt;
-    &lt;&lt;/if&gt;&gt;
-    &lt;&lt;if $lastCombatXP gt 0&gt;&gt;
-      &lt;p class=&quot;xp-gain&quot;&gt;+&lt;&lt;= $lastCombatXP&gt;&gt; XP&lt;/p&gt;
-      &lt;&lt;run D5e.checkLevelUp()&gt;&gt;
-      &lt;&lt;if $partyLeveledUp&gt;&gt;
-        &lt;p style=&quot;color:#c4a862&quot;&gt;&lt;strong&gt;⬆ Level Up!&lt;/strong&gt; You are now level &lt;&lt;= $partyNewLevel&gt;&gt;.&lt;/p&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/if&gt;&gt;
-    &lt;&lt;if $lastCombatLoot.length gt 0&gt;&gt;
-      &lt;p&gt;Loot found: &lt;&lt;= $lastCombatLoot.join(&quot;, &quot;)&gt;&gt;&lt;/p&gt;
-    &lt;&lt;/if&gt;&gt;
-    &lt;&lt;if $travel_pending_loot isnot &quot;&quot;&gt;&gt;
-      &lt;p&gt;You search the bodies.&lt;/p&gt;
-      &lt;&lt;lootDrop $travel_pending_loot $combat_return_passage&gt;&gt;
-      &lt;&lt;set $travel_pending_loot to &quot;&quot;&gt;&gt;
-    &lt;&lt;else&gt;&gt;
-      &lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;
-    &lt;&lt;/if&gt;&gt;
-  &lt;&lt;elseif $lastCombatOutcome is &quot;player_lost&quot;&gt;&gt;
-    &lt;p style=&quot;color:#e07070&quot;&gt;&lt;strong&gt;You have fallen.&lt;/strong&gt;&lt;/p&gt;
-    &lt;&lt;link &quot;↩ Restart&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  &lt;&lt;else&gt;&gt;
-    &lt;p style=&quot;color:#c4a862&quot;&gt;You escaped.&lt;/p&gt;
-    &lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;
-  &lt;&lt;/if&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;&lt;combatlog&gt;&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   COMBAT MODE SELECTOR (hybrid automatic/tactical)
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="15" name="CombatModeSelect" tags="" position="600,225" size="100,100">&lt;h2&gt;Combat Approach&lt;/h2&gt;
-&lt;p&gt;How do you want to handle this fight?&lt;/p&gt;
-
-&lt;div style=&quot;background:#2a2520;border:2px solid #3a342e;padding:1.5em;margin:1.5em 0;&quot;&gt;
-  &lt;h3&gt;Automatic Combat&lt;/h3&gt;
-  &lt;p style=&quot;color:#b8aa98&quot;&gt;The fight plays out according to D&amp;D 5e rules. Fast-paced and narratively focused. You&#39;ll see the outcome without choosing each action.&lt;/p&gt;
-  &lt;p&gt;&lt;&lt;button &quot;Fight Automatically&quot;&gt;&gt;
-    &lt;&lt;set $combat_mode to &quot;automatic&quot;&gt;&gt;
-    &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
-  &lt;&lt;/button&gt;&gt;&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;div style=&quot;background:#2a2520;border:2px solid #3a342e;padding:1.5em;margin:1.5em 0;&quot;&gt;
-  &lt;h3&gt;Tactical Combat (Turn-Based)&lt;/h3&gt;
-  &lt;p style=&quot;color:#b8aa98&quot;&gt;You choose your action each round: Attack, Defend, Use a Skill, or Flee. Slow and strategic.&lt;/p&gt;
-  &lt;p&gt;&lt;&lt;button &quot;Fight Tactically&quot;&gt;&gt;
-    &lt;&lt;set $combat_mode to &quot;tactical&quot;&gt;&gt;
-    &lt;&lt;set $tactical_round to 0&gt;&gt;
-    &lt;&lt;set $tactical_log to []&gt;&gt;
-    &lt;&lt;set $tactical_fight_end to false&gt;&gt;
-    &lt;&lt;set $tactical_player_won to false&gt;&gt;
-    &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
-  &lt;&lt;/button&gt;&gt;&lt;/p&gt;
-&lt;/div&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   TACTICAL COMBAT UI — turn-by-turn interface
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="16" name="TacticalCombatUI" tags="" position="725,225" size="100,100">&lt;h2&gt;Tactical Combat&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;&lt;&lt;= $playerName&gt;&gt;&lt;/strong&gt; vs 
-&lt;&lt;for _ei = 0; _ei lt $tactical_enemies.length; _ei++&gt;&gt;
-  &lt;&lt;if _ei gt 0&gt;&gt;, &lt;&lt;/if&gt;&gt;&lt;&lt;= $tactical_enemies[_ei].name&gt;&gt;
-&lt;&lt;/for&gt;&gt;&lt;/p&gt;
-
-&lt;div style=&quot;background:#1e1b18;border:1px solid #3a342e;padding:1em;margin:1em 0;&quot;&gt;
-  &lt;h3&gt;Enemy Status&lt;/h3&gt;
-  &lt;&lt;tacticalEnemyStatus&gt;&gt;
-  
-  &lt;p style=&quot;margin-top:1em;color:#7a6e60&quot;&gt;
-    &lt;strong&gt;Your HP:&lt;/strong&gt; &lt;&lt;= $partyCurrentHP&gt;&gt;/&lt;&lt;= $partyMaxHP&gt;&gt; · 
-    &lt;strong&gt;AC:&lt;/strong&gt; &lt;&lt;= $partyAC&gt;&gt; · 
-    &lt;strong&gt;Round:&lt;/strong&gt; &lt;&lt;= ($tactical_round + 1)&gt;&gt;
-  &lt;/p&gt;
-&lt;/div&gt;
-
-&lt;&lt;if not $tactical_fight_end&gt;&gt;
-  &lt;h3&gt;Your Action&lt;/h3&gt;
-  &lt;p&gt;What do you do?&lt;/p&gt;
-  
-  &lt;div style=&quot;margin:1em 0;&quot;&gt;
-    &lt;&lt;button &quot;⚔️ Attack&quot;&gt;&gt;
-      &lt;&lt;set $tactical_player_action to &quot;attack&quot;&gt;&gt;
-      &lt;&lt;set $tactical_selected_enemy to 0&gt;&gt;
-      &lt;&lt;tacticalRound&gt;&gt;
-      &lt;&lt;if not $tactical_fight_end&gt;&gt;
-        &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
-      &lt;&lt;else&gt;&gt;
-        &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/button&gt;&gt;
-    
-    &lt;&lt;button &quot;🛡️ Defend&quot;&gt;&gt;
-      &lt;&lt;set $tactical_player_action to &quot;defend&quot;&gt;&gt;
-      &lt;&lt;tacticalRound&gt;&gt;
-      &lt;&lt;if not $tactical_fight_end&gt;&gt;
-        &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
-      &lt;&lt;else&gt;&gt;
-        &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/button&gt;&gt;
-    
-    &lt;&lt;button &quot;🧪 Use Potion&quot;&gt;&gt;
-      &lt;&lt;usePotionTactical&gt;&gt;
-      &lt;&lt;if not $tactical_fight_end&gt;&gt;
-        &lt;&lt;goto &quot;TacticalCombatUI&quot;&gt;&gt;
-      &lt;&lt;else&gt;&gt;
-        &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;&lt;/button&gt;&gt;
-    
-    &lt;&lt;if $mira_in_party&gt;&gt;
-      &lt;&lt;button &quot;✨ Mira Casts Spell&quot;&gt;&gt;
-        &lt;&lt;getMiraAvailableSpells&gt;&gt;
-        &lt;&lt;if $mira_available_spells and $mira_available_spells.length gt 0&gt;&gt;
-          &lt;&lt;goto &quot;MiraSpellSelect&quot;&gt;&gt;
-        &lt;&lt;else&gt;&gt;
-          &lt;p style=&quot;color:#e07070&quot;&gt;&lt;em&gt;Mira has no spells available!&lt;/em&gt;&lt;/p&gt;
-        &lt;&lt;/if&gt;&gt;
-      &lt;&lt;/button&gt;&gt;
-    &lt;&lt;/if&gt;&gt;
-    
-    &lt;&lt;button &quot;💨 Flee&quot;&gt;&gt;
-      &lt;&lt;set $tactical_player_action to &quot;flee&quot;&gt;&gt;
-      &lt;&lt;tacticalRound&gt;&gt;
-      &lt;&lt;goto &quot;CombatOutcome&quot;&gt;&gt;
-    &lt;&lt;/button&gt;&gt;
-  &lt;/div&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;div style=&quot;background:#2a2520;border:2px solid #3a342e;padding:1em;margin:1em 0;&quot;&gt;
-    &lt;h3&gt;&lt;&lt;if $tactical_player_won&gt;&gt;⚔️ Victory!&lt;&lt;else&gt;&gt;💀 Defeated&lt;&lt;/if&gt;&gt;&lt;/h3&gt;
-    &lt;&lt;if $tactical_player_won&gt;&gt;
-      &lt;p&gt;The last enemy falls. Combat is over.&lt;/p&gt;
-    &lt;&lt;else&gt;&gt;
-      &lt;p&gt;You have been vanquished. The fight is lost.&lt;/p&gt;
-    &lt;&lt;/if&gt;&gt;
-  &lt;/div&gt;
-  
-  &lt;p style=&quot;margin-top:1em&quot;&gt;&lt;&lt;link &quot;Continue&quot; $combat_return_passage&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;h3&gt;Combat Log&lt;/h3&gt;
-&lt;div style=&quot;background:#1e1b18;border:1px solid #3a342e;padding:.8em;height:6em;overflow-y:auto;font-size:.85em;line-height:1.4;&quot;&gt;
-  &lt;&lt;for _li = $tactical_log.length - 1; _li gte Math.max(0, $tactical_log.length - 6); _li--&gt;&gt;
-    &lt;&lt;if _li lt $tactical_log.length&gt;&gt;
-      &lt;div&gt;&lt;&lt;= $tactical_log[_li]&gt;&gt;&lt;/div&gt;
-    &lt;&lt;/if&gt;&gt;
-  &lt;&lt;/for&gt;&gt;
-&lt;/div&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   LOOT CONTAINER UI
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="17" name="LootContainer" tags="" position="850,225" size="100,100">&lt;&lt;if $loot_active_container&gt;&gt;
-  &lt;&lt;set _table to $loot_table_registry[$loot_active_container]&gt;&gt;
-  &lt;&lt;if _table&gt;&gt;
-    &lt;&lt;goto &quot;LootContainerUI&quot;&gt;&gt;
-  &lt;&lt;/if&gt;&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="18" name="LootContainerUI" tags="" position="975,225" size="100,100">&lt;h2&gt;&lt;&lt;= $loot_table_registry[$loot_active_container].label&gt;&gt;&lt;/h2&gt;
-
-&lt;&lt;set _openKey to &quot;loot_opened_&quot; + $loot_active_container&gt;&gt;
-&lt;&lt;if State.variables[_openKey]&gt;&gt;
-  &lt;p&gt;&lt;em&gt;The container is empty.&lt;/em&gt;&lt;/p&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;&lt;set _table to $loot_table_registry[$loot_active_container]&gt;&gt;
-  &lt;&lt;if _table.gold_min gt 0 or _table.gold_max gt 0&gt;&gt;
-    &lt;p&gt;Coins glint in the bottom. Take the gold?
-    &lt;&lt;button &quot;[Take all gold]&quot;&gt;&gt;
-      &lt;&lt;if not State.variables[_openKey]&gt;&gt;
-        &lt;&lt;set _g to Math.floor(Math.random() * (_table.gold_max - _table.gold_min + 1)) + _table.gold_min&gt;&gt;
-        &lt;&lt;lootGold _g&gt;&gt;
-        &lt;&lt;run State.variables[_openKey] = true&gt;&gt;
-      &lt;&lt;/if&gt;&gt;
-      &lt;&lt;run Engine.play(&quot;LootContainerUI&quot;, true);&gt;&gt;
-    &lt;&lt;/button&gt;&gt;&lt;/p&gt;
-  &lt;&lt;/if&gt;&gt;
-  &lt;&lt;for _li = 0; _li lt _table.items.length; _li++&gt;&gt;
-    &lt;&lt;set _le to _table.items[_li]&gt;&gt;
-    &lt;p&gt;&lt;&lt;= _le.name&gt;&gt;
-    &lt;&lt;button &quot;[Take]&quot;&gt;&gt;
-      &lt;&lt;if not State.variables[_openKey]&gt;&gt;&lt;&lt;pickupItem _le.item _le.name&gt;&gt;&lt;&lt;run State.variables[_openKey] = true&gt;&gt;&lt;&lt;/if&gt;&gt;
-      &lt;&lt;run Engine.play(&quot;LootContainerUI&quot;, true);&gt;&gt;
-    &lt;&lt;/button&gt;&gt;&lt;/p&gt;
-  &lt;&lt;/for&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;&lt;link &quot;← Leave&quot; $loot_container_return&gt;&gt;&lt;&lt;/link&gt;&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   CRAFT UI
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="19" name="CraftUI" tags="" position="1100,225" size="100,100">&lt;h2&gt;Crafting � &lt;&lt;= $craft_active_station&gt;&gt;&lt;/h2&gt;
-
-&lt;&lt;for _ri = 0; _ri lt $craft_registry.length; _ri++&gt;&gt;
-  &lt;&lt;set _re to $craft_registry[_ri]&gt;&gt;
-  &lt;&lt;if _re.station is $craft_active_station or _re.station is &quot;any&quot;&gt;&gt;
-    &lt;div class=&quot;craft-recipe&quot;&gt;
-      &lt;strong&gt;&lt;&lt;= _re.display&gt;&gt;&lt;/strong&gt;&lt;br&gt;
-      &lt;em style=&quot;font-size:.85em&quot;&gt;&lt;&lt;= _re.notes&gt;&gt;&lt;/em&gt;&lt;br&gt;
-      &lt;small&gt;Ingredients:
-        &lt;&lt;craftCheck _re.id&gt;&gt;
-        &lt;&lt;for _ii = 0; _ii lt _re.ingredients.length; _ii++&gt;&gt;
-          &lt;&lt;set _ie to _re.ingredients[_ii]&gt;&gt;
-          &lt;&lt;set _inv to $inventory.find(function(i){ return i.item === _ie.item; })&gt;&gt;
-          &lt;span class=&quot;&lt;&lt;if _inv and _inv.qty gte _ie.qty&gt;&gt;craft-ok&lt;&lt;else&gt;&gt;craft-missing&lt;&lt;/if&gt;&gt;&quot;&gt;
-            &lt;&lt;= _ie.name&gt;&gt; �&lt;&lt;= _ie.qty&gt;&gt; (have &lt;&lt;= (_inv ? _inv.qty : 0)&gt;&gt;)
-          &lt;/span&gt;
-        &lt;&lt;/for&gt;&gt;
-      &lt;/small&gt;&lt;br&gt;
-      &lt;&lt;if $craft_can_make&gt;&gt;
-        &lt;&lt;link &quot;[Craft]&quot; &quot;CraftResultUI&quot;&gt;&gt;&lt;&lt;craftAttempt _re.id&gt;&gt;&lt;&lt;set $craft_last_recipe to _re.id&gt;&gt;&lt;&lt;/link&gt;&gt;
-      &lt;&lt;else&gt;&gt;
-        &lt;span class=&quot;craft-missing&quot;&gt;Missing: &lt;&lt;= $craft_missing_items.join(&quot;, &quot;)&gt;&gt;&lt;/span&gt;
-      &lt;&lt;/if&gt;&gt;
-    &lt;/div&gt;
-  &lt;&lt;/if&gt;&gt;
-&lt;&lt;/for&gt;&gt;
-
-&lt;&lt;link &quot;← Leave&quot; $craft_station_return&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="20" name="CraftResultUI" tags="" position="1225,225" size="100,100">&lt;h2&gt;Crafting Result&lt;/h2&gt;
-
-&lt;&lt;set _rec to $craft_registry.find(function(r){ return r.id === $craft_last_recipe; })&gt;&gt;
-&lt;&lt;if $last_craft_success&gt;&gt;
-  &lt;p style=&quot;color:#7ec87e&quot;&gt;✓ You craft &lt;strong&gt;&lt;&lt;= _rec.result_name&gt;&gt;&lt;/strong&gt;.&lt;/p&gt;
-  &lt;&lt;if _rec.result_heal and _rec.result_heal gt 0&gt;&gt;
-    &lt;p class=&quot;rest-heal&quot;&gt;You apply the poultice immediately. +&lt;&lt;= _rec.result_heal&gt;&gt; HP.&lt;/p&gt;
-  &lt;&lt;/if&gt;&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;p style=&quot;color:#e07070&quot;&gt;✗ The attempt fails.&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;&lt;link &quot;Continue&quot; $craft_station_return&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
-&lt;&lt;link &quot;Craft another&quot; &quot;CraftUI&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   REST UI
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="21" name="RestUI" tags="" position="100,350" size="100,100">&lt;h2&gt;Long Rest&lt;/h2&gt;
-&lt;p&gt;You spend the night at &lt;&lt;= $rest_type_last is &quot;long&quot; ? &quot;the inn&quot; : &quot;camp&quot;&gt;&gt;. The fire dies to embers.&lt;/p&gt;
-&lt;p style=&quot;color:#7ec87e&quot;&gt;HP fully restored: &lt;&lt;= $partyMaxHP&gt;&gt;/&lt;&lt;= $partyMaxHP&gt;&gt;&lt;br&gt;
-Hit dice recovered: &lt;&lt;= $playerMaxHitDice&gt;&gt;/&lt;&lt;= $playerMaxHitDice&gt;&gt;&lt;&lt;= $playerHitDiceType&gt;&gt;&lt;br&gt;
-Action Surge and Second Wind available.&lt;/p&gt;
-&lt;p style=&quot;color:#7a6e60;font-size:.85em&quot;&gt;Day &lt;&lt;= $day_counter - 1&gt;&gt; ends. Day &lt;&lt;= $day_counter&gt;&gt; begins.&lt;/p&gt;
-
-&lt;&lt;link &quot;Wake up →&quot; $rest_return_passage&gt;&gt;&lt;&lt;set $inn_paid to false&gt;&gt;&lt;&lt;/link&gt;&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   TRAVEL ENCOUNTER TRANSITION
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="22" name="TravelEncounterTransition" tags="" position="225,350" size="100,100">&lt;&lt;set _enc to $travel_active_encounter&gt;&gt;
-&lt;div style=&quot;background:#211e1b;border:1px solid #6a3a2e;padding:1em;margin:1em 0&quot;&gt;
-  &lt;strong&gt;⚠ &lt;&lt;= _enc.display&gt;&gt;&lt;/strong&gt;&lt;br&gt;
-  &lt;em&gt;&lt;&lt;= _enc.intro&gt;&gt;&lt;/em&gt;
-&lt;/div&gt;
-
-&lt;&lt;if _enc.type is &quot;combat&quot;&gt;&gt;
-  &lt;p&gt;&lt;&lt;button &quot;Fight&quot;&gt;&gt;&lt;&lt;travelEncounterResult&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
-&lt;&lt;elseif _enc.type is &quot;discovery&quot;&gt;&gt;
-  &lt;p&gt;&lt;&lt;button &quot;Investigate&quot;&gt;&gt;&lt;&lt;travelEncounterResult&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
-&lt;&lt;elseif _enc.type is &quot;hazard&quot;&gt;&gt;
-  &lt;p&gt;&lt;&lt;button &quot;Take the hit&quot;&gt;&gt;&lt;&lt;travelEncounterResult&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;p&gt;&lt;&lt;button &quot;Investigate&quot;&gt;&gt;&lt;&lt;travelEncounterResult&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="23" name="Start" tags="" position="350,350" size="100,100">&lt;&lt;goto &quot;NODE-001_RoadToThorn&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="24" name="NODE-001_RoadToThorn" tags="" position="475,350" size="100,100">&lt;h2&gt;The North Road&lt;/h2&gt;
-
-&lt;p&gt;The road out of Ashenvale is packed earth and pine needles, narrowing as it climbs into the Thornwood proper. Your pack sits heavy. The commission from Elder Henne sits heavier — sixty gold for clearing out a goblin den that&#39;s been bleeding the village for three seasons. You&#39;ve taken worse work for less.&lt;/p&gt;
-
-&lt;p&gt;The pines close in. Light comes through in long, angled columns, cold even at midday. Somewhere above, a raven makes a sound like a door being shut.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;The Thornwood feels like it&#39;s waiting to see what kind of person you are.&lt;/em&gt;&lt;/p&gt;
-
-&lt;h3&gt;What do you notice?&lt;/h3&gt;
-
-&lt;&lt;skillCheck &quot;perception&quot; 12&gt;&gt;
-&lt;&lt;if $last_skill_success&gt;&gt;
-  &lt;p class=&quot;perception-success&quot;&gt;&lt;strong&gt;Perception check: Success!&lt;/strong&gt; (&lt;&lt;= $last_skill_roll&gt;&gt; vs DC 12)&lt;/p&gt;
-  &lt;p&gt;Your eyes catch something off in the forest floor. Boot prints, recent — booted feet don&#39;t belong to farmers. Following the trail with your eyes, you spot something else: a crude marker tied to a sapling. Three notches, fresh. The goblins are marking territory.&lt;/p&gt;
-  &lt;&lt;set $goblin_marker_found to true&gt;&gt;
-  &lt;&lt;link &quot;Continue north, forewarned&quot; &quot;NODE-001b_SkillCheckResult&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;p class=&quot;perception-fail&quot;&gt;&lt;strong&gt;Perception check: Failed.&lt;/strong&gt; (&lt;&lt;= $last_skill_roll&gt;&gt; vs DC 12)&lt;/p&gt;
-  &lt;p&gt;You scan the treeline but see nothing out of the ordinary. The forest looks quiet enough. You continue on, watchful but not alarmed.&lt;/p&gt;
-  &lt;&lt;set $goblin_marker_found to false&gt;&gt;
-  &lt;&lt;link &quot;Continue north&quot; &quot;NODE-001b_SkillCheckResult&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="25" name="NODE-001b_SkillCheckResult" tags="" position="600,350" size="100,100">&lt;&lt;if $goblin_marker_found&gt;&gt;
-  /* If perception succeeded, offer advantage on next encounter */
-  &lt;&lt;if $travel_encounter_result is &quot;goblin_patrol&quot;&gt;&gt;
-    &lt;p&gt;The goblins come from the trees exactly where you expected them. Your foreknowledge lets you plant your feet firmly, hand on your sword hilt. They notice you&#39;re ready — something flickers in their yellow eyes. Respect, maybe. Or concern.&lt;/p&gt;
-  &lt;&lt;else&gt;&gt;
-    &lt;p&gt;Your alertness serves you well as you travel. The forest feels less like it&#39;s watching you and more like you&#39;re watching back.&lt;/p&gt;
-  &lt;&lt;/if&gt;&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;p&gt;You continue on, unaware of the markers being left on the trees.&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-/* MECHANIC:TRAVEL_ENCOUNTER region=REGION-Thornwood return=LOC-Thorngate */
-&lt;&lt;travelRoll &quot;REGION-Thornwood&quot; &quot;LOC-Thorngate&quot;&gt;&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   NODE-002_TavernMira
-   scene_type: dialogue
-   parent_location: LOC-DrunkGriffin
-   passage_name:    NODE-002_TavernMira
-   hooks: MECHANIC:COMPANION id=mira action=recruit
-          MECHANIC:COMPANION id=mira approval=+10
-          MECHANIC:QUEST id=clear_goblin_lair action=accept
-          MECHANIC:QUEST id=alchemist_reagents action=accept
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="26" name="NODE-002_TavernMira" tags="" position="725,350" size="100,100">&lt;&lt;set $flag_mira_intro_seen to true&gt;&gt;
-&lt;&lt;set $loc_DrunkGriffin_visited to true&gt;&gt;
-
-&lt;h2&gt;The Woman at the Bar&lt;/h2&gt;
-
-&lt;p&gt;She&#39;s reading a codex propped against her ale mug, making notes in the margins with a charcoal stick. Her robe was expensive once — you can still see the quality of the stitching under the travel stains. She doesn&#39;t look up when you sit down.&lt;/p&gt;
-
-&lt;p&gt;&quot;The barkeep charges double if you use his chair without buying something first,&quot; she says, without looking at you. &quot;I&#39;d recommend the ale. The stew is a lie.&quot;&lt;/p&gt;
-
-&lt;p&gt;Her name is Mira Ashveil, as it turns out — and she has a professional problem. She&#39;s been mapping the Thornwood&#39;s ley-line network, and the goblins have made the northern quadrant impassable. She was about to hire someone.&lt;/p&gt;
-
-&lt;p&gt;&lt;&lt;link &quot;Talk to Mira&quot;&gt;&gt;
-  &lt;&lt;dialogue &quot;mira&quot; &quot;meet&quot;&gt;&gt;
-&lt;&lt;/link&gt;&gt;&lt;/p&gt;
-
-&lt;&lt;if $mira_in_party and $quest_clear_goblin_lair_stage gte 2&gt;&gt;
-  &lt;p&gt;With Mira at your side and the quest ahead, you prepare to move forward.&lt;/p&gt;
-  &lt;p&gt;&lt;&lt;link &quot;Head to the Goblin Lair&quot; &quot;NODE-003_GoblinAmbush&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="27" name="NODE-002b_MiraJoins" tags="" position="850,350" size="100,100">&lt;p&gt;Her grip is firm. She goes back to her codex immediately, but there&#39;s a slight upward twitch at the corner of her mouth.&lt;/p&gt;
-
-&lt;p&gt;&quot;Good. We leave at first light. The lair entrance is about three hours north — there&#39;s a rocky outcrop shaped like a broken tooth. You&#39;ll know it when you see it.&quot;&lt;/p&gt;
-
-&lt;p&gt;She slides a second mug across the bar without ceremony.&lt;/p&gt;
-
-&lt;&lt;companionReact &quot;mira&quot; 5 &quot;\&quot;I&#39;ll buy the round,\&quot; she adds. \&quot;This once.\&quot;&quot; &quot;She doesn&#39;t offer to split the tab.&quot;&gt;&gt;
-
-&lt;&lt;link &quot;Get some rest (return to inn)&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;</tw-passagedata><tw-passagedata pid="28" name="NODE-002c_MiraDeclined" tags="" position="975,350" size="100,100">&lt;p&gt;She shrugs, closes her codex, and goes back to her ale. &quot;Suit yourself. The offer stands if you change your mind.&quot; She sounds entirely unbothered, which somehow makes it worse.&lt;/p&gt;
-
-&lt;p&gt;You&#39;ve accepted the commission. The lair is north, according to the elder — rocky outcrop, broken-tooth shape. Hard to miss.&lt;/p&gt;
-
-&lt;&lt;link &quot;Return to the inn&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   NODE-003_GoblinAmbush
-   scene_type: combat
-   parent_location: LOC-Thorngate
-   passage_name:    NODE-003_GoblinAmbush
-   hooks: MECHANIC:COMBAT enemies=[goblin×2] return=NODE-004_AlchemyBench
-          MECHANIC:LOOT container=goblin_sack (post-combat, handled by CombatBody)
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="29" name="NODE-003_GoblinAmbush" tags="" position="1100,350" size="100,100">&lt;h2&gt;The Lair Entrance&lt;/h2&gt;
-
-&lt;p&gt;The broken-tooth rock is exactly where Mira said it would be. So are the goblins.&lt;/p&gt;
-
-&lt;p&gt;Two of them are crouched by a fire, arguing in their own language over what appears to be a boot. They see you at roughly the same moment you see them. There is a half-second of perfect silence.&lt;/p&gt;
-
-&lt;p&gt;Then one of them throws the boot at you and the other charges.&lt;/p&gt;
-
-&lt;&lt;if $mira_in_party&gt;&gt;
-  &lt;p&gt;&lt;em&gt;Mira steps left, already muttering the syllables of a force-bolt. &quot;Two of them,&quot; she says. &quot;How delightful.&quot;&lt;/em&gt;&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;p&gt;
-  &lt;&lt;button &quot;Fight&quot;&gt;&gt;
-    &lt;&lt;initiateCombat &quot;goblin_lair&quot; &quot;NODE-004_AlchemyBench&quot; &quot;goblin_sack&quot;&gt;&gt;
-  &lt;&lt;/button&gt;&gt;
-&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   NODE-004_AlchemyBench
-   scene_type: exploration
-   parent_location: LOC-Thorngate
-   passage_name:    NODE-004_AlchemyBench
-   hooks: MECHANIC:CRAFT station=alchemy_bench return=LOC-DrunkGriffin
-          MECHANIC:FLAG flag=lair_cleared value=true
-          MECHANIC:QUEST id=clear_goblin_lair action=advance (stage 3)
-          MECHANIC:COMPANION id=mira approval=+5
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="30" name="NODE-004_AlchemyBench" tags="" position="1225,350" size="100,100">&lt;&lt;if not $flag_lair_cleared&gt;&gt;
-  &lt;&lt;set $flag_lair_cleared to true&gt;&gt;
-  &lt;&lt;questAdvance &quot;clear_goblin_lair&quot;&gt;&gt;
-  /* Now at stage 3: return to Henne */
-  &lt;&lt;companionApproval &quot;mira&quot; +5&gt;&gt;
-  /* Faction reputation changes */
-  &lt;&lt;factionRep &quot;city_guard&quot; 10&gt;&gt;
-  &lt;&lt;factionRep &quot;temple_order&quot; 5&gt;&gt;
-  &lt;&lt;factionRep &quot;dark_syndicate&quot; -3&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;h2&gt;Inside the Lair&lt;/h2&gt;
-
-&lt;p&gt;Past the entrance, the lair is three chambers of low ceilings and stolen goods. The goblins had a taste for brass candlesticks, apparently, and a concerning quantity of rope. In the back room, wedged between a pile of boots and a wooden crate, you find a small alchemist&#39;s bench — the portable kind, folded flat. Someone&#39;s been using it recently.&lt;/p&gt;
-
-&lt;&lt;if $mira_in_party&gt;&gt;
-  &lt;p&gt;Mira crouches over the bench, turns one of the jars over in her hands, and sniffs the cork. &quot;Moonleaf extract. Not refined, but workable.&quot; She glances at you. &quot;You could make a field poultice with this if you have the cloth.&quot;&lt;/p&gt;
-  &lt;p&gt;&lt;em&gt;Mira approves of finding the bench: she marks something in her codex.&lt;/em&gt;&lt;/p&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;p&gt;A small reference card is tucked under the bench. The handwriting is careful, technical. Someone knew what they were doing. You recognize the drawing of moonleaf — a common enough wound herb.&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;&lt;set _hasBandage to $inventory.some(function(i){ return i.item === &quot;bandage_cloth&quot; and i.qty gte 2; })&gt;&gt;
-&lt;&lt;set _hasMoonleaf to $inventory.some(function(i){ return i.item === &quot;moonleaf&quot; and i.qty gte 1; })&gt;&gt;
-
-&lt;&lt;if _hasBandage and _hasMoonleaf&gt;&gt;
-  &lt;p&gt;You have what you need to use the bench.&lt;/p&gt;
-  &lt;p&gt;&lt;&lt;button &quot;Use the alchemy bench&quot;&gt;&gt;&lt;&lt;craftStation &quot;alchemy_bench&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;&lt;&lt;/button&gt;&gt;&lt;/p&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;p style=&quot;color:#6a5e50&quot;&gt;&lt;em&gt;You don&#39;t have the ingredients to use the bench right now. (Need: Bandage Cloth ×2, Moonleaf ×1)&lt;/em&gt;&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;p&gt;The lair is clear. Time to collect the reward.&lt;/p&gt;
-[[Head back to Thorngate|LOC-DrunkGriffin]]
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   NODE-005_InnRest
-   scene_type: rest
-   parent_location: LOC-DrunkGriffin
-   passage_name:    NODE-005_InnRest
-   hooks: MECHANIC:REST type=long return=LOC-DrunkGriffin
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="31" name="NODE-005_InnRest" tags="" position="100,475" size="100,100">/* One-shot payment — only charge once per rest session */
-&lt;&lt;if not $inn_paid&gt;&gt;
-  &lt;&lt;set $inn_paid to true&gt;&gt;
-  &lt;&lt;if $gold gte 5&gt;&gt;&lt;&lt;set $gold to $gold - 5&gt;&gt;&lt;&lt;/if&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;h2&gt;A Room at the Griffin&lt;/h2&gt;
-
-&lt;p&gt;The room is small and smells like wood resin and whatever the previous guest was cooking. The mattress is stuffed with pine needles. It is, nevertheless, a bed.&lt;/p&gt;
-
-&lt;&lt;if $mira_in_party&gt;&gt;
-  &lt;p&gt;Mira takes the chair by the door without comment. Her codex is open across her knees within thirty seconds. She doesn&#39;t sleep so much as pause—though you notice her lips moving faintly as she traces runes in the air, renewing the magical formulae in her mind. By morning, her spells will be ready again.&lt;/p&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;p&gt;You&#39;re alone. The fire dies down in the hearth downstairs. Outside, the Thornwood breathes — wind through the pines, slow and deliberate.&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;p&gt;You close your eyes. Tomorrow the commission gets paid.&lt;/p&gt;
-
-/* MECHANIC:REST type=long return=LOC-DrunkGriffin */
-/* &lt;&lt;longRestScene&gt;&gt; must be the last statement — it handles navigation */
-&lt;&lt;longRestScene &quot;The Drunk Griffin Inn&quot; &quot;LOC-DrunkGriffin&quot;&gt;&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   NODE-006_QuestComplete
-   scene_type: quest_event
-   parent_location: LOC-DrunkGriffin
-   passage_name:    NODE-006_QuestComplete
-   hooks: MECHANIC:QUEST id=clear_goblin_lair action=complete
-          MECHANIC:LOOT container=elder_chest (quest reward)
-          MECHANIC:COMPANION id=mira approval=+15
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="32" name="NODE-006_QuestComplete" tags="" position="225,475" size="100,100">&lt;h2&gt;Elder Henne&#39;s Table&lt;/h2&gt;
-
-&lt;p&gt;Elder Henne is a compact woman in her sixties with the handshake of someone who spent forty years splitting wood. She listens to your report — the goblins, the lair, the alchemist&#39;s bench — with the focused attention of someone who has been waiting for this news for a long time.&lt;/p&gt;
-
-&lt;p&gt;&quot;Three seasons,&quot; she says, when you finish. &quot;Three seasons and four head of livestock and my nephew&#39;s left ear.&quot; She reaches under the table and sets a lockbox down. &quot;Sixty gold, as agreed. And the ear was his own fault, but the thought is appreciated.&quot;&lt;/p&gt;
-
-&lt;&lt;if $mira_in_party&gt;&gt;
-  &lt;p&gt;Mira accepts her share without ceremony — a quarter of the total — and immediately puts it somewhere inside her robe. &quot;The ley-line survey will take another week,&quot; she says. &quot;I&#39;ll be at the Griffin if you need someone with sense in your corner.&quot;&lt;/p&gt;
-  /* MECHANIC:COMPANION id=mira approval=+15 */
-  &lt;&lt;companionApproval &quot;mira&quot; +15&gt;&gt;
-  &lt;&lt;companionReact &quot;mira&quot; 60 &quot;&lt;em&gt;She gives you a small, precise nod. It is, from Mira, effusive praise.&lt;/em&gt;&quot; &quot;&lt;em&gt;She tucks her share away and goes back to her codex. Business concluded.&lt;/em&gt;&quot;&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-
-/* MECHANIC:QUEST id=clear_goblin_lair action=complete */
-&lt;&lt;questReward &quot;clear_goblin_lair&quot; 300&gt;&gt;
-&lt;&lt;set $gold to $gold + 60&gt;&gt;
-
-&lt;p style=&quot;color:#c4a862&quot;&gt;+60 gold · +300 XP&lt;/p&gt;
-
-&lt;p&gt;&quot;There&#39;s one more thing,&quot; Henne says, and pushes a small chest across the table. &quot;My grandmother&#39;s. She&#39;d want it with someone who can use it.&quot;&lt;/p&gt;
-
-&lt;&lt;lootContainer &quot;elder_chest&quot; &quot;NODE-006b_Ending&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="33" name="NODE-006b_Ending" tags="" position="350,475" size="100,100">&lt;h2&gt;The Road Ahead&lt;/h2&gt;
-
-&lt;&lt;questAdvance &quot;clear_goblin_lair&quot;&gt;&gt;
-/* Quest now at final stage — complete */
-
-&lt;p&gt;Outside, Thorngate looks the same as it did when you arrived. The pines press close; the smoke smells of woodsmoke; the chickens scatter. The difference is that the north road is open again.&lt;/p&gt;
-
-&lt;&lt;if $goblin_marker_found&gt;&gt;
-  /* SECRET ENDING: High Perception discovered the markers */
-  &lt;&lt;endingSlide &quot;END-C&quot;&gt;&gt;
-  
-  &lt;p&gt;Mira falls into step beside you without being asked — but not as a follower. She sees the way your eyes move across the forest, reading signs the average traveler would miss. She recognizes something: not a warrior, but a &lt;em&gt;reader&lt;/em&gt; of wild places.&lt;/p&gt;
-  
-  &lt;p&gt;&quot;You spotted the markers,&quot; she says. Not a question. &quot;Most would have walked past them. Most do.&quot;&lt;/p&gt;
-  
-  &lt;p&gt;She pulls out her codex and makes a note. &quot;The ley-lines are interesting around here, but you... you&#39;re interesting in a different way. I don&#39;t think I&#39;m done knowing you.&quot;&lt;/p&gt;
-  
-  &lt;p style=&quot;margin-top:1.5em&quot;&gt;
-    &lt;&lt;link &quot;↩ Play again&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
-    &lt;&lt;link &quot;Character&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
-    &lt;&lt;link &quot;Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  &lt;/p&gt;
-
-&lt;&lt;elseif $mira_in_party&gt;&gt;
-  /* GOOD ENDING: Recruited Mira */
-  &lt;&lt;endingSlide &quot;END-B&quot;&gt;&gt;
-  
-  &lt;p&gt;Mira falls into step beside you without being asked. She has a new page open in her codex.&lt;/p&gt;
-  
-  &lt;p&gt;&lt;em&gt;&quot;The Thornwood connects to the Ashfall Highlands about forty miles north,&quot; she says. &quot;The ley-lines get interesting up there. I was thinking of going, once my survey here is done.&quot;&lt;/em&gt;&lt;/p&gt;
-  
-  &lt;p&gt;She doesn&#39;t ask. She doesn&#39;t have to. The partnership is already sealed — forged in combat, solidified by shared victory.&lt;/p&gt;
-  
-  &lt;p&gt;The road ahead stretches longer and less lonely than it did before.&lt;/p&gt;
-  
-  &lt;p style=&quot;margin-top:1.5em&quot;&gt;
-    &lt;&lt;link &quot;↩ Play again&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
-    &lt;&lt;link &quot;Character&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
-    &lt;&lt;link &quot;Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  &lt;/p&gt;
-
-&lt;&lt;else&gt;&gt;
-  /* NEUTRAL ENDING: Solo hero */
-  &lt;&lt;endingSlide &quot;END-A&quot;&gt;&gt;
-  
-  &lt;p&gt;The road ahead is empty. That&#39;s fine. Empty roads have their own kind of quiet.&lt;/p&gt;
-  
-  &lt;p&gt;You return to your solitary path as you&#39;ve always walked it — tested by the Thornwood and found sufficient. The village respects that. Elder Henne respects that most of all.&lt;/p&gt;
-  
-  &lt;p&gt;Somewhere north, the Ashfall Highlands rise. Another contract awaits. Another road to walk alone.&lt;/p&gt;
-  
-  &lt;p style=&quot;margin-top:1.5em&quot;&gt;
-    &lt;&lt;link &quot;↩ Play again&quot; &quot;Start&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
-    &lt;&lt;link &quot;Character&quot; &quot;CharacterSheet&quot;&gt;&gt;&lt;&lt;/link&gt;&gt; &amp;nbsp;
-    &lt;&lt;link &quot;Quests&quot; &quot;QuestJournal&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  &lt;/p&gt;
-
-&lt;&lt;/if&gt;&gt;
-
-&lt;hr&gt;
-
-&lt;p style=&quot;text-align:center;color:#7a6e60;font-size:.9em&quot;&gt;
-  &lt;em&gt;End of sample. Thank you for playing The Witchhunter&#39;s Road.&lt;/em&gt;&lt;br&gt;
-  &lt;small&gt;A speckit-preset-game-narrative-writing demo · D&amp;D 5e · SugarCube 2.x&lt;/small&gt;
-&lt;/p&gt;</tw-passagedata><tw-passagedata pid="34" name="LOC-Thorngate" tags="hub location" position="475,475" size="100,100">/* First-visit */
-&lt;&lt;if not $loc_Thorngate_visited&gt;&gt;
-  &lt;&lt;set $loc_Thorngate_visited to true&gt;&gt;
-  &lt;&lt;set $region_Thornwood_visited to true&gt;&gt;
-  &lt;&lt;set $area_Riverside_visited to true&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-
-/* Location chain breadcrumb */
-&lt;nav class=&quot;loc-breadcrumb&quot;&gt;
-  &lt;&lt;link &quot;World Map&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  › &lt;&lt;link &quot;Thornwood&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  › &lt;span class=&quot;loc-breadcrumb-current&quot;&gt;Thorngate Village&lt;/span&gt;
-&lt;/nav&gt;
-
-&lt;h2&gt;Thorngate Village&lt;/h2&gt;
-
-&lt;p class=&quot;loc-desc&quot;&gt;The village smells of woodsmoke and wet thatch. Chickens scatter across the mud. To the north, the Thornwood presses close — dark pines that seem to lean inward regardless of the wind.&lt;/p&gt;
-
-&lt;&lt;if $loc_Thorngate_state is &quot;hostile&quot;&gt;&gt;
-  &lt;p style=&quot;color:#e07070&quot;&gt;&lt;em&gt;The villagers watch you with suspicion. Hands rest on tools a little too deliberately.&lt;/em&gt;&lt;/p&gt;
-&lt;&lt;/if&gt;&gt;
-
-&lt;h3&gt;What do you do?&lt;/h3&gt;
-&lt;&lt;hubScene &quot;NODE-002_TavernMira&quot; &quot;Head to the Drunk Griffin Inn&quot;&gt;&gt;
-&lt;&lt;hubScene &quot;NODE-003_GoblinAmbush&quot; &quot;Follow the north road toward the Thornwood&quot; &quot;$quest_clear_goblin_lair_state is &#39;active&#39;&quot;&gt;&gt;
-&lt;&lt;hubGuard &quot;$quest_clear_goblin_lair_state is not &#39;active&#39;&quot; &quot;You don&#39;t have reason to venture north yet.&quot;&gt;&gt;
-
-&lt;h3&gt;Leave&lt;/h3&gt;
-&lt;&lt;hubTravel &quot;LOC-DrunkGriffin&quot; &quot;Enter the Drunk Griffin Inn&quot;&gt;&gt;
-
-&lt;p style=&quot;margin-top:1.5em;font-size:.85em&quot;&gt;
-  [[World Map|WorldMap]] · [[Character|CharacterSheet]] · [[Quests|QuestJournal]]
-&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   LOC-DrunkGriffin — The Drunk Griffin Inn
-   parent_area:   AREA-Riverside
-   parent_region: REGION-Thornwood
-   passage_name:  LOC-DrunkGriffin
-   Scenes: NODE-002_TavernMira, NODE-005_InnRest, Elara&#39;s shop (stub)
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="35" name="LOC-DrunkGriffin" tags="hub location" position="600,475" size="100,100">/* First-visit */
-&lt;&lt;if not $loc_DrunkGriffin_visited&gt;&gt;
-  &lt;&lt;set $loc_DrunkGriffin_visited to true&gt;&gt;
-&lt;&lt;/if&gt;&gt;
-
-/* Location chain breadcrumb */
-&lt;nav class=&quot;loc-breadcrumb&quot;&gt;
-  &lt;&lt;link &quot;World Map&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  › &lt;&lt;link &quot;Thornwood&quot; &quot;WorldMap&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  › &lt;&lt;link &quot;Thorngate&quot; &quot;LOC-Thorngate&quot;&gt;&gt;&lt;&lt;/link&gt;&gt;
-  › &lt;span class=&quot;loc-breadcrumb-current&quot;&gt;The Drunk Griffin Inn&lt;/span&gt;
-&lt;/nav&gt;
-
-&lt;h2&gt;The Drunk Griffin Inn&lt;/h2&gt;
-
-&lt;p class=&quot;loc-desc&quot;&gt;Lantern smoke and old beer. A fire in the hearth, half the village crammed around it. Somewhere near the bar, a woman in a travel-worn robe is reading with the focused intensity of someone trying very hard not to make eye contact with the locals.&lt;/p&gt;
-
-&lt;h3&gt;What do you do?&lt;/h3&gt;
-&lt;&lt;hubScene &quot;NODE-002_TavernMira&quot; &quot;Approach the woman at the bar&quot; &quot;not $flag_mira_intro_seen or not $mira_recruited&quot;&gt;&gt;
-&lt;&lt;hubScene &quot;NODE-006_QuestComplete&quot; &quot;Find Elder Henne&quot; &quot;$quest_clear_goblin_lair_stage gte 3&quot;&gt;&gt;
-&lt;&lt;hubScene &quot;NODE-005_InnRest&quot; &quot;Rent a room for the night&quot; &quot;$gold gte 5&quot;&gt;&gt;
-&lt;&lt;hubGuard &quot;$gold lt 5&quot; &quot;Not enough gold to rent a room (need 5 gp).&quot;&gt;&gt;
-&lt;&lt;hubScene &quot;ElaraShop&quot; &quot;Browse Elara&#39;s wares&quot;&gt;&gt;
-
-&lt;h3&gt;Leave&lt;/h3&gt;
-&lt;&lt;hubTravel &quot;LOC-Thorngate&quot; &quot;Back to the village gate&quot;&gt;&gt;
-
-&lt;p style=&quot;margin-top:1.5em;font-size:.85em&quot;&gt;
-  [[World Map|WorldMap]] · [[Character|CharacterSheet]] · [[Quests|QuestJournal]]
-&lt;/p&gt;
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   SHOP STUB — Elara&#39;s Sundries
-   ══════════════════════════════════════════════════════════════════════════ */</tw-passagedata><tw-passagedata pid="36" name="ElaraShop" tags="" position="725,475" size="100,100">&lt;&lt;set _here to passage()&gt;&gt;
-&lt;h2&gt;Elara&#39;s Sundries&lt;/h2&gt;
-&lt;p&gt;&lt;em&gt;&quot;I&#39;m out of most things. The last merchant through here took everything useful. Try back after you&#39;ve cleared those goblins — the road was my only supply route.&quot;&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;Healing Potion — &lt;strong&gt;50 gp&lt;/strong&gt;
-&lt;&lt;if $gold gte 50&gt;&gt;
-  &lt;&lt;button &quot;[Buy]&quot;&gt;&gt;&lt;&lt;set $gold to $gold - 50&gt;&gt;&lt;&lt;pickupItem &quot;healing_potion&quot; &quot;Healing Potion&quot;&gt;&gt;&lt;&lt;goto _here&gt;&gt;&lt;&lt;/button&gt;&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;em style=&quot;color:#6a5e50&quot;&gt;(not enough gold)&lt;/em&gt;
-&lt;&lt;/if&gt;&gt;&lt;/p&gt;
-
-&lt;p&gt;Torch (5) — &lt;strong&gt;1 gp&lt;/strong&gt;
-&lt;&lt;if $gold gte 1&gt;&gt;
-  &lt;&lt;button &quot;[Buy]&quot;&gt;&gt;&lt;&lt;set $gold to $gold - 1&gt;&gt;&lt;&lt;pickupItem &quot;torch&quot; &quot;Torch&quot;&gt;&gt;&lt;&lt;goto _here&gt;&gt;&lt;&lt;/button&gt;&gt;
-&lt;&lt;else&gt;&gt;
-  &lt;em style=&quot;color:#6a5e50&quot;&gt;(not enough gold)&lt;/em&gt;
-&lt;&lt;/if&gt;&gt;&lt;/p&gt;
-
-&lt;&lt;back &quot;← Back to inn&quot;&gt;&gt;</tw-passagedata></tw-storydata>
+&lt;&lt;/widget&gt;&gt;</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
 	/*! SugarCube JS */
 	if(document.documentElement.getAttribute("data-init")==="loading"){!function(window,document,jQuery,undefined){"use strict";function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _toConsumableArray(e){if(Array.isArray(e)){for(var t=0,r=Array(e.length);t<e.length;t++)r[t]=e[t];return r}return Array.from(e)}var _createClass=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),_slicedToArray=function(){function e(e,t){var r=[],n=!0,a=!1,i=undefined;try{for(var o,s=e[Symbol.iterator]();!(n=(o=s.next()).done)&&(r.push(o.value),!t||r.length!==t);n=!0);}catch(e){a=!0,i=e}finally{try{!n&&s.return&&s.return()}finally{if(a)throw i}}return r}return function(t,r){if(Array.isArray(t))return t;if(Symbol.iterator in Object(t))return e(t,r);throw new TypeError("Invalid attempt to destructure non-iterable instance")}}(),_typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},errorPrologRegExp=/^(?:(?:uncaught\s+(?:exception:\s+)?)?\w*(?:error|exception|_err):\s+)+/i,Alert=function(){function e(e,t,r,n){var a="fatal"===e,i="Apologies! "+(a?"A fatal":"An")+" error has occurred.";i+=a?" Aborting.":" You may be able to continue, but some parts may not work properly.",null==t&&null==r||(i+="\n\nError",null!=t&&(i+=" ["+t+"]"),i+=null!=r?": "+r.replace(errorPrologRegExp,"")+".":": unknown error."),"object"===(void 0===n?"undefined":_typeof(n))&&n.stack&&(i+="\n\nStack Trace:\n"+n.stack),window.alert(i)}function t(t,r,n){e(null,t,r,n)}function r(t,r,n){e("fatal",t,r,n)}return function(e){window.onerror=function(n,a,i,o,s){"complete"===document.readyState?t(null,n,s):(r(null,n,s),window.onerror=e,"function"==typeof window.onerror&&window.onerror.apply(this,arguments))}}(window.onerror),Object.freeze(Object.defineProperties({},{error:{value:t},fatal:{value:r}}))}(),Patterns=function(){var e=function(){var e=new Map([[" ","\\u0020"],["\f","\\f"],["\n","\\n"],["\r","\\r"],["\t","\\t"],["\v","\\v"],[" ","\\u00a0"],[" ","\\u1680"],["᠎","\\u180e"],[" ","\\u2000"],[" ","\\u2001"],[" ","\\u2002"],[" ","\\u2003"],[" ","\\u2004"],[" ","\\u2005"],[" ","\\u2006"],[" ","\\u2007"],[" ","\\u2008"],[" ","\\u2009"],[" ","\\u200a"],["\u2028","\\u2028"],["\u2029","\\u2029"],[" ","\\u202f"],[" ","\\u205f"],["　","\\u3000"],["\ufeff","\\ufeff"]]),t=/^\s$/,r="";return e.forEach(function(e,n){t.test(n)||(r+=e)}),r?"[\\s"+r+"]":"\\s"}(),t="\\s"===e?"\\S":e.replace(/^\[/,"[^"),r="[0-9A-Z_a-z\\-\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff\\u0150\\u0170\\u0151\\u0171]",n=r.replace("\\-",""),a=function(){return"("+r+"+)\\(([^\\)\\|\\n]+)\\):|("+r+"+):([^;\\|\\n]+);|((?:\\."+r+"+)+);|((?:#"+r+"+)+);"}();return Object.freeze({space:e,spaceNoTerminator:"[\\u0020\\f\\t\\v\\u00a0\\u1680\\u180e\\u2000-\\u200a\\u202f\\u205f\\u3000\\ufeff]",lineTerminator:"[\\n\\r\\u2028\\u2029]",notSpace:t,anyChar:"(?:.|[\\n\\r\\u2028\\u2029])",anyLetter:r,anyLetterStrict:n,identifierFirstChar:"[$A-Z_a-z]",identifierNextChar:"[$0-9A-Z_a-z]",identifier:"[$A-Z_a-z][$0-9A-Z_a-z]*",variableSigil:"[$_]",variable:"[$_][$A-Z_a-z][$0-9A-Z_a-z]*",macroName:"[A-Za-z][\\w-]*|[=-]",templateName:"[A-Za-z][\\w-]*",cssImage:"\\[[<>]?[Ii][Mm][Gg]\\[(?:\\s|\\S)*?\\]\\]+",inlineCss:a,url:"(?:file|https?|mailto|ftp|javascript|irc|news|data):[^\\s'\"]+"})}();!function(){!function(e){if(e&&e.prototype&&null==e.prototype.firstElementChild){var t=Node.ELEMENT_NODE;Object.defineProperty(e.prototype,"firstElementChild",{get:function(){for(var e=this.childNodes,r=0;r<e.length;++r){var n=e[r];if(n.nodeType===t)return n}return null}})}}(window.Node||window.Element)}(),function(){function e(e,t){var r=Number.parseInt(e,10)||0;if(r<1)return"";var n=void 0===t?"":String(t);for(""===n&&(n=" ");n.length<r;){var a=n.length,i=r-a;n+=a>i?n.slice(0,i):n}return n.length>r&&(n=n.slice(0,r)),n}var t=function(){function e(e,n){var a=String(e);if(!a)return a;switch(n){case"start":return t.test(a)?a.replace(t,""):a;case"end":return r.test(a)?a.replace(r,""):a;default:throw new Error('_trimString called with incorrect where parameter value: "'+n+'"')}}var t=new RegExp("^"+Patterns.space+Patterns.space+"*"),r=new RegExp(""+Patterns.space+Patterns.space+"*$");return e}();Array.prototype.flat||Object.defineProperty(Array.prototype,"flat",{configurable:!0,writable:!0,value:function(){function e(){if(null==this)throw new TypeError("Array.prototype.flat called on null or undefined");var t=0===arguments.length?1:Number(arguments[0])||0;return t<1?Array.prototype.slice.call(this):Array.prototype.reduce.call(this,function(r,n){return n instanceof Array?r.push.apply(r,_toConsumableArray(e.call(n,t-1))):r.push(n),r},[])}return e}()}),Array.prototype.flatMap||Object.defineProperty(Array.prototype,"flatMap",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.flatMap called on null or undefined");return Array.prototype.map.apply(this,arguments).flat()}}),Array.prototype.includes||Object.defineProperty(Array.prototype,"includes",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.includes called on null or undefined");if(0===arguments.length)return!1;var e=this.length>>>0;if(0===e)return!1;var t=arguments[0],r=Number(arguments[1])||0;for(r<0&&(r=Math.max(0,e+r));r<e;++r){var n=this[r];if(n===t||n!==n&&t!==t)return!0}return!1}}),Object.entries||Object.defineProperty(Object,"entries",{configurable:!0,writable:!0,value:function(e){if("object"!==(void 0===e?"undefined":_typeof(e))||null===e)throw new TypeError("Object.entries object parameter must be an object");return Object.keys(e).map(function(t){return[t,e[t]]})}}),Object.fromEntries||Object.defineProperty(Object,"fromEntries",{configurable:!0,writable:!0,value:function(e){return Array.from(e).reduce(function(e,t){if(Object(t)!==t)throw new TypeError("Object.fromEntries iterable parameter must yield objects");return t[0]in e?Object.defineProperty(e,t[0],{configurable:!0,enumerable:!0,writable:!0,value:t[1]}):e[t[0]]=t[1],e},{})}}),Object.getOwnPropertyDescriptors||Object.defineProperty(Object,"getOwnPropertyDescriptors",{configurable:!0,writable:!0,value:function(e){if(null==e)throw new TypeError("Object.getOwnPropertyDescriptors object parameter is null or undefined");var t=Object(e);return Reflect.ownKeys(t).reduce(function(e,r){var n=Object.getOwnPropertyDescriptor(t,r);return void 0!==n&&(r in e?Object.defineProperty(e,r,{configurable:!0,enumerable:!0,writable:!0,value:n}):e[r]=n),e},{})}}),Object.values||Object.defineProperty(Object,"values",{configurable:!0,writable:!0,value:function(e){if("object"!==(void 0===e?"undefined":_typeof(e))||null===e)throw new TypeError("Object.values object parameter must be an object");return Object.keys(e).map(function(t){return e[t]})}}),String.prototype.padStart||Object.defineProperty(String.prototype,"padStart",{configurable:!0,writable:!0,value:function(t,r){if(null==this)throw new TypeError("String.prototype.padStart called on null or undefined");var n=String(this),a=n.length,i=Number.parseInt(t,10);return i<=a?n:e(i-a,r)+n}}),String.prototype.padEnd||Object.defineProperty(String.prototype,"padEnd",{configurable:!0,writable:!0,value:function(t,r){if(null==this)throw new TypeError("String.prototype.padEnd called on null or undefined");var n=String(this),a=n.length,i=Number.parseInt(t,10);return i<=a?n:n+e(i-a,r)}}),String.prototype.trimStart||Object.defineProperty(String.prototype,"trimStart",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.trimStart called on null or undefined");return t(this,"start")}}),String.prototype.trimLeft||Object.defineProperty(String.prototype,"trimLeft",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.trimLeft called on null or undefined");return t(this,"start")}}),String.prototype.trimEnd||Object.defineProperty(String.prototype,"trimEnd",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.trimEnd called on null or undefined");return t(this,"end")}}),String.prototype.trimRight||Object.defineProperty(String.prototype,"trimRight",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.trimRight called on null or undefined");return t(this,"end")}})}(),function(){function _random(){var e=void 0,t=void 0;switch(arguments.length){case 0:throw new Error("_random called with insufficient parameters");case 1:e=0,t=arguments[0];break;default:e=arguments[0],t=arguments[1]}if(e>t){var r=[t,e];e=r[0],t=r[1]}return Math.floor(_nativeMathRandom()*(t-e+1))+e}function _randomIndex(e,t){var r=void 0,n=void 0;switch(t.length){case 1:r=0,n=e-1;break;case 2:r=0,n=Math.trunc(t[1]);break;default:r=Math.trunc(t[1]),n=Math.trunc(t[2])}return Number.isNaN(r)?r=0:!Number.isFinite(r)||r>=e?r=e-1:r<0&&(r=e+r)<0&&(r=0),Number.isNaN(n)?n=0:!Number.isFinite(n)||n>=e?n=e-1:n<0&&(n=e+n)<0&&(n=e-1),_random(r,n)}function _getCodePointStartAndEnd(e,t){var r=e.charCodeAt(t);if(Number.isNaN(r))return{char:"",start:-1,end:-1};if(r<55296||r>57343)return{char:e.charAt(t),start:t,end:t};if(r>=55296&&r<=56319){var n=t+1;if(n>=e.length)throw new Error("high surrogate without trailing low surrogate");var a=e.charCodeAt(n);if(a<56320||a>57343)throw new Error("high surrogate without trailing low surrogate");return{char:e.charAt(t)+e.charAt(n),start:t,end:n}}if(0===t)throw new Error("low surrogate without leading high surrogate");var i=t-1,o=e.charCodeAt(i);if(o<55296||o>56319)throw new Error("low surrogate without leading high surrogate");return{char:e.charAt(i)+e.charAt(t),start:i,end:t}}var _nativeMathRandom=Math.random;Object.defineProperty(Array,"random",{configurable:!0,writable:!0,value:function(e){if("object"!==(void 0===e?"undefined":_typeof(e))||null===e||!Object.prototype.hasOwnProperty.call(e,"length"))throw new TypeError("Array.random array parameter must be an array or array-lke object");var t=e.length>>>0;if(0!==t){return e[0===arguments.length?_random(0,t-1):_randomIndex(t,Array.prototype.slice.call(arguments,1))]}}}),Object.defineProperty(Array.prototype,"concatUnique",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.concatUnique called on null or undefined");var e=Array.from(this);if(0===arguments.length)return e;var t=Array.prototype.reduce.call(arguments,function(e,t){return e.concat(t)},[]),r=t.length;if(0===r)return e;for(var n=Array.prototype.indexOf,a=Array.prototype.push,i=0;i<r;++i){var o=t[i];-1===n.call(e,o)&&a.call(e,o)}return e}}),Object.defineProperty(Array.prototype,"count",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.count called on null or undefined");for(var e=Array.prototype.indexOf,t=arguments[0],r=Number(arguments[1])||0,n=0;-1!==(r=e.call(this,t,r));)++n,++r;return n}}),Object.defineProperty(Array.prototype,"delete",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.delete called on null or undefined");if(0===arguments.length)return[];var e=this.length>>>0;if(0===e)return[];for(var t=Array.prototype.concat.apply([],arguments),r=t.length,n=[],a=0;a<e;++a)for(var i=this[a],o=0;o<r;++o){var s=t[o];if(i===s||i!==i&&s!==s){n.push(a);break}}for(var u=[],l=0,c=n.length;l<c;++l)u[l]=this[n[l]];for(var d=Array.prototype.splice,f=n.length-1;f>=0;--f)d.call(this,n[f],1);return u}}),Object.defineProperty(Array.prototype,"deleteAt",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.deleteAt called on null or undefined");if(0===arguments.length)return[];var e=this.length>>>0;if(0===e)return[];for(var t=Array.prototype.splice,r=[].concat(_toConsumableArray(new Set(Array.prototype.concat.apply([],arguments).map(function(t){return t<0?Math.max(0,e+t):t})).values())),n=[].concat(_toConsumableArray(r)).sort(function(e,t){return t-e}),a=[],i=0,o=r.length;i<o;++i)a[i]=this[r[i]];for(var s=0,u=n.length;s<u;++s)t.call(this,n[s],1);return a}}),Object.defineProperty(Array.prototype,"deleteWith",{configurable:!0,writable:!0,value:function(e,t){if(null==this)throw new TypeError("Array.prototype.deleteWith called on null or undefined");if("function"!=typeof e)throw new Error("Array.prototype.deleteWith predicate parameter must be a function");var r=this.length>>>0;if(0===r)return[];for(var n=Array.prototype.splice,a=[],i=[],o=0;o<r;++o)e.call(t,this[o],o,this)&&(i.push(this[o]),a.push(o));for(var s=a.length-1;s>=0;--s)n.call(this,a[s],1);return i}}),Object.defineProperty(Array.prototype,"first",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.first called on null or undefined");if(0!=this.length>>>0)return this[0]}}),Object.defineProperty(Array.prototype,"includesAll",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.includesAll called on null or undefined");if(1===arguments.length)return Array.isArray(arguments[0])?Array.prototype.includesAll.apply(this,arguments[0]):Array.prototype.includes.apply(this,arguments);for(var e=0,t=arguments.length;e<t;++e)if(!Array.prototype.some.call(this,function(e){return e===this.val||e!==e&&this.val!==this.val},{val:arguments[e]}))return!1;return!0}}),Object.defineProperty(Array.prototype,"includesAny",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.includesAny called on null or undefined");if(1===arguments.length)return Array.isArray(arguments[0])?Array.prototype.includesAny.apply(this,arguments[0]):Array.prototype.includes.apply(this,arguments);for(var e=0,t=arguments.length;e<t;++e)if(Array.prototype.some.call(this,function(e){return e===this.val||e!==e&&this.val!==this.val},{val:arguments[e]}))return!0;return!1}}),Object.defineProperty(Array.prototype,"last",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.last called on null or undefined");var e=this.length>>>0;if(0!==e)return this[e-1]}}),Object.defineProperty(Array.prototype,"pluck",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.pluck called on null or undefined");var e=this.length>>>0;if(0!==e){var t=0===arguments.length?_random(0,e-1):_randomIndex(e,[].concat(Array.prototype.slice.call(arguments)));return Array.prototype.splice.call(this,t,1)[0]}}}),Object.defineProperty(Array.prototype,"pluckMany",{configurable:!0,writable:!0,value:function(e){if(null==this)throw new TypeError("Array.prototype.pluckMany called on null or undefined");var t=this.length>>>0;if(0===t)return[];var r=Math.trunc(e);if(!Number.isInteger(r))throw new Error("Array.prototype.pluckMany want parameter must be an integer");if(r<1)return[];r>t&&(r=t);var n=Array.prototype.splice,a=[],i=t-1;do{a.push(n.call(this,_random(0,i--),1)[0])}while(a.length<r);return a}}),Object.defineProperty(Array.prototype,"pushUnique",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.pushUnique called on null or undefined");var e=arguments.length;if(0===e)return this.length>>>0;for(var t=Array.prototype.indexOf,r=Array.prototype.push,n=0;n<e;++n){var a=arguments[n];-1===t.call(this,a)&&r.call(this,a)}return this.length>>>0}}),Object.defineProperty(Array.prototype,"random",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.random called on null or undefined");var e=this.length>>>0;if(0!==e){return this[0===arguments.length?_random(0,e-1):_randomIndex(e,[].concat(Array.prototype.slice.call(arguments)))]}}}),Object.defineProperty(Array.prototype,"randomMany",{configurable:!0,writable:!0,value:function(e){if(null==this)throw new TypeError("Array.prototype.randomMany called on null or undefined");var t=this.length>>>0;if(0===t)return[];var r=Math.trunc(e);if(!Number.isInteger(r))throw new Error("Array.prototype.randomMany want parameter must be an integer");if(r<1)return[];r>t&&(r=t);var n=new Map,a=[],i=t-1;do{var o=void 0;do{o=_random(0,i)}while(n.has(o));n.set(o,!0),a.push(this[o])}while(a.length<r);return a}}),Object.defineProperty(Array.prototype,"shuffle",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.shuffle called on null or undefined");var e=this.length>>>0;if(0===e)return this;for(var t=e-1;t>0;--t){var r=Math.floor(_nativeMathRandom()*(t+1));if(t!==r){var n=this[t];this[t]=this[r],this[r]=n}}return this}}),Object.defineProperty(Array.prototype,"unshiftUnique",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.unshiftUnique called on null or undefined");var e=arguments.length;if(0===e)return this.length>>>0;for(var t=Array.prototype.indexOf,r=Array.prototype.unshift,n=0;n<e;++n){var a=arguments[n];-1===t.call(this,a)&&r.call(this,a)}return this.length>>>0}}),Object.defineProperty(Function.prototype,"partial",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Function.prototype.partial called on null or undefined");var e=Array.prototype.slice,t=this,r=e.call(arguments,0);return function(){for(var n=[],a=0,i=0;i<r.length;++i)n.push(r[i]===undefined?arguments[a++]:r[i]);return t.apply(this,n.concat(e.call(arguments,a)))}}}),Object.defineProperty(Math,"clamp",{configurable:!0,writable:!0,value:function(e,t,r){var n=Number(e);return Number.isNaN(n)?NaN:n.clamp(t,r)}}),Object.defineProperty(Math,"easeInOut",{configurable:!0,writable:!0,value:function(e){return 1-(Math.cos(Number(e)*Math.PI)+1)/2}}),Object.defineProperty(Number.prototype,"clamp",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Number.prototype.clamp called on null or undefined");if(2!==arguments.length)throw new Error("Number.prototype.clamp called with an incorrect number of parameters");var e=Number(arguments[0]),t=Number(arguments[1]);if(e>t){var r=[t,e];e=r[0],t=r[1]}return Math.min(Math.max(this,e),t)}}),RegExp.escape||function(){var e=/[\\^$*+?.()|[\]{}]/g,t=new RegExp(e.source);Object.defineProperty(RegExp,"escape",{configurable:!0,writable:!0,value:function(r){var n=String(r);return n&&t.test(n)?n.replace(e,"\\$&"):n}})}(),function(){var e=/{(\d+)(?:,([+-]?\d+))?}/g,t=new RegExp(e.source);Object.defineProperty(String,"format",{configurable:!0,writable:!0,value:function(r){function n(e,t,r){if(!t)return e;var n=Math.abs(t)-e.length;if(n<1)return e;var a=String(r).repeat(n);return t<0?e+a:a+e}if(arguments.length<2)return 0===arguments.length?"":r;var a=2===arguments.length&&Array.isArray(arguments[1])?[].concat(_toConsumableArray(arguments[1])):Array.prototype.slice.call(arguments,1);return 0===a.length?r:t.test(r)?(e.lastIndex=0,r.replace(e,function(e,t,r){var i=a[t];if(null==i)return"";for(;"function"==typeof i;)i=i();switch(void 0===i?"undefined":_typeof(i)){case"string":break;case"object":i=JSON.stringify(i);break;default:i=String(i)}return n(i,r?Number.parseInt(r,10):0," ")})):r}})}(),Object.defineProperty(String.prototype,"contains",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.contains called on null or undefined");return-1!==String.prototype.indexOf.apply(this,arguments)}}),Object.defineProperty(String.prototype,"count",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.count called on null or undefined");var e=String(arguments[0]||"");if(""===e)return 0;for(var t=String.prototype.indexOf,r=e.length,n=Number(arguments[1])||0,a=0;-1!==(n=t.call(this,e,n));)++a,n+=r;return a}}),Object.defineProperty(String.prototype,"first",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.first called on null or undefined");return _getCodePointStartAndEnd(String(this),0).char}}),Object.defineProperty(String.prototype,"last",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.last called on null or undefined");var e=String(this);return _getCodePointStartAndEnd(e,e.length-1).char}}),Object.defineProperty(String.prototype,"splice",{configurable:!0,writable:!0,value:function(e,t,r){if(null==this)throw new TypeError("String.prototype.splice called on null or undefined");var n=this.length>>>0;if(0===n)return"";var a=Number(e);Number.isSafeInteger(a)?a<0&&(a+=n)<0&&(a=0):a=0,a>n&&(a=n);var i=Number(t);(!Number.isSafeInteger(i)||i<0)&&(i=0);var o=this.slice(0,a);return void 0!==r&&(o+=r),a+i<n&&(o+=this.slice(a+i)),o}}),Object.defineProperty(String.prototype,"splitOrEmpty",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.splitOrEmpty called on null or undefined");return""===String(this)?[]:String.prototype.split.apply(this,arguments)}}),Object.defineProperty(String.prototype,"toLocaleUpperFirst",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.toLocaleUpperFirst called on null or undefined");var e=String(this),t=_getCodePointStartAndEnd(e,0),r=t.char,n=t.end;return-1===n?"":r.toLocaleUpperCase()+e.slice(n+1)}}),Object.defineProperty(String.prototype,"toUpperFirst",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.toUpperFirst called on null or undefined");var e=String(this),t=_getCodePointStartAndEnd(e,0),r=t.char,n=t.end;return-1===n?"":r.toUpperCase()+e.slice(n+1)}}),Object.defineProperty(Date.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:date)",this.toISOString()]}}),Object.defineProperty(Function.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:eval)","("+this.toString()+")"]}}),Object.defineProperty(Map.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:map)",[].concat(_toConsumableArray(this))]}}),Object.defineProperty(RegExp.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:eval)",this.toString()]}}),Object.defineProperty(Set.prototype,"toJSON",{configurable:!0,writable:!0,value:function(){return["(revive:set)",[].concat(_toConsumableArray(this))]}}),Object.defineProperty(JSON,"reviveWrapper",{configurable:!0,writable:!0,value:function(e,t){if("string"!=typeof e)throw new TypeError("JSON.reviveWrapper code parameter must be a string");return["(revive:eval)",[e,t]]}}),Object.defineProperty(JSON,"_real_parse",{value:JSON.parse}),Object.defineProperty(JSON,"parse",{configurable:!0,writable:!0,value:function value(text,reviver){return JSON._real_parse(text,function(key,val){var value=val;if(Array.isArray(value)&&2===value.length)switch(value[0]){case"(revive:set)":value=new Set(value[1]);break;case"(revive:map)":value=new Map(value[1]);break;case"(revive:date)":value=new Date(value[1]);break;case"(revive:eval)":try{if(Array.isArray(value[1])){var $ReviveData$=value[1][1];value=eval(value[1][0])}else value=eval(value[1])}catch(e){}}else if("string"==typeof value&&"@@revive@@"===value.slice(0,10))try{value=eval(value.slice(10))}catch(e){}if("function"==typeof reviver)try{value=reviver(key,value)}catch(e){}return value})}}),Object.defineProperty(Array.prototype,"contains",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.contains called on null or undefined");return Array.prototype.includes.apply(this,arguments)}}),Object.defineProperty(Array.prototype,"containsAll",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.containsAll called on null or undefined");return Array.prototype.includesAll.apply(this,arguments)}}),Object.defineProperty(Array.prototype,"containsAny",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.containsAny called on null or undefined");return Array.prototype.includesAny.apply(this,arguments)}}),Object.defineProperty(Array.prototype,"flatten",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("Array.prototype.flatten called on null or undefined");return Array.prototype.flat.call(this,1/0)}}),Object.defineProperty(String.prototype,"readBracketedList",{configurable:!0,writable:!0,value:function(){if(null==this)throw new TypeError("String.prototype.readBracketedList called on null or undefined");for(var e=new RegExp("(?:\\[\\[((?:\\s|\\S)*?)\\]\\])|([^\"'\\s]\\S*)","gm"),t=[],r=void 0;null!==(r=e.exec(this));)r[1]?t.push(r[1]):r[2]&&t.push(r[2]);return t}})}();var Browser=function(){var e=navigator.userAgent.toLowerCase(),t=e.includes("windows phone"),r=Object.freeze({Android:!t&&e.includes("android"),BlackBerry:/blackberry|bb10/.test(e),iOS:!t&&/ip(?:hone|ad|od)/.test(e),Opera:!t&&("object"===_typeof(window.operamini)||e.includes("opera mini")),Windows:t||/iemobile|wpdesktop/.test(e),any:function(){return r.Android||r.BlackBerry||r.iOS||r.Opera||r.Windows}}),n=!r.Windows&&!/khtml|trident|edge/.test(e)&&e.includes("gecko"),a=!e.includes("opera")&&/msie|trident/.test(e),i=a?function(){var t=/(?:msie\s+|rv:)(\d+\.\d)/.exec(e);return t?Number(t[1]):0}():null,o=e.includes("opera")||e.includes(" opr/"),s=o?function(){var t=new RegExp((/khtml|chrome/.test(e)?"opr":"version")+"\\/(\\d+\\.\\d+)"),r=t.exec(e);return r?Number(r[1]):0}():null,u=e.includes("vivaldi");return Object.freeze({userAgent:e,isMobile:r,isGecko:n,isIE:a,ieVersion:i,isOpera:o,operaVersion:s,isVivaldi:u})}(),Has=function(){var e=function(){try{return"function"==typeof document.createElement("audio").canPlayType}catch(e){}return!1}(),t=e&&function(){try{var e=document.createElement("audio").play();return e.catch(function(){}),e instanceof Promise}catch(e){}return!1}(),r=function(){try{return"Blob"in window&&"File"in window&&"FileList"in window&&"FileReader"in window&&!Browser.isMobile.any()&&(!Browser.isOpera||Browser.operaVersion>=15)}catch(e){}return!1}(),n=function(){try{return"geolocation"in navigator&&"function"==typeof navigator.geolocation.getCurrentPosition&&"function"==typeof navigator.geolocation.watchPosition}catch(e){}return!1}(),a=function(){try{return"MutationObserver"in window&&"function"==typeof window.MutationObserver}catch(e){}return!1}(),i=function(){try{return"performance"in window&&"function"==typeof window.performance.now}catch(e){}return!1}(),o=function(){try{return"ontouchstart"in window||!!window.DocumentTouch&&document instanceof window.DocumentTouch||!!navigator.maxTouchPoints||!!navigator.msMaxTouchPoints}catch(e){}return!1}(),s=function(){try{for(var e=new Map([["transition","transitionend"],["MSTransition","msTransitionEnd"],["WebkitTransition","webkitTransitionEnd"],["MozTransition","transitionend"]]),t=[].concat(_toConsumableArray(e.keys())),r=document.createElement("div"),n=0;n<t.length;++n)if(r.style[t[n]]!==undefined)return e.get(t[n])}catch(e){}return!1}();return Object.freeze({audio:e,audioPromise:t,fileAPI:r,geolocation:n,mutationObserver:a,performance:i,touch:o,transitionEndEvent:s})}(),Visibility=function(){function e(){return Boolean(r&&document[r.hiddenProperty])}function t(){return r&&document[r.stateProperty]||"visible"}var r=function(){try{return Object.freeze([{hiddenProperty:"hidden",stateProperty:"visibilityState",changeEvent:"visibilitychange"},{hiddenProperty:"webkitHidden",stateProperty:"webkitVisibilityState",changeEvent:"webkitvisibilitychange"},{hiddenProperty:"mozHidden",stateProperty:"mozVisibilityState",changeEvent:"mozvisibilitychange"},{hiddenProperty:"msHidden",stateProperty:"msVisibilityState",changeEvent:"msvisibilitychange"}].find(function(e){return e.hiddenProperty in document}))}catch(e){}return null}();return Object.freeze(Object.defineProperties({},{isHidden:{value:e},state:{value:t},hiddenProperty:{value:r.hiddenProperty},stateProperty:{value:r.stateProperty},changeEvent:{value:r.changeEvent}}))}(),_ref3=function(){function e(t){if("object"!==(void 0===t?"undefined":_typeof(t))||null===t)return t;if(t instanceof String)return String(t);if(t instanceof Number)return Number(t);if(t instanceof Boolean)return Boolean(t);if("function"==typeof t.clone)return t.clone(!0);if(t.nodeType&&"function"==typeof t.cloneNode)return t.cloneNode(!0);var r=void 0;return t instanceof Array?r=new Array(t.length):t instanceof Date?r=new Date(t.getTime()):t instanceof Map?(r=new Map,t.forEach(function(t,n){return r.set(n,e(t))})):t instanceof RegExp?r=new RegExp(t):t instanceof Set?(r=new Set,t.forEach(function(t){return r.add(e(t))})):r=Object.create(Object.getPrototypeOf(t)),Object.keys(t).forEach(function(n){return r[n]=e(t[n])}),r}function t(e){for(var t=document.createDocumentFragment(),r=document.createElement("p"),n=void 0;null!==(n=e.firstChild);){if(n.nodeType===Node.ELEMENT_NODE){switch(n.nodeName.toUpperCase()){case"BR":if(null!==n.nextSibling&&n.nextSibling.nodeType===Node.ELEMENT_NODE&&"BR"===n.nextSibling.nodeName.toUpperCase()){e.removeChild(n.nextSibling),e.removeChild(n),t.appendChild(r),r=document.createElement("p");continue}if(!r.hasChildNodes()){e.removeChild(n);continue}break;case"ADDRESS":case"ARTICLE":case"ASIDE":case"BLOCKQUOTE":case"CENTER":case"DIV":case"DL":case"FIGURE":case"FOOTER":case"FORM":case"H1":case"H2":case"H3":case"H4":case"H5":case"H6":case"HEADER":case"HR":case"MAIN":case"NAV":case"OL":case"P":case"PRE":case"SECTION":case"TABLE":case"UL":r.hasChildNodes()&&(t.appendChild(r),r=document.createElement("p")),t.appendChild(n);continue}}r.appendChild(n)}r.hasChildNodes()&&t.appendChild(r),e.appendChild(t)}function r(){try{return document.activeElement||null}catch(e){return null}}function n(e,t,r){var n="object"===(void 0===e?"undefined":_typeof(e))?e:document.getElementById(e);if(null==n)return null;var a=Array.isArray(t)?t:[t];jQuery(n).empty();for(var i=0,o=a.length;i<o;++i)if(Story.has(a[i]))return new Wikifier(n,Story.get(a[i]).processText().trim()),n;if(null!=r){var s=String(r).trim();""!==s&&new Wikifier(n,s)}return n}function a(e,t,r){var n=jQuery(document.createElement("div")),a=jQuery(document.createElement("button")),i=jQuery(document.createElement("pre")),o=L10n.get("errorTitle")+": "+(t||"unknown error");return a.addClass("error-toggle").ariaClick({label:L10n.get("errorToggle")},function(){a.hasClass("enabled")?(a.removeClass("enabled"),i.attr({"aria-hidden":!0,hidden:"hidden"})):(a.addClass("enabled"),i.removeAttr("aria-hidden hidden"))}).appendTo(n),jQuery(document.createElement("span")).addClass("error").text(o).appendTo(n),jQuery(document.createElement("code")).text(r).appendTo(i),i.addClass("error-source").attr({"aria-hidden":!0,hidden:"hidden"}).appendTo(n),n.addClass("error-view").appendTo(e),console.warn(o+"\n\t"+r.replace(/\n/g,"\n\t")),!1}function i(e,t){var r=i;switch(void 0===e?"undefined":_typeof(e)){case"number":if(Number.isNaN(e))return t;break;case"object":if(null===e)return t;if(Array.isArray(e))return e.map(function(e){return r(e,t)}).join(", ");if(e instanceof Set)return[].concat(_toConsumableArray(e)).map(function(e){return r(e,t)}).join(", ");if(e instanceof Map){return"{ "+[].concat(_toConsumableArray(e)).map(function(e){var n=_slicedToArray(e,2),a=n[0],i=n[1];return r(a,t)+" → "+r(i,t)}).join(", ")+" }"}return e instanceof Date?e.toLocaleString():"function"==typeof e.toString?e.toString():Object.prototype.toString.call(e);case"function":case"undefined":return t}return String(e)}return Object.freeze(Object.defineProperties({},{clone:{value:e},convertBreaks:{value:t},safeActiveElement:{value:r},setPageElement:{value:n},throwError:{value:a},toStringOrDefault:{value:i}}))

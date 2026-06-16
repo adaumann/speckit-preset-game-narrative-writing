@@ -5,6 +5,10 @@ handoffs:
     agent: speckit.export
     prompt: Scaffold boilerplate (init, widgets, UI) for the engine, then compile to playable output
     send: true
+  - label: Run automated tests
+    agent: speckit.compile
+    prompt: Run the full test pipeline — compile the exported project and run Playwright browser tests that walk every branch of the story
+    send: true
   - label: Continue executing tasks
     agent: speckit.implement
     prompt: Run the next uncompleted task from tasks.md
@@ -86,17 +90,21 @@ When `speckit.implement` finds an uncompleted task in `tasks.md`, parse the **Ta
 | `Research: [topic]` | `speckit.research` | Run `speckit.research` with the topic from the task description |
 | `Generate variables.md` | `speckit.specify` | Note: "Run `speckit.specify --force variables.md` to generate" (or auto-run if available) |
 | `Generate mechanics.md` | `speckit.mechanics` | Run `speckit.mechanics` |
-| `Generate endings.md` | `speckit.endings` | Run `speckit.endings` |
-| `Write NPC profile` | `speckit.character` | Run `speckit.character` with the NPC name from description |
+| `Generate endings.md` | `speckit.narrative-arc` | Run `speckit.narrative-arc` |
+| `Write NPC profile` | `speckit.narrative-arc` | Run `speckit.narrative-arc` with the NPC name from description |
 | `Write glossary` | Manual / `speckit.specify` | Prompt user or delegate to `speckit.specify` |
 | `Document world-building` | Manual | Note: populate world-building.md from spec.md |
 | `Outline: [title]` | `speckit.outline` | Run `speckit.outline [NODE_ID]` using the NODE_ID from the task's Node column |
 | `Draft:` or `[P] Draft:` | Internal draft logic | Execute the full draft pipeline below (Steps 1-10) using the NODE_ID from the Node column |
 | `Run speckit.analyze` | `speckit.analyze` | Run `speckit.analyze` |
-| `Run speckit.checklist` | `speckit.checklist` | Run `speckit.checklist` |
+| `Run speckit.checklist` | `speckit.verify` | Run `speckit.verify` |
 | `Review & approve` | Manual | Print: "Manual step. Review and set status to APPROVED, then re-run speckit.implement." Mark task done after confirmation prompt. |
+| `Run speckit.readability` | `speckit.readability` | Run `speckit.readability` |
+| `Run speckit.branching` | `speckit.branching` | Run `speckit.branching` |
+| `Run speckit.information` | `speckit.information` | Run `speckit.information` |
+| `Run speckit.narrative-arc` | `speckit.narrative-arc` | Run `speckit.narrative-arc` |
 | `speckit.X` (any other command) | That command | Run `speckit.X` with extracted arguments |
-| `Document final variable state log` | `speckit.statemap` | Run `speckit.statemap` |
+| `Document final variable state log` | `speckit.continuity` | Run `speckit.continuity` |
 
 ### Dispatch Execution
 
@@ -678,6 +686,8 @@ Remind the author to:
 - Check that all outlined mechanics are present
 - Verify engine-native syntax is correct (Twee passages, Ink knots, etc.)
 - Run `speckit.export` to scaffold full boilerplate (init, widgets, UI)
+- Run `speckit.compile` to generate playable HTML and trigger the Playwright test loop
+- Run the full test pipeline: `python scripts/python/run_tests.py --spec <specname> --engine <engine>`
 
 ### 11. Check for Extension Hooks
 
@@ -762,7 +772,6 @@ What do you say?
   [[I've noticed the amulet you wear. It's unusual.|NODE-003]] /* Effect: Priestess respects your insight; opens secret dialogue | wisdom +1 */
 <</if>>
 
-[[Can I find sanctuary here?|NODE-004]] /* Effect: Safe haven granted | flags.shrine_sanctuary = true */
 
 [[I'll be on my way|NODE-005]] /* Effect: Priestess disappointed; future dialogue colder */
 ```
@@ -826,37 +835,70 @@ When two or more NPCs are present, structure dialogue with character names prefi
 ```
 
 Validation:
-- All NPC dialogue tags must match `characters.md` names
 - Each NPC uses a distinct voice matching their character profile
 - Multi-character scenes show reactions in sequence (primary responder first, then others)
 
 ### Compile & Test Cycle
 
-After implementing nodes:
+After implementing nodes, run the full pipeline:
 
-1. **Scaffold boilerplate** (first run only):
+**One-shot (automated)**:
+```bash
+python scripts/python/run_tests.py --spec my-game --engine sugarcube
+```
+Runs: `verify` → `export` → `compile` → `playwright tests` with auto-fix retry.
+
+**Step-by-step (manual control)**:
+
+1. **Verify nodes** (structural validation + auto-fix):
    ```bash
-   speckit export --engine sugarcube
+   python scripts/python/verify.py --spec my-game --engine sugarcube --all --fix-all
    ```
-   Generates `StoryInit`, widgets, UI passages in `draft/sugarcube/infra/`.
 
-2. **Compile to HTML**:
+2. **Scaffold boilerplate** (first run only):
    ```bash
-   speckit compile --engine sugarcube
+   python scripts/python/export.py --spec my-game --engine sugarcube
+   ```
+   Generates `StoryInit`, widgets, UI passages in `export/sugarcube/`.
+
+3. **Compile to HTML**:
+   ```bash
+   python scripts/python/compile.py --spec my-game --engine sugarcube
    ```
    Produces a playable HTML file with all nodes linked together.
 
-3. **Test in browser**:
+4. **Run automated Playwright tests** (covers the whole story):
+   ```bash
+   cd scripts/tests
+   npx playwright test --config playwright.config.ts
+   ```
+   Tests execute:
+   - Load the compiled HTML in a headless Chromium browser
+   - Verify the start passage renders with no console errors
+   - Walk every first-choice path up to 20 passages deep
+   - Explore all branches at depth 1
+   - BFS traversal of all reachable passages
+   - Verify no `[error]` or `undefined` text appears
+   - Capture screenshots/videos on failure
+
+5. **Manual browser verification** (optional):
    - Open the compiled HTML file
    - Verify prose renders correctly
    - Click dialogue choices; verify branching works
    - Check that attribute changes display in UI
    - Verify inventory changes persist
 
-4. **Iterate**:
+6. **Iterate**:
    - Edit the `.twee` file directly
    - Re-run `speckit compile`
+   - Re-run `npx playwright test` to verify fixes
    - Refresh browser to test changes
+
+**Test scripts location**:
+- `scripts/tests/helpers.ts` — SugarCube-specific test helpers
+- `scripts/tests/game-flow.spec.ts` — Basic flow tests (load, navigation, menus)
+- `scripts/tests/full-story-walkthrough.spec.ts` — Deep branch exploration (walks entire story graph)
+- `scripts/tests/playwright.config.ts` — Test configuration (Chromium, HTML reporter, trace-on-failure)
 
 ### Common Pitfalls & Fixes
 

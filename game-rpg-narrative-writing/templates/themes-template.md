@@ -38,7 +38,6 @@
        - appear in at least 3 nodes (across any branch)
        - escalate or transform across appearances (not repeat identically)
        - pay off in at least one ending
-     speckit.continuity flags motifs absent from a full act as WARNINGS.
 
      NOTE: If the motif is also a mechanic carrier (inventory item, flag trigger),
      register it here AND in the Symbol & Object Registry below. -->

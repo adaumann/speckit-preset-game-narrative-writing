@@ -10,7 +10,7 @@ handoffs:
     prompt: Run a full continuity check to cross-reference feedback against known continuity issues
     send: true
   - label: Run Node Checklists
-    agent: speckit.checklist
+    agent: speckit.verify
     prompt: Run quality checklists for the nodes flagged in the feedback log
     send: true
   - label: Check Project Status
@@ -400,7 +400,6 @@ When processing RPG feedback, note which campaign documents need regeneration or
 - If feedback repeats from multiple testers, mark as CONFIRMED and bump severity
 - Session/chapter pacing issues almost always require regenerating campaign prep docs
 
-**Immediate Red Flags** (Always CRITICAL):
 - Companion loyalty choices not changing loyalty
 - Faction rep choices not gating quests in next session
 - Route-exclusive content accessible in wrong route

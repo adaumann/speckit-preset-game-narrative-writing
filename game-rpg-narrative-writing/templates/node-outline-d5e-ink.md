@@ -453,7 +453,6 @@ speckit.outline --node-template d5e-ink --node-id NODE_015
 
 1. **Dice rolls happen OUTSIDE Ink** — Game engine rolls d20+mod, passes result to Ink
 2. **Combat resolves OUTSIDE Ink** — Game engine handles initiative, HP, damage; Ink narrates aftermath
-3. **All consequences tracked IN Ink** — Companion approval, faction reputation, inventory, flags
 4. **Dialogue branches WITHIN Ink** — All choice logic, NPC reactions, ending gates
 5. **Variables bridge the gap** — Game engine sets ability scores, roll results; Ink reads them for narrative flow
 6. **No mechanics math in Ink** — Ink doesn't calculate "1d6+2"; it receives the result and branches

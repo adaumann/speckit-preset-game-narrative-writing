@@ -6,7 +6,6 @@ Usage:
     python validate_engine.py <file_path> --target <engine>
 
 Supported targets:
-    generic, twine, ink, renpy, escoria, ags, unity
 
 Exit codes:
     0  = validation passed
@@ -202,7 +201,6 @@ def validate_unity_cs(file_path, content):
     return errors
 
 
-def validate_escoria(file_path, content):
     """Static checks for Escoria GDScript (.esc) files."""
     errors = structural_tests(content, file_path)
     # Escoria uses Godot CLI for full validation: godot --check-only
@@ -219,7 +217,6 @@ def validate_escoria(file_path, content):
     return errors
 
 
-def validate_ags(file_path, content):
     """Static checks for AGS script (.asc) files. AGS has no public CLI compiler."""
     errors = structural_tests(content, file_path)
     # Best-effort static checks
@@ -248,8 +245,6 @@ TARGET_MAP = {
     "renpy":   validate_renpy,
     "yarn":    validate_yarn,
     "unity":   validate_unity_cs,
-    "escoria": validate_escoria,
-    "ags":     validate_ags,
     "generic": validate_generic,
 }
 

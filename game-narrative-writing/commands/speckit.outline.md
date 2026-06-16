@@ -322,7 +322,6 @@ When the target engine is SugarCube (from `.specify/memory/constitution.md` `eng
 ### ✅ DO
 
 - **Use simple, linear dialogue** — SugarCube handles branching well; avoid deeply nested conditions
-- **Keep choice gates to 1-2 attributes max** — e.g., `requires: $character.wisdom >= 6` is clear; `requires: ($character.wisdom >= 6 AND $character.power <= 4 AND not $flags.x)` gets hard to read and test
 - **Use inventory checks sparingly** — Each check adds UI complexity in SugarCube inventory widgets
 - **Group related choices together** — SugarCube renders best with 2-4 choices per node
 - **Document variable changes clearly** — Outline should show `$character.wisdom +1`, `$inventory.gold -5`, etc.
@@ -331,6 +330,5 @@ When the target engine is SugarCube (from `.specify/memory/constitution.md` `eng
 
 - **Use attribute ranges that change mid-conversation** — SugarCube doesn't support dynamic range recalculation; write gates based on current-value checks
 - **Create more than 1 level of dialogue nesting** — Twee doesn't handle complex nested dialogue trees well; use separate nodes for deep branches
-- **Use variables with spaces or special characters** — Stick to `snake_case` (e.g., `$flags.priestess_spoken_to`, not `$flags."priestess spoken to"`)
 - **Gate choices on more than 2 unrelated variables** — Players can't mentally track complex multi-variable gates; simplify or merge conditions
 

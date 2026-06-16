@@ -39,7 +39,6 @@
 
 ---
 
-## Authenticity Flags
 
 <!-- Details that, if wrong, a specialist player or reader would notice immediately.
      These are the highest-priority research items. -->

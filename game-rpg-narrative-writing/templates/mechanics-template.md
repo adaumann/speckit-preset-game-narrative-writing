@@ -140,7 +140,6 @@
 <!-- Equips or unequips an accessory into a named slot.
      Slots: ring_left | ring_right | neck | cloak | boots | gloves | belt | head
      Each slot can hold one item. Accessories may contribute stat bonuses
-     (magic_bonus, resist_bonus, initiative_bonus) or narrative flags.
      Item must exist in inventory (MECHANIC:INVENTORY) before equipping.
      All stat variables must be declared in variables.md ## Accessory Stats. -->
 
@@ -227,7 +226,6 @@
      Casting a spell spends one slot of the spell's level.
      Slot recovery is handled by MECHANIC:COUNTER (e.g. on long rest nodes).
      Spell effect is narrative — modelled as a flag, counter delta, or NPC state change.
-     Known spells are declared as flags in variables.md ## Spell Registry.
      Spell slots per level are counters in variables.md ## Spell Slots. -->
 
 `
@@ -258,7 +256,6 @@
 <!-- Validation rules:
      - spell= must match a spell_known_[name] flag declared in variables.md ## Spell Registry
      - level= must correspond to a spell_slots_[N] counter in variables.md ## Spell Slots
-     - speckit.checklist flags casts where no slot counter is declared for that level
      - For tabletop output: renders as GM callout (spell name, slot spent, effect summary);
        slot tracking is advisory only — physical spell slot tracking stays on the character sheet -->
 
@@ -313,7 +310,6 @@
 <!-- Validation rules:
      - quest= must match a quest_[name]_state variable declared in variables.md ## Quest State
      - stage N must exist in quests-template.md for that quest
-     - speckit.checklist flags QUEST hooks with no matching quest declaration
      - speckit.analyze detects quests accepted but never completable (no complete/fail hook reachable)
      - For tabletop output: renders as GM callout (quest name, stage reached, reward summary) -->
 
@@ -376,7 +372,6 @@
      - hp delta must not be set directly in prose — always use <<hpChange>> widget
      - xp delta must not be set directly — always use <<xpGain>> widget (triggers levelup check)
      - ability score changes must recalculate the corresponding modifier variable
-     - speckit.checklist flags nodes that write $partyCurrentHP or $partyLevel directly
      - For tabletop output: renders as GM callout (stat changed, new value); tracking stays on character sheet -->
 
 ---
@@ -449,7 +444,6 @@
 
 <!-- Validation rules:
      - faction_[name]_rep must not be written directly in prose — always use <<factionRep>> widget
-     - speckit.checklist flags $faction_*_rep direct assignments
      - speckit.continuity checks tier transitions are narratively motivated (at least one prose line per change)
      - Each faction in this table must have a matching entry in $faction_registry (variables.md)
      - Ending nodes that require specific faction standing must declare the threshold in endings-template.md -->
@@ -481,7 +475,6 @@
 
      All shops must be declared in world-building-template.md ## Shops.
      All currency variables must be type: currency in variables.md ## Currency.
-     speckit.checklist flags shops that reference items not in $item_registry (inventory). -->
 
 `
 [MECHANIC:SHOP open=[shop_id]]
@@ -519,7 +512,6 @@
 
 <!-- Validation rules:
      - currency debits must not write the currency variable directly — always use <<shopBuy>> widget
-     - speckit.checklist flags nodes that write $[currency_var] directly instead of via a shop or MECHANIC:CURRENCY
      - Every shop_id referenced in a MECHANIC:SHOP hook must have an entry in $shop_registry
      - Items listed in shop catalogs must be declared in $item_registry (inventory)
      - buy/sell transactions must have matching prose (cannot silently transfer items)

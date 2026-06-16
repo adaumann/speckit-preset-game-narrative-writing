@@ -17,7 +17,6 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-Optional flags:
 - `--engine generic|sugarcube|ink` � override engine target (default: generic)
 - `--update` � revise existing `.specify/memory/constitution.md` (preserve approved sections)
 
@@ -27,16 +26,6 @@ Optional flags:
 - Check if `.speckit/extensions.yml` exists in the project root.
 - If it exists, read it and look for entries under the `hooks.before_constitution` key.
 - Process as standard hook block (Optional/Mandatory). Skip silently if absent.
-
-**Query search index for existing project context** (optional � large projects):
-- If `.speckit/index/` exists, query the index before loading documents to identify which files contain relevant context:
-  ```
-  python scripts/python/index.py query "genre tone protagonist premise" --top 8
-  python scripts/python/index.py query "world rules setting mechanics" --type spec --top 5
-  python scripts/python/index.py query "theme player agency dramatic tension" --type spec --top 5
-  ```
-- Use returned passages as supplementary context when inferring `[GENRE]`, `[TONE]`, `[THEME]`, and `[STORY_SPECIFIC_PRINCIPLES]` from existing project files.
-- If the index does not exist, skip silently and proceed with direct file loading.
 
 **Document checks**:
 1. Check if `specs/spec.md` exists. Notify if absent but proceed:
@@ -211,9 +200,9 @@ Optional flags:
      - If `[PLATFORM]` is "Computer Game": allow full selection (ink permitted)
 
    Populate all engine target, POV, language, and version fields
-   - Active Mechanics Table: list every hook type the project uses, with Tier (1/2) and config notes
-     - **For D&D 5e specifically**: if `mechanics-d5e.md` exists, use it as the base; otherwise use `mechanics-template.md`
-     - Use `templates/mechanics-[RULESET_ABBREV].md` or `templates/mechanics-template.md` as the base for `specs/mechanics.md` – copy the relevant Tier 1 hook sections for the hooks listed in the Active Mechanics Table; leave Tier 2 stubs for any hooks declared but not Tier 1
+   - Active Mechanics Table: list every hook type the project uses, with Tier (1/2) and config notes.
+     This is a declaration only — the full mechanics schema file (`specs/mechanics.md`) is generated later by `speckit.plan`.
+     - **For D&D 5e specifically**: if `mechanics-d5e.md` exists, reference it; otherwise use `mechanics-template.md`
    - Inventory config: capacity limit, item list, weight system (if applicable to ruleset)
    - Timer config: type (turns/seconds), precision, failure condition (if applicable)
    - Attribute/currency config: names, ranges, starting values (per ruleset defaults)
@@ -231,7 +220,7 @@ Optional flags:
    - If `STYLE_MODE` is `humanized-ai`: keep only the chosen profile's definition block under `## Profile Specifications`; remove the other four profile blocks entirely
    - If `STYLE_MODE` is `author-sample`: remove the entire `## Profile Specifications` section (profiles are irrelevant; craft rules I–V and the Universal Anti-AI Filter still apply)
    - Write the result to `.specify/memory/craft-rules.md`
-   - Emit: `✓ craft-rules.md written — loaded automatically by speckit.implement, speckit.checklist, speckit.continuity.`
+   - Emit: `✓ craft-rules.md written — loaded automatically by speckit.implement, speckit.verify, speckit.continuity.`
 
 3c. **Load ruleset-specific supporting files** (if applicable):
    - **For D&D 5e**: after constitution is written, auto-populate `specs/` with:
@@ -239,49 +228,7 @@ Optional flags:
      - Flag that `specs/plan-d5e.md`, `specs/implement-d5e.md`, `specs/verify-d5e.md` templates are available
    - **For other rulesets**: note in terminal that ruleset-specific mechanics are not yet available; user may copy generic mechanics-template.md manually
 
-3d. **RAG Index System** – ask after node count is known:
-
-   Determine approximate node count. Compare against 150 nodes to form the recommendation label.
-
    Ask the user:
-
-   > "Do you want to enable the RAG semantic search index for this project?
-   > It allows `speckit.implement`, `speckit.continuity`, and other commands to retrieve relevant passages from your entire project without loading all files into context.
-   > *(Your target is ~[NODE_COUNT] nodes � **recommended** for projects over 150 nodes / optional for smaller projects)*
-   > (a) **Yes** � initialize the index now
-   > (b) **No** � skip (can be enabled later with `python scripts/python/index.py build`)"
-
-   If the user chooses **(b)**: skip silently and continue.
-
-   If the user chooses **(a)**:
-
-   1. **Check if already initialized**: inspect whether `.speckit/index/chroma/` exists in the project root.
-      - If it exists ? emit `?? ChromaDB index already initialized at .speckit/index/ � skipping build.` and continue.
-
-   2. **Check if dependencies are installed** (only if not already initialized):
-      Run:
-      ```
-      python -m pip show chromadb sentence-transformers
-      ```
-      - If both packages are found ? proceed to build.
-      - If either is missing ? ask:
-        > "ChromaDB and sentence-transformers are not installed.
-        > (a) **Install to global/user site** � `python -m pip install chromadb sentence-transformers`
-        > (b) **Create and use .venv** (Recommended) � creates a `.venv/` folder and installs there"
-      - If the user chooses **(b)**:
-        1. Run `python -m venv .venv`
-        2. Activate (Windows: `.venv\Scripts\Activate.ps1`, Unix: `source .venv/bin/activate`)
-        3. Run `python -m pip install chromadb sentence-transformers`
-      - Else run: `python -m pip install chromadb sentence-transformers`
-        - On failure ? emit: `?? Installation failed. Ensure Python is on the PATH and try running manually: python -m pip install chromadb sentence-transformers` and stop.
-
-   3. **Build the index**:
-      Run from the project root:
-      ```
-      python scripts/python/index.py build
-      ```
-      - On success ? emit: `? RAG index initialized at .speckit/index/ � semantic search is now active for all project files.`
-      - On failure ? emit: `?? Index build failed. Check that Python is available and dependencies are installed. You can retry later with: python scripts/python/index.py build`
 
 4. **Increment the semantic version**:
    - **MAJOR**: if engine target, player perspective, or narrative mode changed
@@ -326,14 +273,8 @@ Optional flags:
    - `[RATIFICATION_DATE]` and `[LAST_AMENDED_DATE]` are ISO format (`YYYY-MM-DD`)
    - Active Mechanics Table has at least one Tier 1 entry
    - Node rules NR-001–NR-009 are confirmed active
-   - `[NARRATIVE_MODE]` is one of: `linear`, `branching`, `point-and-click`, `emergent`
    - If Series Position is non-standalone: `## Series Context` section is present and populated
 
 9. **Report**: Summarize all resolved fields, the new version number, any remaining items requiring attention, and next steps including craft-rules.md generation.
-
-10. **Update search index** (optional):
-    - If `.specify/index/` exists, run: `python scripts/python/index.py update` from the project root.
-    - This re-indexes the updated `.specify/memory/constitution.md` and `.specify/memory/craft-rules.md` so subsequent queries reflect the latest rules.
-    - If the command fails or the index does not exist, skip silently.
 
 11. **Suggest next step**: "Run `speckit.spec` to define the game idea"

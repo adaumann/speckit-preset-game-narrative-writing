@@ -24,7 +24,6 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
 - A topic area (e.g. "clarify branch structure" or "clarify engine target")
 - No input � runs a full structured ambiguity scan across all scoped files
 
-Optional flags:
 - `--scope narrative` � scan `specs/spec.md` only
 - `--scope constitution` � scan `.specify/memory/constitution.md` only
 - `--all` � resolve all open questions in sequence (interactive mode)
@@ -63,7 +62,6 @@ Then:
    |---|---|
    | **Branch logic** | Are all branch conditions fully specified? Do any branches lead to dead ends or unreachable nodes? Are merge points and convergence conditions documented? |
    | **Player agency** | Is the player's decision scope clearly bounded? Do choices have distinct, meaningful consequences? Are illusion-of-choice moments deliberately marked? |
-   | **Variable states** | Are all tracked variables (flags, counters, relationship scores) defined with their valid ranges? Are there state combinations that produce contradictions or unreachable content? |
    | **Character consistency** | Do NPC motivation anchors hold across all branches? Are self-deception patterns or behavioral blind spots defined per major NPC? Could an NPC behave differently in two branches in ways that break characterisation? |
    | **World rules** | Are world-building rules implied by the narrative but not yet documented as WR-NNN? Are there location or faction details that could contradict each other across scenes? |
    | **Mechanic coherence** | Are narrative mechanics aligned with the gameplay systems described in the spec? Are pacing requirements compatible with engine or platform constraints? |

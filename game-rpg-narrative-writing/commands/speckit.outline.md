@@ -296,7 +296,6 @@ Key dialogue options by approval state:
 - **Roleplay Tips**: [Suggested voice, mannerisms, common phrases]
 - **Tactical Advice**: [How should DM play this NPC in combat?]
 - **Story Triggers**: [Which events should cause approval changes?]
-- **Red Flags**: [Common mistakes in running this NPC]
 ```
 
 #### D&D 5e NPC Stat Block
@@ -648,7 +647,6 @@ Key dialogue options by approval state:
    - `[LOCATION PROFILE NEEDED]` locations not in locations.md
    - `[GLOSSARY NOTE]` terminology not in glossary.md
    - Propagated `[NEEDS CLARIFICATION]` markers
-   - **RPG-specific flags** (if platform/ruleset detected):
      - `[UNBALANCED SKILL CHECKS]`, `[COMPANION TIMELINE CONFLICT]`, `[ENDING GATE UNREACHABLE]`, `[REPUTATION SPIKE]`, `[SKILL CHECK DISCONNECT]`
      - `[DIFFICULTY LOCK]`, `[PLAYSTYLE ROUTING UNBALANCED]`, `[MISSING ACCESSIBILITY]`
    
@@ -953,7 +951,6 @@ When outline is generated for an RPG preset, automatically validate:
 - ✓ Karma economy is tracked (no excessive karma dumping in single node)
 - ✓ Street Cred and Contact networking opportunities are clear
 
-## VII. RPG-Mode Warning Flags
 
 Flag these issues for author review (auto-generated based on context):
 

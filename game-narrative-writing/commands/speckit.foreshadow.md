@@ -44,7 +44,6 @@ Accepted input:
 - `--branch [BRANCH_ID]` — audit clues in one story branch only
 - `--clue-only` — show only placement issues (ignore payoff timing)
 
-Optional flags:
 - `--strict` — flag any clue not placed before payoff (even if obvious)
 - `--show-paths` — display clue → payoff chain for each mystery
 - `--check-accessibility` — verify clues reachable in all branches

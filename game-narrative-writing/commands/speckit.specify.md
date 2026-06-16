@@ -22,7 +22,6 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-Optional flags:
 - `--update` — revise an existing `spec.md` in the `specs/` directory rather than generating from scratch
 
 ## Pre-Execution Checks
@@ -94,7 +93,6 @@ Optional flags:
 
    - **Endings Map**: 3–6 planned endings with:
      - Type: `good` / `bad` / `neutral` / `secret` / `true`
-     - Rough condition notes (variables / flags that gate this ending)
      - Thematic statement this ending makes
 
    - **Key Scenes / Nodes**: 5–10 pivotal moments using Given/When/Then format. Each labeled with:
@@ -129,6 +127,5 @@ Optional flags:
    - Suggest: "Run `speckit.clarify` to resolve open questions, or `speckit.constitution` to generate the game bible."
 
 7. **Update search index** (optional — large projects):
-   - If `.speckit/index/` exists, run: `python scripts/python/index.py update` from the project root.
    - This indexes the new `specs/<prefix>-<short-name>/spec.md` so `speckit.constitution` can query it for genre, tone, and mechanics inference.
    - If the command fails or the index does not exist, skip silently.

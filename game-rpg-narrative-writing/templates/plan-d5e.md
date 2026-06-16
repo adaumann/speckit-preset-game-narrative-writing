@@ -462,7 +462,6 @@ syndicate_rep: 0
 merchant_rep: 5
 ```
 
-### Plot Flags
 ```
 conspiracy_discovered: false
 conspiracy_depth: 0

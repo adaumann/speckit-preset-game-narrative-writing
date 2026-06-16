@@ -1,5 +1,5 @@
 ---
-description: Full structural analysis of all node files — branch integrity, variable coverage, endings reachability, and plan alignment. Run after node drafting phases; for per-node quality checks use speckit.checklist.
+description: Full structural analysis of all node files — branch integrity, variable coverage, endings reachability, and plan alignment. Run after node drafting phases; for per-node quality checks use speckit.verify.
 handoffs:
   - label: Fix Flagged Nodes
     agent: speckit.revise
@@ -10,7 +10,7 @@ handoffs:
     prompt: Structural issues are fixed. Run a continuity check across all nodes.
     send: true
   - label: Run Per-Node Quality Checks
-    agent: speckit.checklist
+    agent: speckit.verify
     prompt: Run per-node quality checks across all drafted nodes
     send: true
 ---
@@ -21,7 +21,7 @@ handoffs:
 
 Verify that all drafted node files are structurally sound and internally consistent. Catch dead ends, unreachable nodes, undeclared variables, unreachable endings, and plan mismatches now — not after a full playtest cycle.
 
-Run after node drafting phases. Does not modify any files. For per-node prose and dialogue quality checks, use `speckit.checklist` instead.
+Run after node drafting phases. Does not modify any files. For per-node prose and dialogue quality checks, use `speckit.verify` instead.
 
 ## User Input
 

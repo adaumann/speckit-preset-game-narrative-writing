@@ -73,7 +73,6 @@ Each entry:
 
 ### Saving Throw Proficiencies
 
-<!-- Boolean flags — true if the character is proficient in that save.
      Proficient saves: class-specific; set from constitution.md. -->
 
 | Variable | Type | Default | Description | Export (SC) |
@@ -118,7 +117,6 @@ Each entry:
 
 ---
 
-## Visited Flags
 
 <!-- Auto-set when a node is entered. Used to prevent repeated intro text,
      unlock lore options, or track exploration. -->
@@ -130,7 +128,6 @@ Each entry:
 
 ---
 
-## Boolean Flags
 
 <!-- Simple true/false state. Use for events that happen once. -->
 
@@ -158,7 +155,6 @@ Each entry:
 |---|---|---|---|---|---|---|
 | inv_[item_name] | inventory | global | false | [ITEM_DESCRIPTION] | `$inv_[item_name]` (boolean flag) | `~ inv_[item_name]` |
 
-<!-- Export pattern: individual boolean flags per item — `$inv_item = true/false`.
      Sugarcube array alternative (manual): `<<set $inv.push("item")>>` / `<<if $inv.includes("item")>>`
      Use the array alternative only if you need to iterate or count items; write it as raw prose markup. -->
 
@@ -371,7 +367,6 @@ Each entry:
      speckit.compile populates this from world-building-template.md ## Factions for SugarCube targets.
 
      MECHANIC:FACTION hooks in node files must reference faction IDs exactly as declared here.
-     speckit.checklist flags $faction_*_rep direct assignments — always use <<factionRep>> widget.
      speckit.continuity checks that tier transitions are narratively motivated. -->
 
 | Variable | Faction ID | Type | Scope | Default | Range | Export (SC) | Export (Ink) |

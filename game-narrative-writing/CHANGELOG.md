@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.1.0] - 2026-06-14
+
+### Changed
+- **Consolidated quality gates**: 13 overlapping commands reduced to 8 canonical commands
+  - `speckit.readability` = `speckit.pacing` + `speckit.tone` (narrative flow)
+  - `speckit.branching` = `speckit.complexity` + `speckit.consequences` + `speckit.agency` (branch analysis)
+  - `speckit.information` = `speckit.dialogue` + `speckit.asymmetry` + `speckit.secrets` (info flow)
+  - `speckit.narrative-arc` = `speckit.character` + `speckit.subplots` + `speckit.endings` (arc tracking)
+  - `speckit.continuity` now includes `speckit.statemap` (state mapping)
+  - `speckit.verify` now includes `speckit.checklist` (per-node quality gates)
+- **Quality gates added to task phases**: `speckit.tasks.md` and `speckit.implement.md` now dispatch and schedule the 4 new consolidated commands (readability, branching, information, narrative-arc)
+- **Removed leftover stubs**: Deleted 26 redirect stub files after consolidation (13 per preset)
+- **Removed RAG indexing**: Stripped all `index.py`, ChromaDB, and semantic search references from constitution, plan, research, specify, and polish commands across both presets
+- **Removed point-and-click engines**: Stripped all `escoria`, `ags`, and `point-and-click` references from ~80 files across both presets; deleted escoria template files
+- **Cleaned preset.yml**: Fixed broken `escoria-script-template` fragment, added missing `description` fields for `research-template` and `sugarcube-character-sheet-template`
+- **Updated cross-references**: `README.md`, `speckit.help.md`, `speckit.compile.md`, `speckit.revise.md`, `speckit.polish.md`, `speckit.analyze.md`, `speckit.feedback.md`, `speckit.constitution.md`, `speckit.series.md`, and all templates updated to reflect new command names
+
 ## [1.0.0] - 2026-04-25
 
 ### Added
@@ -29,7 +46,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - v1.1: Yarn Spinner export (Unity/Godot dialogue)
 - v1.2: Ren'Py export (visual novels)
 - v1.3: Dialogic JSON export (Godot)
-- v1.4: AGS `.asc` export (adventure games)
-- v1.5: Escoria export (SCUMM-style Godot adventures)
+- v1.4: Ren'Py export (visual novels)
 - v2.0: Tier 2 hook full export support
 - Separate preset: Parser IF (Inform 7 / TADS)

@@ -106,7 +106,6 @@ temple_rep: 10 (start) → [final] (ending gate: >60)
 syndicate_rep: 0 (start) → [final] (ending gate: >70)
 merchant_rep: 5 (start) → [final] (flavor faction)
 
-// Faction status flags
 guard_weakened: false (if guard loses power)
 temple_corrupted: false (if temple leadership compromised)
 syndicate_exposed: false (if conspiracy revealed)
@@ -114,7 +113,6 @@ syndicate_exposed: false (if conspiracy revealed)
 
 ---
 
-## V. Plot Progression Flags (Mutable — Change Per Node)
 
 ```
 // Discovery phase

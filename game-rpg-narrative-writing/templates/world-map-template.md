@@ -133,7 +133,6 @@ REGION-[Name]
 
 <!-- Add one ### section per Region that has travel encounters.
      Regions with travel_encounters: none can be omitted.
-     speckit.checklist (TE-005) flags regions with travel_encounters: encounter_table
      in constitution.md that have no entry here. -->
 
 ---

@@ -1,128 +1,159 @@
 ﻿---
-description: Validate variable state consistency across all branches, check POV drift, and validate series carry-over variables.
+description: Validate variable state consistency across all branches, map state transitions, detect unreachable states and dead-end variable combos. Combines former speckit.continuity + speckit.statemap.
 handoffs:
-  - speckit.revise: Fix nodes with continuity failures
-  - speckit.series: For series carry-over validation specifically
+  - label: Fix Continuity
+    agent: speckit.revise
+    prompt: Fix nodes with continuity failures or state transition issues.
+    send: true
+  - label: Check Series
+    agent: speckit.series
+    prompt: For series carry-over validation specifically.
+    send: false
 ---
 
 # speckit.continuity
 
-Run a full continuity analysis across all node files. Validates variable state consistency on all paths, POV drift, series carry-over variables, and NPC state transitions.
+Run a full continuity and state analysis across all node files. Validates variable state consistency on all paths, state space reachability, POV drift, NPC state transitions, and series carry-over variables. Now includes state mapping (formerly `speckit.statemap`).
 
 ## User Input
 
-Provide one of:
-- Nothing — full continuity check across all nodes
-- A specific check: `--check variables|pov|npc|dialogue|glossary|locations|relationships|series|timeline|thematic`
-- A scope: `--act [N]` to scope to one act
+```text
+$ARGUMENTS
+```
 
-Optional flags:
-- `--check [types]` — run only specific checks (comma-separated: variables, pov, npc, dialogue, glossary, locations, relationships, series, timeline, thematic)
+Accepted input:
+- Nothing — full continuity + state mapping across all nodes
+- `--check [types]` — run only specific checks (comma-separated: variables, pov, npc, state, series, timeline, locations, thematic)
 - `--act [N]` — scope to a single act
+- `--branch [BRANCH_ID]` — map state transitions in one branch only
+- `--variable [NAME]` — track state transitions of one variable
+
+- `--strict` — flag any variable change not explicitly set in node; require all nodes to have `polished: [date]` before continuity check
 - `--report` — write output to `continuity-report.md`
-- `--strict` — require all nodes to have `polished: [date]` before continuity check (default: optional)
+- `--show-graph` — ASCII state transition graph
+- `--show-paths` — display variable state for each branch path
+- `--check-convergence` — verify branch merge points have compatible states
+- `--reachability-check` — verify all theoretical states are reachable
 
 ## Pre-Execution Checks
 
-1. Confirm `draft/` contains node files to analyze.
-2. Load `variables.md` — authoritative variable registry.
-3. Load `.specify/memory/constitution.md` — POV, craft rules, and prose profile.
-4. Load `characters/` — NPC state machines, trust thresholds, dialogue registers.
-5. Load `.specify/memory/craft-rules.md` — dialogue style rules per prose profile.
-6. If `--strict`: verify all node files have `polished: [date]` in frontmatter; warn if not found and continue.
-7. If `specs/glossary.md` exists: load for terminology consistency checks.
-8. If `specs/locations.md` exists: load for location state consistency checks.
-9. If `--check series` or `series-bible.md` exists: load `series-bible.md`.
-10. If `specs/themes.md` exists: load it for thematic drift and motif checks.
-11. If `specs/relationships.md` exists: load it for NPC dynamic consistency checks.
-12. If `specs/timeline.md` exists: load it for continuity constraint checks.
+1. Confirm `draft/` contains node files to analyze
+2. Load `variables.md` — authoritative variable registry with types, ranges, initial values
+3. Load `plan.md` — branch structure, node sequence, merge points
+4. Load `constitution.md` — POV, craft rules, prose profile
+5. Load `characters/` — NPC state machines, trust thresholds
+6. Load optional docs: series-bible.md, themes.md, relationships.md, timeline.md, locations.md, glossary.md
+7. If `--strict`: verify all node files have `polished: [date]` in frontmatter
 
-## Outline
+## Execution Steps
 
-1. **Variable state consistency**
-   - Simulate all reachable paths from NODE-001 through each ending
-   - For each path: track variable state at each node
-   - Detect: variable read before any set on that path; variable set to value outside declared range; counter exceeding declared max; flag set twice without being cleared
-   - Report per-path, per-variable: "PATH [A?C?E]: $trust_mira = 130 at NODE-012 (exceeds max 100)"
+### 1. Variable State Consistency
 
-2. **POV drift check**
-   - Load `player_perspective` from constitution.md
-   - Scan all node prose for POV violations:
-     - Second-person project: flag any `he/she/they` referring to the player
-     - Third-person project: flag any `you` addressing the player
-     - Switching project: verify `$pov` variable is set before each POV-dependent passage
-   - Report: "POV drift in NODE-[N] line [N]: '[QUOTE]'"
+Simulate all reachable paths from NODE-001 through each ending. For each path, track variable state at each node:
 
-3. **NPC state transition validation**
-   - Load `.specify/memory/craft-rules.md` for dialogue style rules per prose profile (NPC Voice & Dialogue section)
-   - For each NPC: verify trust score changes are applied at the correct nodes
-   - Verify that NPC dialogue register matches the trust score range at each node where the NPC speaks, and matches the dialogue style rules for the active prose profile
-   - Verify that NPC state (alive/dead/hostile) is consistent — NPC dead in NODE-A cannot speak in NODE-B unless NODE-B precedes NODE-A on all paths
-   - Report: "[NPC] speaks in NODE-[N] but is dead on PATH [A–B–N]"
+```
+PATH [A→C→E]: $trust_mira = 130 at NODE-012 (exceeds max 100)
+PATH [B→D]: $flag_met_victor read at NODE-010 but never set on this path
+```
 
-4. **Series carry-over validation** (if `series-bible.md` exists or `--check series`)
-   - Verify all carry-over variables in `series-bible.md` are declared in `variables.md`
-   - Verify each ending's variable state snapshot is achievable on at least one path
-   - Report any carry-over variable that is never set before the ending node
+Detect: read before set, value outside declared range, counter exceeding max, flag set twice without clear.
 
-5. **Update continuity logs**
-   - Append issues to `world-building.md` continuity log and `glossary.md` consistency log
-   - Mark resolved issues from previous runs
+### 2. State Space Mapping
 
-6. **Thematic drift check** *(skip if `specs/themes.md` is absent)*
-   - For each registered motif (MO-NNN): verify it appears in at least 3 drafted nodes; flag < 3 occurrences as WARNING
-   - For each act: verify at least one node carries thematic work (node outline "Thematic work" field or prose evidence); two consecutive acts with no thematic work ? CRITICAL
-   - For each symbol in the Symbol & Object Registry: verify physical state is consistent across nodes (object cannot be in two locations simultaneously); flag inconsistency as CRITICAL
-   - Append issues to `specs/themes.md` Thematic Drift Log
+From variables.md, define all possible variable states and track per branch:
 
-7. **NPC relationship consistency check** *(skip if `specs/relationships.md` is absent)*
-   - For each REL-NNN: verify the NPC states implied by each key beat are consistent with the variable values set in the corresponding node
-   - Verify no node references an NPC as friendly/ally when the active dynamic at that branch point should make them hostile
-   - Append issues to `specs/relationships.md` Relationship Drift Log
+```
+VARIABLE: relationship_marcus (0–100, initial: 50)
+Reachable values: 35, 50, 65, 80, 90
+Unreachable: 0–34, 36–49, 51–64, 66–79, 81–89, 91–100
 
-8. **Timeline constraint check** *(skip if `specs/timeline.md` is absent)*
-   - For each TC-NNN constraint: verify no drafted node violates the stated before/after rule
-   - Flag any NPC dialogue that reveals information before the fabula event that creates it — CRITICAL
+BRANCH A state progression:
+  NODE-005: freed / 50 / safe
+  NODE-010: freed / 65 / safe            [relationship +15]
+  NODE-015: freed / 65 / under_siege     [city upgraded]
+  NODE-020: freed / 80 / under_siege     [relationship +15]
+  NODE-025: escaped / 80 / locked_down
+  ENDING:   escaped / 90 / locked_down
+```
 
-9. **Dialogue continuity check** *(skip if no `Dialogue Tree` fields found in outlines)*
-   - For each node with a `Dialogue Tree` (from `outlines/[NODE_ID].md`):
-     - Verify each NPC's dialogue response uses the correct register from `specs/characters/[NPC_ID].md` Section VIII (Dialogue Register by Trust State)
-     - Pull the NPC's current trust state from `variables_read` in the outline; verify the dialogue prose in the drafted node matches that register
-     - Verify all NPCs present in the dialogue tree are actually present in the node (no dangling NPC responses)
-     - For multi-party dialogues: verify NPC-A and NPC-B responses are consistent with their relationship state (from `specs/relationships.md` if present)
-   - Report: "[NPC] dialogue in NODE-[N] uses high-register prose but trust state is 'hostile' (expected low-register)"
-   - Report: "[NPC-A] and [NPC-B] dialogue in NODE-[N] contradicts their relationship arc"
+### 3. POV Drift Check
 
-10. **Glossary validation check** *(skip if `specs/glossary.md` is absent)*
-   - Scan all drafted node prose for terminology that appears in `specs/glossary.md` Section I (Term Registry)
-   - For each found term: verify it is spelled correctly and used with a meaning consistent with the glossary definition
-   - Flag capitalization errors: term registered as `Sanctuary` but used as `sanctuary` in node
-   - Flag usage variance: term has a "Rejected variant" in glossary (e.g., "Temporal Flux" vs. rejected "Time Flux") — flag if rejected variant used
-   - Flag contradictory definitions: same term used with two different meanings across different nodes
-   - Append issues to `specs/glossary.md` Consistency Log
+Load `player_perspective` from constitution.md. Scan all node prose:
+- Second-person project: flag any `he/she/they` referring to the player
+- Third-person project: flag any `you` addressing the player
+- Switching project: verify `$pov` variable is set before each POV-dependent passage
 
-11. **Location state consistency check** *(skip if `specs/locations.md` is absent)*
-   - For each location appearing in multiple nodes: extract sensory details and location state from the node prose
-   - Verify sensory descriptions are consistent across nodes (e.g., "sterile white walls" in NODE-005 should not become "organic vine-covered walls" in NODE-010 unless explicitly changed)
-   - Track location state changes (e.g., if NODE-005 describes the door as "sealed", verify NODE-010 shows the door still sealed unless a node between them opened it)
-   - Flag contradictions: "Sanctuary Station described as 'sterile white' in NODE-005 but 'overgrown with moss' in NODE-012 — timeline unclear"
-   - Append issues to `specs/locations.md` State Change Log
+### 4. NPC State Transition Validation
 
-12. **Multi-party dialogue consistency check** *(skip if fewer than 2 NPCs in project)*
-   - For each pair of NPCs (NPC-A, NPC-B) that interact in multiple nodes:
-     - Verify their dialogue and interaction patterns are consistent with their relationship arc (from `specs/relationships.md` if present or inferred from trust state delta)
-     - If NPC-A's trust toward player is increasing but NPC-B's is decreasing, verify their dialogue reflects this (NPC-A increasingly friendly, NPC-B increasingly distant)
-     - Verify neither NPC contradicts information the other has stated in earlier nodes
-   - Report: "NODE-005: Corvus trusts you enough to reveal the vault key. NODE-012: Corvus claims he never knew about it. Contradiction." (if trust path supports first statement)
+For each NPC: verify trust score changes applied at correct nodes, dialogue register matches trust state, and NPC state (alive/dead/hostile) is consistent:
+```
+[NPC] speaks in NODE-[N] but is dead on PATH [A–B–N]
+```
 
-13. **Polish stage gate** (if `--strict` flag set)
-   - For each node file in `draft/`: verify the frontmatter includes `polished: [YYYY-MM-DD]`
-   - Emit a report: "Nodes awaiting polish: [count] (required for --strict mode)"
-   - If all nodes have been polished: proceed with full continuity check
-   - If some nodes not polished: halt and report which nodes need polish before continuity can be validated in strict mode
+### 5. Series Carry-Over Validation (if series-bible.md exists)
 
-6. **Output**
-   - Report summary: "Variable errors: [N] | POV drift: [N] | NPC errors: [N] | Dialogue continuity: [N] | Glossary errors: [N] | Location state errors: [N] | Multi-party dialogue: [N] | Series errors: [N] | Thematic drift: [N] | Relationship errors: [N] | Timeline violations: [N]"
-   - If `--report`: write full details to `continuity-report.md` with sections per check type
-   - Suggest: "Run `speckit.revise NODE-NNN` to fix flagged nodes. Run `speckit.polish NODE-NNN` to complete polish stage gate."
-   - If `--strict` and polish gate failed: "Cannot complete continuity check in strict mode. Run `speckit.polish [UNPOLISHED_NODES]` first."
+Verify all carry-over variables declared in variables.md, each ending's snapshot achievable on at least one path, no carry-over variable never set before the ending.
+
+### 6. Detect State Space Problems
+
+#### 🔴 Unreachable State
+Variable combo possible by definition but no branch reaches it.
+```
+relationship_marcus=75: No branch reaches this value despite being in range
+```
+Fix: Add path or tighten variable range definition.
+
+#### 🟡 Dead-End State
+State reached, but next content requires incompatible state.
+```
+NODE-020 requires relationship > 75, but max reachable is 65 on this path
+```
+Fix: Add alternate path from this state.
+
+#### 🔵 Untracked Mutation
+Variable changes but no node explicitly sets it.
+```
+relationship_marcus drops 15 points between NODE-015 and NODE-020 with no explicit assignment
+```
+Fix: Add explicit assignment or dialogue hint.
+
+#### 🟢 Convergence Conflict
+Two branches merge with incompatible variable states.
+```
+Branch A: relationship=80, Branch B: relationship=35 — can't merge at NODE-025
+```
+Fix: Keep branches separate or add conditional logic.
+
+### 7. Additional Checks (run conditionally)
+
+- **Thematic drift**: Verify registered motifs appear in 3+ nodes; flag acts with no thematic work
+- **NPC relationship consistency**: Verify relationship beats match variable values
+- **Timeline constraints**: Verify no node violates before/after rules
+- **Dialogue continuity**: Verify NPC dialogue uses correct trust register
+- **Glossary validation**: Verify term spelling and meaning consistency
+- **Location state consistency**: Verify sensory details match across nodes
+- **Multi-party dialogue**: Verify NPC pair interactions match relationship arcs
+
+### 8. Generate Report
+
+Output `continuity-report.md` with:
+- Per-path variable tracking with violations
+- State space overview (reachable vs theoretical)
+- Branch state trajectories per node
+- State problem list (unreachable, dead-end, untracked, convergence)
+- POV drift instances with quotes
+- NPC state violations
+- Series carry-over issues
+- Convergence point analysis
+- If `--show-graph`: ASCII state transition graph
+- If `--show-paths`: Full state for each branch per node
+- If `--check-convergence`: Merge point compatibility
+
+## Important Notes
+
+
+**Convergence is optional**: Branches don't need to merge. Running parallel is valid design.
+
+**Every variable change should be visible**: "Silent" changes are debugging nightmares. Use explicit assignment comments.
+
+**Dead ends are design failures**: If a reachable state leads to incompatible requirements, fix it or make the state unreachable.

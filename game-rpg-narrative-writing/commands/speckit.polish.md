@@ -1,8 +1,8 @@
 ---
-description: Final line-edit pass — prose rhythm, sentence variety, word repetition, filter words, adverb density, and voice register consistency. Runs after speckit.checklist PASS. Distinct from speckit.revise (structural/checklist failures) and speckit.checklist (craft gates).
+description: Final line-edit pass — prose rhythm, sentence variety, word repetition, filter words, adverb density, and voice register consistency. Runs after speckit.verify PASS. Distinct from speckit.revise (structural/checklist failures) and speckit.verify (craft gates).
 handoffs:
   - label: Run Checklist
-    agent: speckit.checklist
+    agent: speckit.verify
     prompt: Run the node quality checklist before polishing
     send: true
   - label: Continue Drafting
@@ -13,7 +13,7 @@ handoffs:
 
 ## Polish Purpose: "Making Prose Invisible"
 
-**CRITICAL CONCEPT**: Polish is the final pass that removes friction between player and story. It operates at the sentence and paragraph level — not the node level. A node that passes `speckit.checklist` is structurally sound; polish makes it feel effortless and immersive.
+**CRITICAL CONCEPT**: Polish is the final pass that removes friction between player and story. It operates at the sentence and paragraph level — not the node level. A node that passes `speckit.verify` is structurally sound; polish makes it feel effortless and immersive.
 
 **NOT for structural problems** — use `speckit.revise`:
 - ❌ NOT "This node doesn't gate properly on the variable"
@@ -37,7 +37,7 @@ handoffs:
 - ✅ Paragraph opening word variety (no two consecutive paragraphs starting with the same word)
 - ✅ Dialogue attribution quality (said-bookism, adverb-on-attribution)
 
-**Metaphor**: If `speckit.checklist` is the unit test suite, polish is the linter and formatter — it catches surface patterns that tests don't see.
+**Metaphor**: If `speckit.verify` is the unit test suite, polish is the linter and formatter — it catches surface patterns that tests don't see.
 
 ## User Input
 
@@ -115,7 +115,6 @@ Expected format: a node ID (e.g., `NODE-005`) or a range (e.g., `NODE-005—NODE
    - Read `glossary.md` if present: Section V (Usage Rules) — capitalization rules, spelling preferences, terms that must not appear, and terms with restricted meaning. These supplement the Anti-AI Filter for this specific node's context.
    - **Ruleset-Specific Terminology** (if `SESSION.is_rpg = true` and `SESSION.ruleset` is set):
      - **D&D 5e**: Check for consistency in ability names (Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma); DC phrasing ("DC 15 Stealth check" not "difficulty 15"); proficiency language ("proficient in" not "skilled at"); spell/item reference consistency
-     - **Pathfinder 2e**: Check for degree of success language consistency ("critically succeeds", "succeeds", "fails", "critically fails" — not "succeeds on a 20"); trait references ([Trait] tags); action economy phrasing ("2 actions" not "takes 2 turns")
      - **Shadowrun 6e**: Check for consistency in hacker/matrix jargon, street slang register (Shadowrunners speak differently than corporate NPCs), dice pool notation clarity ("5d6" consistency), data/program terminology
    - Read author voice sample (if `STYLE_MODE: author-sample`): use it as the rhythm reference for sentence length calibration
 
@@ -155,7 +154,7 @@ Expected format: a node ID (e.g., `NODE-005`) or a range (e.g., `NODE-005—NODE
    - VR-005: Ellipsis used to pad or suggest vagueness rather than trailing thought or interrupted speech
    - VR-006: Glossary violation — a term from `glossary.md` is misspelled, incorrectly capitalised, used in a rejected variant form, or used with a meaning that contradicts its story-specific definition (only checked if `glossary.md` is present)
 
-   **DI — Dialogue Internals** (dialogue-line level only; node-level dialogue strategy is `speckit.checklist` territory)
+   **DI — Dialogue Internals** (dialogue-line level only; node-level dialogue strategy is `speckit.verify` territory)
    - DI-001: Said-bookism — dialogue attribution using a verb other than `said`/`asked` and their tense forms, where the action is not physically distinct. Exception: game-specific attribution is permitted if it conveys a mechanic (e.g. `threatened` to signal a trust shift, provided it appears in character profile register)
    - DI-002: Adverb on attribution (`said quietly`, `asked nervously`) — remove or show via action beat instead
    - DI-003: Double punctuation with attribution (`"Oh." she said.` → `"Oh," she said.`)
@@ -263,7 +262,6 @@ Expected format: a node ID (e.g., `NODE-005`) or a range (e.g., `NODE-005—NODE
 10. **Check for extension hooks** (after polishing): check `hooks.after_polish` in `.specify/extensions.yml`. Process as standard hook block. Skip silently if absent.
 
 11. **Update search index** (optional — large projects):
-    - If `.specify/index/` exists, run: `python scripts/python/index.py update` from the project root.
     - Polished node files are re-indexed incrementally so continuity and research checks query the final prose.
     - If the command fails or the index does not exist, skip silently.
 
