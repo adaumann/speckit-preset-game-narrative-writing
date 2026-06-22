@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.1.0] - 2026-06-14
 
+### Added
+- **Illustration system**: `speckit.illustrate` command generates AI image prompts for scenes from outlines and character files; `speckit.background` generates environment prompts from locations and world-building; embedding of matching PNGs (`<NODE_ID>.png`) during compile via `illustrations_enabled: yes` in constitution
+- **Background image system**: `speckit.background` command for environment-focused prompts (Midjourney, DALL-E 3, Firefly, Stable Diffusion)
+- **Postprocessing plugin system**: `speckit.postprocessing` command generates deterministic Python scripts; `scripts/python/postprocess.py` runner discovers and executes scripts pre/post compile/export; `--postprocess-tests` in `speckit.verify` for validation (16 test cases: passage parsing, CSS/widget injection, script discovery)
+- **Example postprocess scripts**: `fix_theme.py` (CSS injection), `add_headers.py` (header/footer widgets), `add_animations.py` (CSS slideIn/fadeIn)
+- **CSS themes**: 6 theme templates — dark, light, and minimal for both SugarCube (`.css`) and Ink (`.html`); `speckit.theme` command for theme generation/adjustment
+- **Walkthrough testing**: `--walkthrough` flag in `speckit.compile` for BFS story graph traversal; `scripts/tests/full-story-walkthrough.spec.ts` Playwright test
+
 ### Changed
 - **Consolidated quality gates**: 13 overlapping commands reduced to 8 canonical commands
   - `speckit.readability` = `speckit.pacing` + `speckit.tone` (narrative flow)

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "created_at": "2026-05-05T08:00:00Z",
-  "updated_at": "2026-05-25T08:00:00Z",
+  "updated_at": "2026-06-22T08:00:00Z",
   "catalog_url": "https://raw.githubusercontent.com/github/spec-kit/main/presets/catalog.community.json",
   "presets": {
     "game-narrative-writing": {
@@ -19,9 +19,9 @@
         "speckit_version": ">=0.5.0"
       },
       "provides": {
-        "templates": 22,
-        "commands": 36,
-        "scripts": 2
+        "templates": 37,
+        "commands": 34,
+        "scripts": 5
       },
       "tags": [
         "game-writing",
