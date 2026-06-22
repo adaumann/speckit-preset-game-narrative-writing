@@ -113,19 +113,32 @@ You **MUST** consider the user input before proceeding (if not empty).
         > (b) **No** — Text-only, no images needed
         >
         > If YES: What is the default visual style?
-        > • **cel** — Cel-shaded (anime, JRPGs)
-        > • **anime** — Anime style (visual novels)
-        > • **comic** — Comic book (halftones, bold inks)
-        > • **pixelart** — Pixel art (retro games)
-        > • **conceptart** — Concept art (fantasy, sci-fi)
-        > • **handpainted** — Hand-painted (MMO style)
-        > • **rendered** — 3D rendered (AAA)
-        > • **stylized3d** — Stylized 3D (Fortnite, Zelda)
-        > • **lineart** — Line art (literary, MG)
-        > • **penandink** — Pen and ink (classics)
-        > • **woodcut** — Woodcut (horror, dark fantasy)
-        > • **engraving** — Copperplate engraving (period)
-        > • *see full style catalogue in speckit.illustrate*
+        > • **penandink**` - Pen and Ink (Literary fiction, visual novels, MG)
+        > • **2color** - Two-Color; Node openers, section dividers; Duotone (black + 1 accent colour)
+        > • **greyscale** - Greyscale; Interior illustrations, budget printing; Full greyscale range
+        > • **woodcut** - Woodcut; Historical, horror, dark fantasy; High contrast black/white
+        > • **lineart** - Line Art; MG, node headers, decorative; Single color line work
+        > • **engraving** - Copperplate Engraving; Period pieces, literary; Cross-hatching, greyscale
+        > • **artnouveau** - Art Nouveau; Fantasy, historical romance; 2-color with flowing lines
+        > • **artdeco** - Art Deco; 1920s-1930s settings, noir; 2-color geometric style
+        > • **vintage** - Vintage Game Style; Period pieces, nostalgia; Sepia or 2-color vintage
+        > • **minimalist** - Minimalist; Contemporary, literary; Limited palette, clean lines
+        > • **conceptart** - Concept Art; Fantasy, sci-fi, RPGs; Full color, rendered
+        > • **pixelart** - Pixel Art; Retro games, indie; Limited palette, pixel grid
+        > • **cel** - Cel-Shaded; Anime games, visual novels, JRPGs; Flat colors, bold outlines
+        > • **anime** - Anime; Japanese-style games, visual novels; Full color, gradient shading
+        > • **manga** - Manga; Manga-style games, cutscene panels; Greyscale, screentones
+        > • **comic** - Comic Book; Superhero, action, adventure games; Halftones, bold inks, full color
+        > • **retrocomic** - Retro Comic; Period superhero, pulp adventure; Dot screen, primary colors
+        > • **graphicnovel** - Graphic Novel; Mature narrative games, noir; Painted panels, rich color
+        > • **westerncartoon** - Western Cartoon; Kids games, comedy, platformers; Exaggerated, bold colors
+        > • **rpgmaker** - RPG Maker; 16-bit JRPG, indie retro; Full color, tiled sprites
+        > • **handpainted** - Hand-Painted; MMO, ARPG (WoW, Torchlight style); Full color, textured
+        > • **rendered** - 3D Rendered; AAA games, cinematic cutscenes; Full color, photorealistic
+        > • **stylized3d** - Stylized 3D; Fortnite, Overwatch, Zelda: BotW; Full color, stylized shading
+        > • **dither** - Dither; Retro indie, pointilistic shading; Limited palette, dither pattern
+        > • **silhouette** - Silhouette; Cinematic reveals, transitions; High contrast black/color
+
         >
         > Default color range?
         > • **full** — Full color (premium)
