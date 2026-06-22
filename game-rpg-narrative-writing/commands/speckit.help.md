@@ -62,7 +62,7 @@ Perform a **non-blocking inventory scan** — read each file if present, note it
 | `specs/timeline.md` | Exists? Any TC-NNN constraints without a mapped node? |
 | `characters/` | Profile file count vs. NPC count in spec.md? Trust states documented? |
 | `outlines/` | Exists? Count by status: DRAFT / APPROVED / SKIP? |
-| `draft/<ENGINE>/` | Node file count per engine? Count by status in frontmatter? Engine targets configured? |
+| `specs/[FEATURE_DIR]/draft/<ENGINE>/` | Node file count per engine? Count by status in frontmatter? Engine targets configured? |
 | `checklists/` | Exists? Count of failing gates (incomplete items)? |
 | `analysis-report.md` | Exists? CRITICAL issue count? Date of last run? |
 | `specs/consequences-audit.md` | Exists? Any choice outcome problems flagged? |
@@ -127,7 +127,7 @@ For each blocker:
 - `plan.md` has nodes with no drafted file AND those nodes gate an ending ? blocks reachability testing
 - `variables.md` missing AND nodes are being drafted ? undeclared variable risk compounding
 - `mechanics.md` missing Tier 1 schemas AND any Tier 1 hooks used in drafts ? hook translation risk
-- `outlines/` has `status: DRAFT` entries AND a matching node file exists in `draft/` ? outline gate was skipped
+- `outlines/` has `status: DRAFT` entries AND a matching node file exists in `specs/[FEATURE_DIR]/draft/` ? outline gate was skipped
 - `analysis-report.md` exists with CRITICAL issues AND new nodes are still being drafted ? structural debt compounding
 - `tasks.md` has `[FEEDBACK]` CRITICAL tasks open AND new nodes are being drafted ? structural debt
 - `export_engines` configured but no compilation tooling found (tweego.exe missing for sugarcube, inklecate.exe missing for ink) ? export will fail
@@ -177,10 +177,14 @@ Things that are not on the critical path but would strengthen the game:
 - All nodes drafted but no `consequences-audit.md` ? `speckit.branching` (verify choice branches lead to meaningful outcomes)
 - No accessibility audit run ? `speckit.accessibility` (check reading level, content warnings, contrast, ableist language)
 - No secret content documented ? `speckit.information` (map achievements, hidden content, easter eggs)
-- `draft/<ENGINE>/` populated but `output/` missing ? `speckit.compile --all-engines` (generate playable builds)
+- `specs/[FEATURE_DIR]/draft/<ENGINE>/` populated but `output/` missing ? `speckit.compile --all-engines` (generate playable builds)
 - All nodes drafted but engine targets not yet tested ? `speckit.compile --engine <ENGINE>` (test each target engine)
 - Puzzles exist but `puzzles.md` not documented ? `speckit.brainstorm puzzles` (document puzzle dependencies)
 - POV configured as switching but `pov-structure.md` incomplete ? `speckit.pov audit` (verify POV consistency)
+
+- Constitution has `illustrations_enabled: yes` but no illustration briefs in `illustrations/` ? `speckit.illustrate --scene all` (generate illustration prompts for all nodes)
+- Constitution has `illustrations_enabled: yes` but no background briefs in `backgrounds/` ? `speckit.background --scene all` (generate background prompts for all environments)
+- Illustration briefs exist but no PNG files in `assets/illustrations/` ? Process prompts through image generation tool and place outputs in `assets/illustrations/` matching node IDs
 
 ### Section F — Phase-Relevant Command Cheatsheet
 
@@ -205,9 +209,9 @@ Use these per-phase command sets:
 
 **Phase 4 (Quality Review):**
 `speckit.analyze`, `speckit.continuity`, `speckit.verify`, `speckit.revise`, `speckit.readability`, `speckit.branching`, `speckit.accessibility`, `speckit.information`
-
-**Phase 5 (Export / Compilation):**
-`speckit.compile`, `speckit.export`, `speckit.series update`, `speckit.analyze --report`
+**Phase 5 (Export / Compilation):**
+
+`speckit.compile`, `speckit.export`, `speckit.illustrate`, `speckit.background`, `speckit.series update`, `speckit.analyze --report`
 
 ---
 
@@ -232,7 +236,7 @@ Examples:
 
 Scope the report to a single node:
 
-1. Find the node file in `draft/<ENGINE>/` for the given NODE_ID.
+1. Find the node file in `specs/[FEATURE_DIR]/draft/<ENGINE>/` for the given NODE_ID.
 2. Find the checklist file in `checklists/` if present.
 3. Find any open feedback or revision tasks in `tasks.md` referencing this NODE_ID.
 4. Find any analysis CRITICAL issues referencing this node in `analysis-report.md`.

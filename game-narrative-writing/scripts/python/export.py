@@ -24,6 +24,8 @@ from pathlib import Path
 from typing import Optional
 import yaml
 
+from postprocess import run_postprocess
+
 
 # Fix Unicode encoding for Windows console
 if sys.platform == 'win32':
@@ -141,6 +143,12 @@ class ExportEngine:
             self._generate_compile_script()
             self._generate_manifest()
             self._print_summary()
+            run_postprocess(
+                spec_path=self.spec_path,
+                engine=self.engine,
+                stage="export",
+                source_dir=self.output_dir,
+            )
         return success
 
     def _validate_prerequisites(self) -> bool:

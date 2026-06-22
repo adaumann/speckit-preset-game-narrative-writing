@@ -60,7 +60,7 @@ For each target engine, load:
 ### 2. Create Output Directory Structure
 
 ```
-spec/<SPECNAME>/export/<ENGINE>/
+specs/<SPECNAME>/export/<ENGINE>/
 ├── init.[EXT]          # Variable initialization
 ├── widgets.[EXT]       # Widget/macro stubs + utilities
 ├── ui.[EXT]            # UI chrome, StoryCaption, menus, styling
@@ -258,6 +258,29 @@ echo "✓ Compiled to story.html"
 - Export applies default theme if `constitution.md` specifies one; can be overridden
 - Export is re-runnable - safe to run multiple times (--force to overwrite)
 - Exported files are ready for `speckit.compile` → playable output
+
+## Postprocessing
+
+After export, any Python scripts in `specs/[FEATURE_DIR]/postprocessing/*.py` are automatically
+discovered and executed. Each script receives a `postprocess(ctx)` call with the export
+directory as `source_dir`, allowing you to modify the generated `.twee`/`.ink` files.
+
+**Use cases**: inject custom CSS themes, add passage headers/footers, apply animations.
+
+**Generate scripts with**: `speckit.postprocessing` — describe what you want in natural language.
+
+**Example** — create `specs/my-game/postprocessing/fix_theme.py`:
+```python
+def postprocess(ctx):
+    for f in ctx["source_dir"].glob("*.twee"):
+        content = f.read_text()
+        # modify content...
+        f.write_text(content)
+```
+
+Reference examples in `scripts/python/postprocess/`.
+
+You can also use `speckit.postprocessing` to generate scripts automatically.
 
 ## See Also
 

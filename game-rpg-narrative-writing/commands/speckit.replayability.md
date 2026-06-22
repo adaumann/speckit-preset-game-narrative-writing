@@ -73,7 +73,7 @@ Accepted input:
 
 **Standard checks**:
 1. Load `specs/plan.md`: Branch structure, node mapping
-2. Load all `draft/[ENGINE]/NODE-*.md` files (or SESSION-N files for tabletop)
+2. Load all `specs/[FEATURE_DIR]/draft/[ENGINE]/NODE-*.md` files (or SESSION-N files for tabletop)
 3. Parse prose content (separate from code/mechanics)
 4. Identify shared vs. branch-specific nodes
 5. Calculate word count per branch type

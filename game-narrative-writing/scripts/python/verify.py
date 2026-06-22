@@ -366,6 +366,43 @@ class NodeVerifier:
         except Exception as e:
             print(f"    \u26a0 Could not update header: {e}")
 
+    def run_postprocess_tests(self) -> bool:
+        """Run postprocessing system unit tests."""
+        print(f"\n Running postprocessing unit tests...")
+        test_script = self.script_dir / "test_postprocess.py"
+        if not test_script.exists():
+            print("  \u26a0 test_postprocess.py not found; skipping postprocessing tests")
+            return True
+        try:
+            result = subprocess.run(
+                [sys.executable, str(test_script), "--json"],
+                capture_output=True, text=True, timeout=30
+            )
+            try:
+                output = json.loads(result.stdout) if result.stdout else {}
+            except json.JSONDecodeError:
+                print(f"  \u274c Postprocessing tests: JSON parse error")
+                print(result.stdout[:400] if result.stdout else result.stderr[:400])
+                return False
+
+            passed = output.get("passed", 0)
+            failed = output.get("failed", 0)
+            summary = output.get("summary", "")
+
+            if failed == 0:
+                print(f"  \u2705 Postprocessing tests passed ({passed}/{passed + failed})")
+                return True
+            print(f"  \u274c Postprocessing tests: {summary}")
+            for f in output.get("failures", []):
+                print(f"     \u2717 [{f['test']}] {f['detail']}")
+            return False
+        except subprocess.TimeoutExpired:
+            print("  \u274c Postprocessing tests timed out")
+            return False
+        except Exception as e:
+            print(f"  \u274c Error running postprocessing tests: {e}")
+            return False
+
     def run_unit_test_suite(self) -> bool:
         """Run full cross-node unit test suite."""
         print(f"\n Running cross-node unit test suite...")
@@ -399,13 +436,23 @@ def main():
     parser.add_argument('nodes', nargs='*', help='Node IDs to verify')
     parser.add_argument('--all', action='store_true', help='Verify all nodes')
     parser.add_argument('--unit-tests', action='store_true', help='Run full cross-node unit tests')
+    parser.add_argument('--postprocess-tests', action='store_true', help='Run postprocessing system unit tests')
     parser.add_argument('--structural-only', action='store_true', help='Skip engine compiler validation')
     parser.add_argument('--fix-all', action='store_true', help='Auto-fix all fixable errors')
     parser.add_argument('--engine', default='sugarcube', help='Target engine')
-    parser.add_argument('--spec', required=True, help='Spec name')
+    parser.add_argument('--spec', default='', help='Spec name')
     parser.add_argument('--max-attempts', type=int, default=3, help='Max self-correction attempts')
 
     args = parser.parse_args()
+
+    # Postprocess tests are standalone — no spec or nodes needed
+    if args.postprocess_tests:
+        script_dir = Path(__file__).resolve().parent / "validation"
+        verifier = NodeVerifier(Path(), args.engine, args.max_attempts, args.fix_all)
+        verifier.script_dir = script_dir
+        print(f" Speckit Verifier — Postprocessing Tests")
+        success = verifier.run_postprocess_tests()
+        sys.exit(0 if success else 1)
 
     spec_path = Path.cwd() / "specs" / args.spec
     if not spec_path.exists():

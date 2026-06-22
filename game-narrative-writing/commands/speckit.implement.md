@@ -105,6 +105,7 @@ When `speckit.implement` finds an uncompleted task in `tasks.md`, parse the **Ta
 | `Run speckit.narrative-arc` | `speckit.narrative-arc` | Run `speckit.narrative-arc` |
 | `speckit.X` (any other command) | That command | Run `speckit.X` with extracted arguments |
 | `Document final variable state log` | `speckit.continuity` | Run `speckit.continuity` |
+| `Run e2e` or `Run speckit.compile` | Internal e2e workflow | Execute the full e2e fix-and-regenerate loop below |
 
 ### Dispatch Execution
 
@@ -114,6 +115,44 @@ For each dispatched handler:
 3. If the handler succeeds, mark the task as completed in tasks.md
 4. If the handler fails, halt with the error and do not mark the task as done
 5. After marking done, print: "✓ Task [TXXX] completed. Re-run `speckit.implement` for the next task."
+
+### E2E Fix-and-Regenerate Workflow
+
+When `Run e2e` or `Run speckit.compile` is dispatched from tasks.md:
+
+1. **Run compile + Playwright tests**: Execute `speckit.compile` (which runs tweego/inklecate compilation, auto-fix loop, and Playwright browser tests). Capture the full output including errors and test findings.
+
+2. **Collect findings**: Parse the output for:
+   - **Compilation errors** — tweego/inklecate error lines (file, line, error type)
+   - **Runtime errors** — Playwright console errors, undefined variables, missing passages
+   - **Test failures** — Playwright assertion failures, failed branch walks, broken navigation
+
+3. **Fix findings in draft twee files**: For each finding, apply a targeted fix directly to the source `.twee` (or `.ink`) file in `specs/[FEATURE_DIR]/draft/[ENGINE]/`:
+   - **Unmatched `<<` / macro syntax error** → find and close the unclosed macro block
+   - **Undefined variable `$var`** → add `<<set $var to 0>>` to the appropriate `StoryInit` / infra file, or add a default initialization at the top of the passage where it's first used
+   - **Passage not found** → verify the target NODE_ID matches an existing `.twee` file; if a passage link points to an ID that doesn't exist, either correct the link target or create a stub passage
+   - **Widget macro not found** → ensure the required template widget file exists in `specs/[FEATURE_DIR]/draft/[ENGINE]/infra/` or add the widget definition inline
+   - **Choice link to non-existent node** → correct the link target to match the actual passage name per the outline
+   - **Console JS error** → inspect the referenced line in the `.twee` file, fix the offending syntax
+   - **Playwright test assertion failure** → follow the test trace to the failing passage, fix the prose or mechanic hook that caused the failure
+
+4. **Regenerate**: After applying fixes, re-run `speckit.compile`:
+   - If it succeeds → mark the e2e task as completed in tasks.md
+   - If new errors appear → repeat steps 2-4 (up to 3 total attempts)
+   - If the same error persists unchanged → halt: "E2E fix loop stuck on [error]. Manual intervention required." — do NOT mark the task done
+
+5. **Report**: Print a summary of all fixes applied:
+   ```
+   ✅ E2E tests passed after [N] fix round(s)
+      Fixed: [N] compilation errors
+      Fixed: [N] runtime errors
+      Fixed: [N] test failures
+      Files modified: [file1.twee, file2.twee, ...]
+   ```
+
+6. **Mark task completed**: Replace `- [ ]` with `- [x]` for the e2e task in tasks.md
+
+**Important**: Fixes MUST be applied to the source `.twee`/`.ink` files in `specs/[FEATURE_DIR]/draft/[ENGINE]/`, not to intermediate/output files. This ensures that subsequent `speckit.implement` runs and re-exports use the corrected source.
 
 ## Execution Steps (Draft Mode)
 
@@ -571,16 +610,16 @@ Generate the output file in engine-native format based on `SESSION.engine`.
 
 #### If `SESSION.engine = "sugarcube"`
 
-Output path: `draft/sugarcube/NODE-{seq}_{Name}.twee`
+Output path: `specs/[FEATURE_DIR]/draft/sugarcube/NODE-{seq}_{Name}.twee`
 
 ```twee
 :: NODE-001-shrine-entrance [header]
-  {- Node ID: NODE-001 -}
+/*  {- Node ID: NODE-001 -}
   {- Act: 1 -}
   {- Variables Read: [$character.intelligence] -}
   {- Variables Set: [$visited_shrine] -}
   {- Drafted: YYYY-MM-DD -}
-  {- Outline: outlines/NODE-001.md -}
+  {- Outline: outlines/NODE-001.md -} */
 
   You stand before an ancient shrine, its stones worn by centuries.
   <<set $loc_chamber_visited to true>>
@@ -597,7 +636,7 @@ All mechanics use SugarCube macro syntax (`<<set>>`, `<<if>>`, `<<link>>`, widge
 
 #### If `SESSION.engine = "ink"`
 
-Output path: `draft/ink/NODE-{seq}_{Name}.ink`
+Output path: `specs/[FEATURE_DIR]/draft/ink/NODE-{seq}_{Name}.ink`
 
 ```ink
 === NODE_001_ShrineEntrance ===
@@ -623,7 +662,7 @@ All mechanics use Ink syntax (`~ var = value`, `{condition}`, `+ [label] -> targ
 
 #### If `SESSION.engine = "generic"`
 
-Output path: `draft/NODE-{seq}_{Name}.md`
+Output path: `specs/[FEATURE_DIR]/draft/NODE-{seq}_{Name}.md`
 
 ```markdown
 ---
@@ -910,4 +949,4 @@ Runs: `verify` → `export` → `compile` → `playwright tests` with auto-fix r
 | NPC dialogue wrong tone | Prose_profile not matching character voice | Review `characters.md` profiles; adjust prose tone |
 | Choice leads to wrong node | Node ID typo in link target | Verify target NODE_ID matches outline |
 | `<<back>>` returns to wrong passage | No history entry (e.g., arrived from StoryMenu) | Use `<<link>>` for navigation from menus; reserve `<<back>>` for in-scene returns |
-| Passage not found at compile time | Missing `.twee` file or typo in filename | Verify file exists in `draft/sugarcube/` and name matches the `:: PassageName` header |
+| Passage not found at compile time | Missing `.twee` file or typo in filename | Verify file exists in `specs/[FEATURE_DIR]/draft/sugarcube/` and name matches the `:: PassageName` header |

@@ -70,7 +70,7 @@ Expected format: a node ID (e.g., `NODE-005`) or a range (e.g., `NODE-005—NODE
 1. **Setup**: Run `{SCRIPT}` from repo root and parse `FEATURE_DIR`.
 
 2. **Identify the target**:
-   - Parse `$ARGUMENTS` for node ID or range. Resolve to `draft/[ENGINE]/[NODE_ID].[EXT]` file(s) (auto-detect engine from first matching file).
+   - Parse `$ARGUMENTS` for node ID or range. Resolve to `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID].[EXT]` file(s) (auto-detect engine from first matching file).
    - If no argument given: find the most recently modified draft node file whose matching checklist has `Verdict: PASS`.
    - For each target file, verify the most recent checklist in `checklists/` has `Verdict: PASS`. If FAIL: abort that file with: `✗ <NODE_ID>: checklist is FAIL — run speckit.revise before polishing.`
    - Skip any file that has `revised: [date]` in frontmatter but no `polished: [date]` since revisions invalidate prior polish (user must confirm to re-polish after revisions)
@@ -159,7 +159,7 @@ Expected format: a node ID (e.g., `NODE-005`) or a range (e.g., `NODE-005—NODE
      - Increment `version` (e.g., `version: 2` → `version: 3`)
      - Update `actual_words` with new word count
      - Add `polished: [YYYY-MM-DD]` field (insert after `revised:` if present, else after `drafted:`)
-   - Save as `draft/[ENGINE]/[NODE_ID]_v<N>.[EXT]` (e.g., `draft/ink/NODE-005_v3.ink`)
+   - Save as `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID]_v<N>.[EXT]` (e.g., `specs/[FEATURE_DIR]/draft/ink/NODE-005_v3.ink`)
    - Keep all prior versions unchanged
 
 8. **Append polish notes** to the top of the polished file (after YAML frontmatter, before prose):

@@ -15,13 +15,15 @@ Usage:
 """
 
 import argparse
-import os
 import re
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 from typing import Optional
 import yaml
+
+from postprocess import run_postprocess
 
 # Fix Unicode encoding for Windows console
 if sys.platform == 'win32':
@@ -44,6 +46,8 @@ class CompileWrapper:
         self.errors = []
         self.max_retries = 3
         self.retry_count = 0
+        # Locate preset templates directory (handles both presets)
+        self._template_dir = self._resolve_template_dir()
         
     def run(self, error_context: Optional[str] = None) -> bool:
         """Execute compilation with optional error context."""
@@ -86,14 +90,38 @@ class CompileWrapper:
         for f in source_files:
             print(f"   • {f.name}")
         
-        # Attempt compilation with retries
+        # Prepare combined compile source with mechanic hook conversion
+        print(f"\n📦 Preparing combined source...")
+        compile_file = self._create_compile_twee(source_files)
+        
+        # Run postprocessing BEFORE compilation so scripts can
+        # transform the combined file (convert tokens, add headers, etc.)
+        run_postprocess(
+            spec_path=self.spec_path,
+            engine=self.engine,
+            stage="compile",
+            source_dir=self.output_dir,
+            output_dir=self.output_dir,
+        )
+        
+        # Attempt compilation with retries.
+        # Auto-fix modifies compile_file directly, so don't re-create between retries.
+        compile_files = [compile_file]
         print(f"\n🔄 Compilation attempts (max: {self.max_retries}):")
         while self.retry_count < self.max_retries:
             self.retry_count += 1
             print(f"\n▶️  Attempt {self.retry_count}/{self.max_retries}...")
             
-            if self._compile(source_files):
+            if self._compile(compile_files):
                 print(f"\n✅ Compilation succeeded on attempt {self.retry_count}")
+                # Run postprocessing after compilation for output file transforms
+                run_postprocess(
+                    spec_path=self.spec_path,
+                    engine=self.engine,
+                    stage="post-compile",
+                    source_dir=self.output_dir,
+                    output_dir=self.output_dir,
+                )
                 return True
             
             if self.retry_count >= self.max_retries:
@@ -105,6 +133,25 @@ class CompileWrapper:
         
         return False
     
+    def _resolve_template_dir(self) -> Path:
+        """Find the preset templates directory.
+        
+        Uses the preset that compile.py is installed in first,
+        then falls back to the other preset.
+        """
+        script_dir = Path(__file__).parent
+        own_preset = script_dir.parent.parent  # e.g. game-narrative-writing/
+        own_templates = own_preset / "templates"
+        if own_templates.exists():
+            return own_templates
+        # Fallback: try sibling preset
+        workspace_root = own_preset.parent
+        sibling = "game-rpg-narrative-writing" if own_preset.name == "game-narrative-writing" else "game-narrative-writing"
+        sibling_templates = workspace_root / sibling / "templates"
+        if sibling_templates.exists():
+            return sibling_templates
+        return script_dir
+
     def _validate_setup(self) -> bool:
         """Check if spec and source directory (export or draft) exist."""
         if not self.spec_path.exists():
@@ -165,6 +212,7 @@ class CompileWrapper:
         When using export/, collect all relevant engine files (includes
         boilerplate: init, widgets, ui). When using draft/, check for
         a pre-combined story file first, then collect NODE-* files.
+        Falls back to .md files (generic drafts with [MECHANIC:...] tokens).
         """
         source_dir = self.source_dir
         is_export = self.source_label == "Export"
@@ -175,7 +223,11 @@ class CompileWrapper:
             story_file = source_dir / "story.twee"
             if story_file.exists():
                 return [story_file]
-            return sorted(source_dir.glob("NODE-*.twee"))
+            twee_files = sorted(source_dir.glob("NODE-*.twee"))
+            if twee_files:
+                return twee_files
+            # Fallback: generic .md drafts with [MECHANIC:...] tokens
+            return sorted(source_dir.glob("NODE-*.md"))
         
         elif self.engine == 'ink':
             if is_export:
@@ -183,7 +235,10 @@ class CompileWrapper:
             story_file = source_dir / "story.ink"
             if story_file.exists():
                 return [story_file]
-            return sorted(source_dir.glob("NODE-*.ink"))
+            ink_files = sorted(source_dir.glob("NODE-*.ink"))
+            if ink_files:
+                return ink_files
+            return sorted(source_dir.glob("NODE-*.md"))
         
         elif self.engine == 'renpy':
             if is_export:
@@ -195,6 +250,449 @@ class CompileWrapper:
         
         return []
     
+    def _load_yaml_frontmatter(self, content: str) -> Optional[dict]:
+        """Extract YAML front matter from file content."""
+        if content.startswith('---'):
+            parts = content.split('---', 2)
+            if len(parts) >= 2:
+                try:
+                    return yaml.safe_load(parts[1]) or {}
+                except Exception:
+                    return None
+        return None
+
+    def _translate_mechanic_hooks(self, content: str) -> str:
+        """Translate [MECHANIC:...] tokens to engine-native syntax."""
+        if self.engine == 'sugarcube':
+            return self._translate_to_sugarcube(content)
+        elif self.engine == 'ink':
+            return self._translate_to_ink(content)
+        return content
+
+    def _translate_to_sugarcube(self, content: str) -> str:
+        lines = content.split('\n')
+        result = []
+        for line in lines:
+            hook_match = re.match(r'^\s*\[MECHANIC:(\w+)\s+(.*?)\]\s*$', line)
+            if hook_match:
+                hook_type = hook_match.group(1)
+                hook_args = hook_match.group(2)
+                translated = self._sugarcube_hook(hook_type, hook_args)
+                if translated:
+                    result.append(translated)
+                    continue
+            close_match = re.match(r'^\s*\[/MECHANIC\]\s*$', line)
+            if close_match:
+                continue
+            full_match = re.match(r'^\s*\[MECHANIC:(\w+)\s+(.*?)\]\[/MECHANIC\]\s*$', line)
+            if full_match:
+                translated = self._sugarcube_hook(full_match.group(1), full_match.group(2))
+                if translated:
+                    result.append(translated)
+                    continue
+            result.append(line)
+        return '\n'.join(result)
+
+    def _sugarcube_hook(self, hook_type: str, args: str) -> Optional[str]:
+        hook_type = hook_type.upper()
+        if hook_type == 'VISITED':
+            m = re.search(r'(?:variable=)?\$?(\w+)', args)
+            if m:
+                return f"<<set ${m.group(1)} to true>>"
+        elif hook_type == 'FLAG':
+            m = re.search(r'(?:set|variable)=?\$?(\w+)', args)
+            if m:
+                return f"<<set ${m.group(1)} to true>>"
+        elif hook_type == 'COUNTER':
+            m = re.search(r'variable=\$?(\w+).*?delta=\+?(-?\d+)', args)
+            if m:
+                return f"<<set ${m.group(1)} += {m.group(2)}>>"
+            m2 = re.search(r'variable=\$?(\w+).*?set=(-?\d+)', args)
+            if m2:
+                return f"<<set ${m2.group(1)} to {m2.group(2)}>>"
+        elif hook_type == 'INVENTORY':
+            m = re.search(r'(add|remove)=(\w+)', args)
+            if m:
+                action, item = m.group(1), m.group(2)
+                if action == 'add':
+                    return f"<<run $inv.push(\"{item}\")>>"
+                elif action == 'remove':
+                    return f"<<run $inv.delete(\"{item}\")>>"
+        elif hook_type == 'TRUST':
+            m = re.search(r'npc=(\w+).*?delta=([+-]?\d+)', args)
+            if m:
+                return f"<<set ${m.group(1)}Trust += {m.group(2)}>>"
+        elif hook_type == 'CURRENCY':
+            m = re.search(r'(?:variable=)?\$?(\w+).*?(add|remove|delta)=([+-]?\d+)', args)
+            if m:
+                var_name = m.group(1)
+                delta = m.group(3)
+                return f"<<set ${var_name} += {delta}>>"
+        elif hook_type == 'NPC_STATE':
+            m = re.search(r'npc=(\w+).*?set=(\w+)', args)
+            if m:
+                return f"<<set ${m.group(1)}_state to \"{m.group(2)}\">>"
+        elif hook_type == 'ENDING_CONDITION':
+            m = re.search(r'(?:variable=)?\$?(\w+).*?delta=([+-]?\d+)', args)
+            if m:
+                return f"<<set ${m.group(1)} += {m.group(2)}>>"
+        elif hook_type == 'TIMER':
+            m = re.search(r'(start|stop|tick)=(\w+).*?(?:duration=)?(\d+)?', args)
+            if m:
+                action, timer = m.group(1), m.group(2)
+                if action == 'start' and m.group(3):
+                    return f"<<set ${timer}Timer to {m.group(3)}>>"
+                elif action == 'tick':
+                    return f"<<set ${timer}Timer -= 1>>"
+        elif hook_type == 'RANDOM':
+            m = re.search(r'range=(\d+)-(\d+).*?target=(\w+)', args)
+            if m:
+                return f"<<set ${m.group(3)} to random({m.group(1)}, {m.group(2)})>>"
+        elif hook_type == 'CLUE':
+            m = re.search(r'set=(\w+)', args)
+            if m:
+                return f"<<set $clue_{m.group(1)} to true>>"
+        elif hook_type == 'CHOICE_MEMORY':
+            m = re.search(r'(?:variable=)?\$?(\w+).*?value=([\w\"]+)', args)
+            if m:
+                return f"<<set ${m.group(1)} to {m.group(2)}>>"
+        elif hook_type == 'ATTRIBUTE':
+            m = re.search(r'(?:modify|variable)=(\w+).*?delta=([+-]?\d+)', args)
+            if m:
+                return f"<<set $character.{m.group(1)} += {m.group(2)}>>"
+        elif hook_type == 'QUEST':
+            m = re.search(r'(advance|complete|fail)=(\w+)', args)
+            if m:
+                action, quest = m.group(1), m.group(2)
+                if action == 'advance':
+                    return f"<<advanceQuestStage \"{quest}\">>"
+                elif action == 'complete':
+                    return f"<<completeQuest \"{quest}\">>"
+                elif action == 'fail':
+                    return f"<<failQuest \"{quest}\">>"
+        return None
+
+    def _translate_to_ink(self, content: str) -> str:
+        lines = content.split('\n')
+        result = []
+        for line in lines:
+            hook_match = re.match(r'^\s*\[MECHANIC:(\w+)\s+(.*?)\]\s*$', line)
+            if hook_match:
+                hook_type = hook_match.group(1)
+                hook_args = hook_match.group(2)
+                translated = self._ink_hook(hook_type, hook_args)
+                if translated:
+                    result.append(translated)
+                    continue
+            close_match = re.match(r'^\s*\[/MECHANIC\]\s*$', line)
+            if close_match:
+                continue
+            full_match = re.match(r'^\s*\[MECHANIC:(\w+)\s+(.*?)\]\[/MECHANIC\]\s*$', line)
+            if full_match:
+                translated = self._ink_hook(full_match.group(1), full_match.group(2))
+                if translated:
+                    result.append(translated)
+                    continue
+            result.append(line)
+        return '\n'.join(result)
+
+    def _ink_hook(self, hook_type: str, args: str) -> Optional[str]:
+        hook_type = hook_type.upper()
+        if hook_type == 'VISITED':
+            m = re.search(r'(?:variable=)?\$?(\w+)', args)
+            if m:
+                return f"~ {m.group(1)} = true"
+        elif hook_type == 'FLAG':
+            m = re.search(r'(?:set|variable)=?\$?(\w+)', args)
+            if m:
+                return f"~ {m.group(1)} = true"
+        elif hook_type == 'COUNTER':
+            m = re.search(r'variable=\$?(\w+).*?delta=\+?(-?\d+)', args)
+            if m:
+                return f"~ {m.group(1)} += {m.group(2)}"
+        elif hook_type == 'INVENTORY':
+            m = re.search(r'(add|remove)=(\w+)', args)
+            if m:
+                action, item = m.group(1), m.group(2)
+                if action == 'add':
+                    return f"~ inv(\"{item}\")"
+                elif action == 'remove':
+                    return f"~ inv(\"{item}\", false)"
+        elif hook_type == 'TRUST':
+            m = re.search(r'npc=(\w+).*?delta=([+-]?\d+)', args)
+            if m:
+                return f"~ {m.group(1)}Trust += {m.group(2)}"
+        elif hook_type == 'CURRENCY':
+            m = re.search(r'(?:variable=)?\$?(\w+).*?(add|remove|delta)=([+-]?\d+)', args)
+            if m:
+                return f"~ {m.group(1)} += {m.group(3)}"
+        elif hook_type == 'NPC_STATE':
+            m = re.search(r'npc=(\w+).*?set=(\w+)', args)
+            if m:
+                return f"~ {m.group(1)}_state = \"{m.group(2)}\""
+        elif hook_type == 'ENDING_CONDITION':
+            m = re.search(r'(?:variable=)?\$?(\w+).*?delta=([+-]?\d+)', args)
+            if m:
+                return f"~ {m.group(1)} += {m.group(2)}"
+        elif hook_type == 'TIMER':
+            m = re.search(r'(start|stop|tick)=(\w+).*?(?:duration=)?(\d+)?', args)
+            if m:
+                action, timer = m.group(1), m.group(2)
+                if action == 'start' and m.group(3):
+                    return f"~ {timer}Timer = {m.group(3)}"
+                elif action == 'tick':
+                    return f"~ {timer}Timer -= 1"
+        elif hook_type == 'RANDOM':
+            m = re.search(r'range=(\d+)-(\d+).*?target=(\w+)', args)
+            if m:
+                return f"~ temp {m.group(3)} = RANDOM({m.group(1)}, {m.group(2)})"
+        elif hook_type == 'CLUE':
+            m = re.search(r'set=(\w+)', args)
+            if m:
+                return f"~ clue_{m.group(1)} = true"
+        elif hook_type == 'CHOICE_MEMORY':
+            m = re.search(r'(?:variable=)?\$?(\w+).*?value=([\w\"]+)', args)
+            if m:
+                return f"~ {m.group(1)} = {m.group(2)}"
+        elif hook_type == 'ATTRIBUTE':
+            m = re.search(r'(?:modify|variable)=(\w+).*?delta=([+-]?\d+)', args)
+            if m:
+                return f"~ character.{m.group(1)} += {m.group(2)}"
+        elif hook_type == 'QUEST':
+            m = re.search(r'(advance|complete|fail)=(\w+)', args)
+            if m:
+                action, quest = m.group(1), m.group(2)
+                if action == 'advance':
+                    return f"~ quest_{quest}_stage += 1"
+                elif action == 'complete':
+                    return f"~ quest_{quest}_complete = true"
+                elif action == 'fail':
+                    return f"~ quest_{quest}_failed = true"
+        return None
+
+    def _load_variables(self) -> list:
+        """Parse variables.md for variable declarations."""
+        path = self.spec_path / "variables.md"
+        if not path.exists():
+            return []
+        content = path.read_text(encoding='utf-8')
+        variables = []
+        # Try YAML front matter first
+        header = self._load_yaml_frontmatter(content)
+        if header and 'variables' in header:
+            for v in header['variables']:
+                variables.append({
+                    'name': v.get('name', ''),
+                    'type': v.get('type', 'flag'),
+                    'default': str(v.get('default', 'false')),
+                })
+            return variables
+        # Fallback: parse markdown list format like `$var_name` — type — default
+        var_pattern = re.compile(
+            r'`\$([a-zA-Z_]\w*)`\s*(?:[:\-]\s*type:\s*(\w+))?\s*(?:[:\-]\s*default:\s*(\S+))?'
+        )
+        for m in var_pattern.finditer(content):
+            variables.append({
+                'name': m.group(1),
+                'type': m.group(2) or 'flag',
+                'default': m.group(3) or 'false',
+            })
+        return variables
+
+    def _load_boilerplate_sugarcube(self, first_node: str) -> str:
+        """Load sugarcube-boilerplate.twee template and fill placeholders."""
+        template_path = self._template_dir / "sugarcube-boilerplate.twee"
+        if not template_path.exists():
+            # Fallback: generate minimal boilerplate
+            return self._generate_minimal_story_data_sugarcube(first_node)
+
+        content = template_path.read_text(encoding='utf-8')
+        story_name = self._get_story_name()
+        ifid = self._get_ifid()
+
+        content = content.replace('{story_name}', story_name)
+        content = content.replace('{ifid}', ifid)
+        content = content.replace('{start_node}', first_node)
+
+        # Inject variable initializations into StoryInit
+        variables = self._load_variables()
+        if variables:
+            var_lines = ['']
+            var_lines.append('  {- Variable initializations -}')
+            for v in variables:
+                default = v.get('default', 'false')
+                vtype = v.get('type', 'flag')
+                name = v['name']
+                if vtype == 'flag':
+                    val = 'true' if default in ('true', 'True', '1') else 'false'
+                    var_lines.append(f'  <<set ${name} to {val}>>')
+                elif vtype == 'string':
+                    var_lines.append(f'  <<set ${name} to "{default}">>'  )
+                elif vtype == 'inventory':
+                    var_lines.append(f'  <<set ${name} to []>>')
+                else:
+                    var_lines.append(f'  <<set ${name} to {default}>>')
+            var_block = '\n'.join(var_lines)
+            # Insert after <<run setup()>>
+            content = content.replace(
+                '  <<run setup()>>\n',
+                f'  <<run setup()>>{var_block}\n'
+            )
+
+        return content
+
+    def _generate_minimal_story_data_sugarcube(self, first_node: str) -> str:
+        """Fallback minimal boilerplate when template is missing."""
+        story_name = self._get_story_name()
+        ifid = self._get_ifid()
+        return f''':: StoryData
+{{
+  "ifid": "{ifid}",
+  "name": "{story_name}",
+  "startnode": "{first_node}",
+  "engine": "SugarCube",
+  "engineversion": "2.30.0"
+}}
+
+:: StoryInit [header]
+  <<run setup()>>
+'''
+
+    def _get_story_name(self) -> str:
+        constitution = self._load_yaml_frontmatter_file("constitution.md")
+        if constitution and 'story_name' in constitution:
+            return constitution['story_name']
+        return self.spec_path.name
+
+    def _get_ifid(self) -> str:
+        constitution = self._load_yaml_frontmatter_file("constitution.md")
+        if constitution and 'ifid' in constitution:
+            return str(constitution['ifid'])
+        return str(uuid.uuid4()).upper()
+
+    def _load_yaml_frontmatter_file(self, filename: str) -> Optional[dict]:
+        """Load YAML front matter from a file in the spec directory."""
+        path = self.spec_path / filename
+        if not path.exists():
+            return None
+        try:
+            content = path.read_text(encoding='utf-8')
+            return self._load_yaml_frontmatter(content)
+        except Exception:
+            return None
+
+    def _generate_var_decls_ink(self) -> str:
+        """Generate VAR declarations for Ink."""
+        lines = ['// Variable declarations']
+        variables = self._load_variables()
+        for v in variables:
+            default = v.get('default', 'false')
+            vtype = v.get('type', 'flag')
+            name = v['name']
+            if vtype == 'string':
+                lines.append(f'VAR {name} = "{default}"')
+            elif vtype == 'flag':
+                val = 'true' if default in ('true', 'True', '1') else 'false'
+                lines.append(f'VAR {name} = {val}')
+            else:
+                lines.append(f'VAR {name} = {default}')
+        if len(lines) > 1:
+            lines.append('')  # blank line after declarations
+        return '\n'.join(lines)
+
+    def _create_compile_twee(self, source_files: list) -> Path:
+        """Create a combined compile source file from all source files.
+        
+        Converts [MECHANIC:...] tokens to engine-native syntax,
+        strips YAML front matter, converts markdown choices to
+        engine-appropriate links, and wraps bare prose in passage headers.
+        Uses engine-appropriate extension (.twee for SugarCube, .ink for Ink).
+        """
+        ext = {'sugarcube': '.twee', 'ink': '.ink', 'renpy': '.rpy'}.get(self.engine, '.twee')
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        compile_file = self.output_dir / f"compile{ext}"
+
+        passages = []
+        has_story_data = False
+        has_var_decls = False
+
+        for src_path in source_files:
+            content = src_path.read_text(encoding='utf-8')
+            if ':: StoryData' in content:
+                has_story_data = True
+            if re.search(r'\bVAR\s+\w+\s*=', content):
+                has_var_decls = True
+
+            if src_path.suffix == '.md':
+                # .md files need full conversion to engine format
+                header = self._load_yaml_frontmatter(content)
+
+                # Strip YAML front matter
+                body = content
+                if content.startswith('---'):
+                    parts = content.split('---', 2)
+                    if len(parts) >= 3:
+                        body = parts[2].strip()
+
+                # Convert [MECHANIC:...] tokens
+                body = self._translate_mechanic_hooks(body)
+
+                if self.engine == 'sugarcube':
+                    node_id = src_path.stem
+                    if header and 'node_id' in header:
+                        node_id = header['node_id']
+                    # Convert markdown choices to Twee wiki-links
+                    body = re.sub(
+                        r'-\s*\[([^\]]+)\]\(([^)]+)\)',
+                        r'[[\1|\2]]',
+                        body
+                    )
+                    # Build passage with header
+                    lines = [f':: {node_id} [header]']
+                    lines.append(f'  {{- Node ID: {node_id} -}}')
+                    lines.append('')
+                    for line in body.split('\n'):
+                        lines.append(f'  {line}')
+                    passages.append('\n'.join(lines))
+                elif self.engine == 'ink':
+                    node_id = src_path.stem.replace('-', '_').upper()
+                    if header and 'node_id' in header:
+                        node_id = header['node_id'].replace('-', '_').upper()
+                    # Convert markdown choices to Ink diverts
+                    body = re.sub(
+                        r'-\s*\[([^\]]+)\]\(([^)]+)\)',
+                        r'+ [\1] -> \2',
+                        body
+                    )
+                    lines = [f'=== {node_id} ===']
+                    lines.append(f'// Node ID: {src_path.stem}')
+                    lines.append('')
+                    for line in body.split('\n'):
+                        lines.append(f'{line}')
+                    passages.append('\n'.join(lines))
+                else:
+                    passages.append(body)
+            else:
+                # .twee / .ink files: keep as-is after hook conversion
+                body = self._translate_mechanic_hooks(content)
+                passages.append(body)
+
+        # Prepend boilerplate if not already present in source files
+        if self.engine == 'sugarcube' and not has_story_data:
+            first_node = source_files[0].stem
+            boilerplate = self._load_boilerplate_sugarcube(first_node)
+            passages.insert(0, boilerplate)
+            print(f"   StoryData + StoryInit from template (no boilerplate found)")
+        elif self.engine == 'ink' and not has_var_decls:
+            boilerplate = self._generate_var_decls_ink()
+            passages.insert(0, boilerplate)
+            print(f"   VAR declarations generated (no boilerplate found)")
+
+        combined = '\n\n'.join(passages)
+        compile_file.write_text(combined, encoding='utf-8')
+        print(f"   {compile_file.name} — {len(passages)} passage(s) combined")
+        return compile_file
+
     def _compile(self, source_files: list) -> bool:
         """Execute the compiler for the target engine."""
         if self.engine == 'sugarcube':

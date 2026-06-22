@@ -168,7 +168,40 @@ You **MUST** consider the user input before proceeding (if not empty).
      > - constitution.md § IX (Map Configuration)
      > - plan.md § [MAP INVENTORY] (maps needed per session)
      > - compile.md validation (map file format checks)"
-     - Store as `[MAP_FORMAT]`, `[MAP_SCALE]`, `[PLAYER_MAPS_NEEDED]` in YAML frontmatter
+      - Store as `[MAP_FORMAT]`, `[MAP_SCALE]`, `[PLAYER_MAPS_NEEDED]` in YAML frontmatter
+    - **Illustration Configuration**:
+      > "Does this project need illustrations or background images?
+      > (a) **Yes** — I want to generate illustration prompts and embed images in compiled output
+      > (b) **No** — Text-only, no images needed
+      >
+      > If YES: What is the default visual style?
+      > • **cel** — Cel-shaded (anime, JRPGs)
+      > • **comic** — Comic book (halftones, bold inks)
+      > • **pixelart** — Pixel art (retro games)
+      > • **conceptart** — Concept art (fantasy, sci-fi)
+      > • **handpainted** — Hand-painted (MMO style)
+      > • **rendered** — 3D rendered (AAA)
+      > • **stylized3d** — Stylized 3D
+      > • *see full style catalogue in speckit.illustrate*
+      >
+      > Default color range?
+      > • **full** — Full color
+      > • **2color** — Two-color
+      > • **greyscale** — Greyscale
+      >
+      > Default aspect ratio?
+      > • **landscape** — Wide
+      > • **portrait** — Tall
+      > • **square** — Square
+      >
+      > Default background type?
+      > • **environment** — Outdoor scenes
+      > • **interior** — Indoor scenes
+      > • **exterior** — Building exteriors
+      > • **abstract** — Abstract
+      >
+      > Your choices populate constitution.md § XI (Illustration Configuration)."
+      - Store as `[ILLUSTRATIONS_ENABLED]`, `[STYLE_KEY]`, `[COLOR_RANGE]`, `[ASPECT_RATIO]`, `[BACKGROUND_TYPE]` in YAML frontmatter
    - **`[COPYRIGHT]`** � ask the user to choose a format or enter custom text:
      > "Which copyright notice?
      > (a) � [YEAR] [STUDIO_NAME]. All rights reserved.
@@ -195,9 +228,13 @@ You **MUST** consider the user input before proceeding (if not empty).
      - `ruleset: "[RULESET]"` (e.g., "D&D 5e")
      - `genre: "[GENRE]"` (e.g., "Fantasy")
      - `platform: "[PLATFORM]"` (e.g., "Tabletop" or "Computer Game")
-   - **Adjust export_engines** based on `[PLATFORM]`:
-     - If `[PLATFORM]` is "Tabletop": set `export_engines: [generic, sugarcube]` (exclude ink)
-     - If `[PLATFORM]` is "Computer Game": allow full selection (ink permitted)
+   - **Adjust export_engines** based on user's engine selection and `[PLATFORM]`:
+      - If the user selected a specific engine (sugarcube, ink, etc.): set `export_engines` to just that engine (e.g., `[sugarcube]`). Remove any engines the user did not select.
+      - If the user selected **generic**: set `export_engines: [generic]`
+      - If the user selected **Multiple**: let them choose which engines to include
+      - If no explicit engine selection was made, fall back to platform defaults:
+        - If `[PLATFORM]` is "Tabletop": `export_engines: [generic, sugarcube]` (exclude ink)
+        - If `[PLATFORM]` is "Computer Game": allow full selection (ink permitted)
 
    Populate all engine target, POV, language, and version fields
    - Active Mechanics Table: list every hook type the project uses, with Tier (1/2) and config notes.
@@ -273,7 +310,8 @@ You **MUST** consider the user input before proceeding (if not empty).
    - `[RATIFICATION_DATE]` and `[LAST_AMENDED_DATE]` are ISO format (`YYYY-MM-DD`)
    - Active Mechanics Table has at least one Tier 1 entry
    - Node rules NR-001–NR-009 are confirmed active
-   - If Series Position is non-standalone: `## Series Context` section is present and populated
+    - If Series Position is non-standalone: `## Series Context` section is present and populated
+    - If `illustrations_enabled: yes`: validate `default_illustration_style` is a valid style key, `default_illustration_color_range` is one of `full/2color/greyscale`, `default_illustration_aspect` is one of `landscape/portrait/square`, `default_background_type` is one of `environment/interior/exterior/abstract`
 
 9. **Report**: Summarize all resolved fields, the new version number, any remaining items requiring attention, and next steps including craft-rules.md generation.
 

@@ -52,7 +52,7 @@ Accepted input:
 
 1. Load `specs/foreshadow-template.md` or extract from spec.md (mysteries, plot twists)
 2. Confirm `specs/plan.md` exists with node sequence
-3. Load all `draft/[ENGINE]/NODE-*.md` files to locate clue text and payoff moments
+3. Load all `specs/[FEATURE_DIR]/draft/[ENGINE]/NODE-*.md` files to locate clue text and payoff moments
 4. Parse for clue keywords (names, objects, behaviors)
 5. Identify payoff moments (reveals, twists, puzzle solutions)
 

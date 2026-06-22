@@ -7,7 +7,7 @@ A Spec-Driven Development preset purpose-built for branching narrative game desi
 **Key features at a glance:**
 
 - **Constitution governance** — `constitution.md` is the single source of truth for engine targets (SugarCube, Ink, Ren'py), POV architecture, player character voice, narrative mode (linear/branching/emergent), mechanics hooks, and craft rules. Every command reads from it; no inconsistencies across sessions.
-- **Full narrative pipeline** — 36 AI commands from first idea (`speckit.specify`) through planning (`speckit.plan`, `speckit.outline`), drafting (`speckit.implement`), quality validation (13 narrative analysis tools), and compilation (`speckit.compile`) to playable output.
+- **Full narrative pipeline** — 39 AI commands from first idea (`speckit.specify`) through planning (`speckit.plan`, `speckit.outline`), drafting (`speckit.implement`), quality validation (13 narrative analysis tools), compilation (`speckit.compile`), postprocessing (`speckit.postprocessing`), and illustration (`speckit.illustrate`, `speckit.background`) to playable output.
 - **Dialogue branching system** — Plan dialogue trees with trust states, NPC responses, player choices, and branch targets. Outline dialogue beats with multi-party reactions. Implement prose with mechanic hooks. Validate consequences and choice clarity.
 - **8 Narrative Quality Validators** — Branch structure and agency, narrative arc quality, subplot resolution, narrative flow and emotional tempo, cross-branch variable consistency, foreshadowing/payoff, dialogue trees and information asymmetry, replayability metrics, and accessibility (reading level + content warnings).
 - **Multi-POV support** — Single protagonist, dual parallel, switching POV, ensemble casts, or rotating perspectives. Trust state tracking per POV. Information asymmetry mapping (what each character knows when).
@@ -15,6 +15,7 @@ A Spec-Driven Development preset purpose-built for branching narrative game desi
 - **Multi-engine compilation** — SugarCube 2.x (Twine), Ink (usable in Unreal, Unity, Godot), with Ren'py support in development. Compiled output in `output/[ENGINE]/`. Automatic theme application (dark/light/minimal CSS for SugarCube; HTML wrappers for Ink).
 - **Series Bible support** — Carry-over variable registry, ending canon table, NPC survival tracking, world state deltas per game entry, series arc continuity.
 - **Playable themes** — 3 base SugarCube CSS themes (dark, light, minimal) with all values as CSS custom properties for easy tweaking. 3 Ink HTML theme wrappers. All themes exposed via `speckit.theme`.
+- **Postprocessing plugin system** — Generate deterministic Python scripts via `speckit.postprocessing` that transform `.twee`/`.ink` files after every export or compile. Inject CSS animations, passage headers, act title cards, custom HUD, or dynamic backgrounds without manual file editing.
 
 - **TBI** - RenPy export is in development.
 
@@ -52,7 +53,7 @@ A Spec-Driven Development preset purpose-built for branching narrative game desi
 
 The Game Narrative Writing preset applies Spec-Driven Development to interactive fiction, quest design, and branching narratives. It provides:
 
-- **36 AI commands** covering every stage from idea to compiled, playable game
+- **38 AI commands** covering every stage from idea to compiled, playable game
 - **22 templates** for all supporting game documents
 - **1 compilation script** (Python-based) for SugarCube, Ink, and Ren'py output
 - Support for **multiple POV architectures** (single, dual, rotating, ensemble)
@@ -290,9 +291,12 @@ Most commands accept these optional arguments:
 
 | Command | Phase | What It Does | Arguments |
 |---|---|---|---|
-| `speckit.compile` | Build | Compile all nodes to engine-specific output (SugarCube, Ink, Ren'py). Includes theme, variables, and hook translation. Output in `output/[ENGINE]/` | `--all-engines` \| `[ENGINE]` (sugarcube/ink/renpy/generic) |
+| `speckit.compile` | Build | Compile all nodes to engine-specific output (SugarCube, Ink, Ren'py). Includes theme, variables, hook translation, and illustration embedding. If illustrations_enabled is set in constitution.md, automatically embeds matching PNGs from `assets/illustrations/` at the start of each node. Output in `output/[ENGINE]/` | `--all-engines` \| `[ENGINE]` (sugarcube/ink/renpy/generic) |
 | `speckit.verify` | QA | Per-node quality gates + comprehensive validation: structural tests, hook validation, choice meaningfulness check, dead-end detection, POV drift, and self-correction. Use for deep audits | `--all-engines` \| `[ENGINE]` \| `--unit-tests` \| `--structural-only` |
 | `speckit.theme` | Styling | Generate or adjust story.css (SugarCube) or ink-theme.html wrapper. Dark/light/minimal base themes or custom via flags | `dark` \| `light` \| `minimal` \| `custom [FILE]` |
+| `speckit.postprocessing` | Styling | Generate a Python postprocessing script that transforms `.twee`/`.ink` files after export or compile. Describe headers, animations, act openings, HUD, or backgrounds in natural language — the command writes a deterministic script to `specs/[FEATURE_DIR]/postprocessing/` | free-form description of the visual change |
+| `speckit.illustrate` | Visual Assets | Generate illustration briefs and AI image-generation prompts for game narrative scenes. Reads outlines, character files, and world-building to produce ready-to-paste prompts for Midjourney, DALL-E 3, Firefly, or Stable Diffusion | `--node <id>` \| `--scene all` \| `--scene description` \| `--style [name]` \| `--color [range]` \| `--aspect [ratio]` \| `prompt-only` \| `brief-only` |
+| `speckit.background` | Visual Assets | Generate background image briefs and AI prompts for game environments. Reads outlines, locations, and world-building. Supports per-node and composite location backgrounds | `--node <id>` \| `--scene all` \| `--composite` \| `--style [name]` \| `--color [range]` \| `--aspect [ratio]` \| `--type [variant]` |
 | `speckit.export` | Distribution | Export final game to platform-specific formats (coming: web deployment, itch.io packaging) | `web` \| `itch` (coming soon) |
 
 ### Series & Reference
@@ -387,6 +391,29 @@ python scripts/python/verify.py --spec <spec-name> --engine sugarcube --max-atte
 **Output:** Validation report with issues, warnings, and auto-fix attempts. Exit code 0 = all pass, 1 = failures.
 
 ---
+
+### Postprocessing
+
+**`scripts/python/postprocess.py`** — Postprocessing plugin runner. Automatically called by `export.py` and `compile.py`; no manual invocation needed.
+
+Place Python scripts in `specs/<specname>/postprocessing/` and they run automatically after every export or compile. Each script exposes a `postprocess(ctx)` function that can modify `.twee`/`.ink` files in-place.
+
+```python
+# specs/my-game/postprocessing/typewriter_animation.py
+def postprocess(ctx):
+    for f in ctx["source_dir"].glob("*.twee"):
+        content = f.read_text()
+        if "StoryStylesheet" in content and "@keyframes" not in content:
+            content = content.replace(
+                ".passage {",
+                ".passage { animation: fadeIn 0.4s ease-out; }\n"
+                "@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }\n"
+                ".passage {",
+            )
+            f.write_text(content)
+```
+
+Generate scripts with `speckit.postprocessing` or reference the examples in `scripts/python/postprocess/`.
 
 ### Direct Structural Testing
 

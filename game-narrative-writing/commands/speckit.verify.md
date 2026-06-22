@@ -30,12 +30,13 @@ Accepted input:
 - `[NODE_ID] [NODE_ID] ...` — validate a list of nodes
 - `--all` — validate every file in `nodes/`
 - `--unit-tests` — run the full cross-node unit test suite only (no compiler)
+- `--postprocess-tests` — run the postprocessing system unit test suite (TweeParser, injectors, script discovery/loading)
 - `--structural-only` — run only structural unit tests (no compiler/linter)
 - *(no argument)* — validate every DRAFT node that has no `verified: true` flag
 
 ## What this command does
 
-`speckit.verify` runs three layers in sequence:
+`speckit.verify` runs three layers in sequence (or standalone postprocessing tests with `--postprocess-tests`):
 
 ### Layer 1 — Structural Unit Tests (always runs)
 
@@ -90,6 +91,31 @@ VERDICT: ✅ PASS (weighted score: 6/6)
 
 Toolchain warnings (binary not found) are reported but do not fail. Hard errors (syntax errors) fail and trigger self-correction.
 
+### Layer 4 — Postprocessing Tests (standalone, with `--postprocess-tests`)
+
+Validates the postprocessing plugin system itself:
+
+| ID | Test | What it checks |
+|----|------|---------------|
+| P-01 | PASSAGE-CREATE | Passage class construction and tag querying |
+| P-02 | PARSER-PARSE | TweeParser correctly splits raw twee into passages |
+| P-03 | PARSER-FIND | TweeParser.find() returns correct passage or None |
+| P-04 | PARSER-FIND-TAG | TweeParser.find_by_tag() filters by tag |
+| P-05 | PARSER-FIND-PATTERN | TweeParser.find_by_pattern() matches names via regex |
+| P-06 | INJECT-CSS | inject_css adds CSS to StoryStylesheet (idempotent) |
+| P-07 | INJECT-WIDGET | inject_widget creates new widget passage |
+| P-08 | INJECT-WIDGET-UPDATE | inject_widget appends to existing widget (idempotent) |
+| P-09 | HEADER-FOOTER | add_passage_header_footer skips boilerplate correctly |
+| P-10 | WRITE-ROUNDTRIP | Parse → modify → write → re-parse preserves changes |
+| P-11 | DISCOVER-SCRIPTS | _discover_scripts finds .py files in postprocessing/ |
+| P-12 | DISCOVER-LEGACY | _discover_scripts falls back to postprocess/ (legacy) |
+| P-13 | DISCOVER-EMPTY | _discover_scripts returns [] when no dir exists |
+| P-14 | LOAD-SCRIPT | _load_script loads a .py with postprocess function |
+| P-15 | LOAD-SCRIPT-NO-PP | _load_script handles scripts without postprocess() |
+| P-16 | RUN-POSTPROCESS | run_postprocess discovers and invokes scripts |
+
+These tests run **independently** of any spec — they create temporary directories and synthetic twee files. Use this to verify the postprocessing infrastructure is working after upgrades or modifications.
+
 ### Self-Correction Loop
 
 If hard errors found in any layer:
@@ -117,6 +143,7 @@ After 3 failed attempts: output full error log, do NOT mark node as verified, pr
    e. If clean: add `verified: true` and `verified_at: [date]` to YAML header
 4. **After all nodes**: Print summary table with status per node
 5. If `--unit-tests`: Run full cross-node test suite
+6. If `--postprocess-tests`: Run postprocessing system unit tests (skips node verification)
 
 ### Output
 

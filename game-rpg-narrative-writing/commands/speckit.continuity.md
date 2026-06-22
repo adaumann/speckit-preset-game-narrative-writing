@@ -37,7 +37,7 @@ Accepted input:
 
 ## Pre-Execution Checks
 
-1. Confirm `draft/` contains node files to analyze
+1. Confirm `specs/[FEATURE_DIR]/draft/` contains node files to analyze
 2. Load `variables.md` — authoritative variable registry with types, ranges, initial values
 3. Load `plan.md` — branch structure, node sequence, merge points
 4. Load `constitution.md` — POV, craft rules, prose profile

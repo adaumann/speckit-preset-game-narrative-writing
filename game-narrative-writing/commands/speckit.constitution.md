@@ -107,8 +107,47 @@ You **MUST** consider the user input before proceeding (if not empty).
 
    - **Active mechanics**: survey narrative design doc for all referenced mechanic types ? identify Tier 1 (core loop) and Tier 2 (optional/conditional) mechanics.
 
-   - **`[LANGUAGE]`** - BCP-47 code. Ask if not already set:
-     > "What language is this game written in? (e.g. en, de, fr, es, it, pt, nl, ja, zh, fi, hu, tr)"
+      - **Illustration Configuration**:
+        > "Does this project need illustrations or background images?
+        > (a) **Yes** — I want to generate illustration prompts and embed images in compiled output
+        > (b) **No** — Text-only, no images needed
+        >
+        > If YES: What is the default visual style?
+        > • **cel** — Cel-shaded (anime, JRPGs)
+        > • **anime** — Anime style (visual novels)
+        > • **comic** — Comic book (halftones, bold inks)
+        > • **pixelart** — Pixel art (retro games)
+        > • **conceptart** — Concept art (fantasy, sci-fi)
+        > • **handpainted** — Hand-painted (MMO style)
+        > • **rendered** — 3D rendered (AAA)
+        > • **stylized3d** — Stylized 3D (Fortnite, Zelda)
+        > • **lineart** — Line art (literary, MG)
+        > • **penandink** — Pen and ink (classics)
+        > • **woodcut** — Woodcut (horror, dark fantasy)
+        > • **engraving** — Copperplate engraving (period)
+        > • *see full style catalogue in speckit.illustrate*
+        >
+        > Default color range?
+        > • **full** — Full color (premium)
+        > • **2color** — Two-color (cost-effective)
+        > • **greyscale** — Greyscale (atmospheric)
+        >
+        > Default aspect ratio for images?
+        > • **landscape** — Wide (backgrounds, environments)
+        > • **portrait** — Tall (character art, mobile)
+        > • **square** — Square (thumbnails, UI)
+        >
+        > Default background type?
+        > • **environment** — Outdoor scenes, landscapes
+        > • **interior** — Indoor scenes, rooms, buildings
+        > • **exterior** — Building exteriors, streets
+        > • **abstract** — Abstract atmospherics
+        >
+        > Your choices populate constitution.md § XI (Illustration Configuration)."
+      - Store as `[ILLUSTRATIONS_ENABLED]`, `[STYLE_KEY]`, `[COLOR_RANGE]`, `[ASPECT_RATIO]`, `[BACKGROUND_TYPE]` in YAML frontmatter
+
+    - **`[LANGUAGE]`** - BCP-47 code. Ask if not already set:
+      > "What language is this game written in? (e.g. en, de, fr, es, it, pt, nl, ja, zh, fi, hu, tr)"
 
    - **`[STUDIO_NAME]`** / **`[AUTHOR_NAME]`** - publishing credit. Ask if not set.
 
@@ -131,6 +170,13 @@ You **MUST** consider the user input before proceeding (if not empty).
    - The output MUST reproduce every section heading, table, and placeholder from that file - populated with the values gathered above.
    - Do **NOT** use `.specify/templates/constitution-template.md` - that is the generic software-development template and is wrong for this project.
    - Do **NOT** invent a structure from memory or training data. Use only the structure from the file you just read.
+
+   **Set `export_engines` in YAML frontmatter based on the engine selection from step 2**:
+   - If the user selected **sugarcube** (option a): `export_engines: [sugarcube]`
+   - If the user selected **ink** (option b): `export_engines: [ink]`
+   - If the user selected **generic** (option g): `export_engines: [generic]`
+   - If no explicit engine selection was made: keep the template default of `export_engines: [generic, sugarcube]`
+   - Remove `generic` from the list when the user standard-alone engine (not generic). The user selected a specific engine for a reason — output only that engine.
 
    Populate all engine target, POV, language, and version fields
    - Active Mechanics Table: list every hook type the project uses, with Tier (1/2) and config notes.
@@ -194,7 +240,8 @@ You **MUST** consider the user input before proceeding (if not empty).
    - `[RATIFICATION_DATE]` and `[LAST_AMENDED_DATE]` are ISO format (`YYYY-MM-DD`)
    - Active Mechanics Table has at least one Tier 1 entry
    - Node rules NR-001–NR-009 are confirmed active
-   - If Series Position is non-standalone: `## Series Context` section is present and populated
+    - If Series Position is non-standalone: `## Series Context` section is present and populated
+    - If `illustrations_enabled: yes`: validate `default_illustration_style` is a valid style key, `default_illustration_color_range` is one of `full/2color/greyscale`, `default_illustration_aspect` is one of `landscape/portrait/square`, `default_background_type` is one of `environment/interior/exterior/abstract`
 
 9. **Report**: Summarize all resolved fields, the new version number, any remaining items requiring attention, and next steps including craft-rules.md generation.
 

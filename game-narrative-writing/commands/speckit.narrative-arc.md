@@ -60,7 +60,7 @@ Accepted input:
 2. Load `specs/characters.md` (or equivalent): NPC profiles, traits, arcs
 3. Load `specs/endings.md`: All registered endings with requirements
 4. Load `specs/constitution.md`: Central dramatic question, theme
-5. Load all `draft/[ENGINE]/NODE-*.md` files
+5. Load all `specs/[FEATURE_DIR]/draft/[ENGINE]/NODE-*.md` files
 6. Identify subplot markers from node content and plan.md
 7. Load optional docs: relationships.md, themes.md
 

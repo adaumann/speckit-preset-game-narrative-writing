@@ -60,7 +60,7 @@ Accepted input:
 1. Load `specs/plan.md`: Branch structure, choice points, node sequence
 2. Load `specs/variables.md`: All variables affected by choices
 3. Load `specs/endings.md`: All registered ending IDs
-4. Load all `draft/[ENGINE]/NODE-*.md` files
+4. Load all `specs/[FEATURE_DIR]/draft/[ENGINE]/NODE-*.md` files
 5. Parse for choice syntax and extract variable mutations per branch
 6. Identify divergence points and convergence points
 

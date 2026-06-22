@@ -1,0 +1,40 @@
+:: StoryData
+{
+  "ifid": "{ifid}",
+  "name": "{story_name}",
+  "startnode": "{start_node}",
+  "engine": "SugarCube",
+  "engineversion": "2.30.0"
+}
+
+:: StoryInit [header]
+  <<run setup()>>
+
+:: StoryStylesheet [stylesheet]
+  /* Base theme — override with story.css or postprocessing */
+  #passages {
+    max-width: 40em;
+    margin: 0 auto;
+    font-family: Georgia, serif;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  .passage {
+    margin-bottom: 1.5em;
+  }
+  a.internal-link, a.link-internal {
+    color: #333;
+    text-decoration: underline;
+  }
+  a.internal-link:hover {
+    color: #000;
+  }
+
+:: StoryMenu
+  <<link "Continue" "StoryContinue">><</link>>
+
+:: StoryContinue
+  <<back "Return to story">>
+
+:: StoryCaption
+  <span id="game-title">{story_name}</span>

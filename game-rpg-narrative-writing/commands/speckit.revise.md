@@ -65,7 +65,7 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
 1. **Setup**: Run `{SCRIPT}` from repo root and parse JSON for spec file paths.
 
 2. **Identify the revision target**:
-   - Parse `$ARGUMENTS` for node ID. Resolve to `draft/[ENGINE]/[NODE_ID].[EXT]` (auto-detect engine from the first existing file).
+   - Parse `$ARGUMENTS` for node ID. Resolve to `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID].[EXT]` (auto-detect engine from the first existing file).
    - If no argument: scan `checklists/` for the most recently modified file with open failures � use its linked node as the target.
    - Abort with a clear error if the node file does not exist or has no valid YAML frontmatter header.
 
@@ -78,7 +78,7 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
    - **Failure scope is fixed at this step.** Do not expand it during revision.
 
 4. **Load required context**:
-   - Read `draft/[ENGINE]/[NODE_ID].[EXT]` in full (prose + YAML frontmatter)
+   - Read `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID].[EXT]` in full (prose + YAML frontmatter)
    - Read `.specify/memory/constitution.md` � POV rules, prohibited phrases, tone, Prose Style Mode (Section VII), `style_mode`, `prose_profile`
    - Read `.specify/memory/craft-rules.md` � craft rules (NR-NNN, PR-NNN per active prose profile), anti-AI clich�s filter, prohibited phrases
    - Read `outlines/[NODE_ID].md` � beat sequence, choices table, variable contract, Dialogue Tree field (if present)
@@ -95,8 +95,8 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
    - `specs/bestiary.md` – enemy CR/difficulty profiles (if Tabletop)
    
    **Tabletop-Only Context** (if `SESSION.is_rpg = "tabletop"`):
-   - `draft/campaign-guide.md` – campaign overview, house rules, party composition, companion system, player contract
-   - `draft/SESSION-[N]-BRIEFING.md` – session-specific player introduction
+   - `specs/[FEATURE_DIR]/draft/campaign-guide.md` – campaign overview, house rules, party composition, companion system, player contract
+   - `specs/[FEATURE_DIR]/draft/SESSION-[N]-BRIEFING.md` – session-specific player introduction
    - `outlines/[NODE_ID].md` – **encounter_type** and **session** fields mandatory for Tabletop revisions
    
    **Computer Game-Only Context** (if `SESSION.is_rpg = "computer"`):
@@ -156,7 +156,7 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
    - **TR-006 (faction rep)**: Revise to announce faction reputation change in NPC dialogue (not silent variable shift)
    - **TR-007 (CR balance)**: If combat CR out of ±2 tolerance: revise encounter difficulty (reduce NPC count, lower AC/damage, or increase party resources)
    - **TR-008 (combat narrative)**: Add foreshadowing or narrative justification for combat encounter
-   - **Campaign Prep (Tabletop first session)**: If SESSION-1 first node: generate/revise `draft/campaign-guide.md` Introduction section with ruleset house rules, party composition, companion system overview; also update `draft/SESSION-1-BRIEFING.md` for player introduction
+   - **Campaign Prep (Tabletop first session)**: If SESSION-1 first node: generate/revise `specs/[FEATURE_DIR]/draft/campaign-guide.md` Introduction section with ruleset house rules, party composition, companion system overview; also update `specs/[FEATURE_DIR]/draft/SESSION-1-BRIEFING.md` for player introduction
 
    **Computer Game RPG Failures** (if `SESSION.is_rpg = "computer"`):
    - **CR-001 (playstyle routing)**: Document which playstyles (Combat/Dialogue/Exploration) reach this node
@@ -183,8 +183,8 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
    - Add `revised: [YYYY-MM-DD]` field to the YAML frontmatter
 
 8. **Write output**:
-   - **Revised node**: save as `draft/[ENGINE]/[NODE_ID]_v[N].[EXT]` (e.g. `draft/ink/NODE-003_v2.ink`)
-   - **Keep the original** `draft/[ENGINE]/[NODE_ID].[EXT]` unchanged � it is the v1 record
+   - **Revised node**: save as `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID]_v[N].[EXT]` (e.g. `specs/[FEATURE_DIR]/draft/ink/NODE-003_v2.ink`)
+   - **Keep the original** `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID].[EXT]` unchanged � it is the v1 record
    - **Revision notes**: append a `<!-- REVISION NOTES` comment block at the top of the revised file (after YAML frontmatter):
      ```
      <!-- REVISION NOTES v[N]
@@ -253,10 +253,10 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
 
 
 **Tabletop Campaign Introduction Model**:
-- On first SESSION-1 node revision: Generate/update `draft/campaign-guide.md` with:
+- On first SESSION-1 node revision: Generate/update `specs/[FEATURE_DIR]/draft/campaign-guide.md` with:
   - **Introduction section**: Ruleset system (D&D 5e/PF2e/SR6e), house rules summary, party composition guidance, companion system overview, player contract
   - **Player-Facing Tone**: Welcoming, clear mechanics summary, no spoilers for campaign
-- Update `draft/SESSION-1-BRIEFING.md` for player character creation guidance (level, starting equipment, house rules relevant to level 1)
+- Update `specs/[FEATURE_DIR]/draft/SESSION-1-BRIEFING.md` for player character creation guidance (level, starting equipment, house rules relevant to level 1)
 - All Tabletop revisions should note impact on session pacing (does revision extend/reduce typical 2-4 hour session time?)
 
 **Platform-Specific Revision Scope**:
@@ -274,7 +274,7 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
 - **Shadowrun 6e**: Dice pool notation, routing balance (Street/Matrix/Astral equivalence), karma/contact economy
 
 **Campaign Prep Impact** (Tabletop-specific):
-- Any change to house rules, party composition, or companion system should update `draft/campaign-guide.md`
-- Any SESSION-N session-wide change (new NPC, faction shift, companion milestone) should update `draft/SESSION-N-BRIEFING.md`
+- Any change to house rules, party composition, or companion system should update `specs/[FEATURE_DIR]/draft/campaign-guide.md`
+- Any SESSION-N session-wide change (new NPC, faction shift, companion milestone) should update `specs/[FEATURE_DIR]/draft/SESSION-N-BRIEFING.md`
 - Player-facing docs maintained separately from narrative prose (no spoilers in introductions)
 

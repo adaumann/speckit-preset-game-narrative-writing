@@ -54,9 +54,12 @@ Accepted arguments:
 
 **If no NODE_ID was given:**
 1. Check if `specs/[FEATURE_DIR]/tasks.md` exists
-2. If it exists, scan for the first uncompleted `[P] Draft:` or `Draft:` task (check for `- [ ]` checkbox in Phase 2/4/6 task tables)
+2. If it exists, scan for the first uncompleted task (check for `- [ ]` checkbox in any phase table):
+   - First, look for an e2e task: description matching "Run e2e" or "Run speckit.compile"
+   - If an e2e task is found, execute the **E2E Fix-and-Regenerate Workflow** below, mark it done, and halt (do not continue to draft tasks)
+   - Otherwise, scan for the first uncompleted `[P] Draft:` or `Draft:` task
 3. Extract the NODE_ID from the task's Node column
-4. If no uncompleted draft task is found, halt: "No uncompleted draft tasks in tasks.md. Run `speckit.tasks --update` or specify NODE_ID manually."
+4. If no uncompleted draft or e2e task is found, halt: "No uncompleted tasks in tasks.md. Run `speckit.tasks --update` or specify NODE_ID manually."
 
 Then:
 1. Confirm `specs/[FEATURE_DIR]/outline/` and `specs/[FEATURE_DIR]/constitution.md` exist
@@ -68,13 +71,52 @@ Then:
 6. Confirm `specs/[FEATURE_DIR]/constitution.md` exists — prose_profile and engine settings needed
 7. **If RPG detected**: Confirm `specs/[FEATURE_DIR]/mechanics-[ruleset].md` exists — skill checks, approval gates, faction reps must resolve
 
+### E2E Fix-and-Regenerate Workflow
+
+When an e2e task is found in tasks.md (description matching "Run e2e" or "Run speckit.compile"):
+
+1. **Run compile + Playwright tests**: Execute `speckit.compile` (which runs tweego/inklecate compilation, auto-fix loop, and Playwright browser tests). Capture the full output including errors and test findings.
+
+2. **Collect findings**: Parse the output for:
+   - **Compilation errors** — tweego/inklecate error lines (file, line, error type)
+   - **Runtime errors** — Playwright console errors, undefined variables, missing passages
+   - **Test failures** — Playwright assertion failures, failed branch walks, broken navigation
+
+3. **Fix findings in draft files**: For each finding, apply a targeted fix directly to the source `.twee` (or `.ink`) file in `specs/[FEATURE_DIR]/draft/[ENGINE]/`:
+   - **Unmatched `<<` / macro syntax error** → find and close the unclosed macro block
+   - **Undefined variable `$var`** → add `<<set $var to 0>>` to the appropriate `StoryInit` / infra file, or add a default initialization at the top of the passage where it's first used
+   - **Passage not found** → verify the target NODE_ID matches an existing file; correct the link target or create a stub passage
+   - **Widget macro not found** → ensure the required template widget file exists in `specs/[FEATURE_DIR]/draft/[ENGINE]/infra/` or add the widget definition inline
+   - **Choice link to non-existent node** → correct the link target to match the actual passage name per the outline
+   - **Console JS error** → inspect the referenced line, fix the offending syntax
+   - **Playwright test assertion failure** → follow the test trace to the failing passage, fix the prose or mechanic hook that caused the failure
+   - **RPG-specific: Missing companion/faction variable** → add the required variable declaration to `StoryInit` and initialize it
+
+4. **Regenerate**: After applying fixes, re-run `speckit.compile`:
+   - If it succeeds → mark the e2e task as completed in tasks.md
+   - If new errors appear → repeat steps 2-4 (up to 3 total attempts)
+   - If the same error persists unchanged → halt: "E2E fix loop stuck on [error]. Manual intervention required." — do NOT mark the task done
+
+5. **Report**: Print a summary of all fixes applied:
+   ```
+   ✅ E2E tests passed after [N] fix round(s)
+      Fixed: [N] compilation errors
+      Fixed: [N] runtime errors
+      Fixed: [N] test failures
+      Files modified: [file1.twee, file2.twee, ...]
+   ```
+
+6. **Mark task completed**: Replace `- [ ]` with `- [x]` for the e2e task in tasks.md
+
+**Important**: Fixes MUST be applied to the source `.twee`/`.ink` files in `specs/[FEATURE_DIR]/draft/[ENGINE]/`, not to intermediate/output files. This ensures that subsequent `speckit.implement` runs and re-exports use the corrected source.
+
 ## Execution Steps
 
 ### Phase 0 — Infrastructure Generation *(SugarCube only; skip for Ink / Generic)*
 
 **Run once per project before generating any node prose.** Check whether the infrastructure files already exist before generating. If they exist, skip and proceed to Step 1.
 
-Infrastructure files live in `draft/sugarcube/infra/`. Generate each file that is absent:
+Infrastructure files live in `specs/[FEATURE_DIR]/draft/sugarcube/infra/`. Generate each file that is absent:
 
 | File | Source template | When needed |
 |---|---|---|
@@ -110,20 +152,20 @@ Infrastructure files live in `draft/sugarcube/infra/`. Generate each file that i
 
 **Compile command** (output at end of Phase 0):
 ```bash
-tweego -o draft/sugarcube/[PROJECT_NAME].html \
-  draft/sugarcube/infra/StoryInit.twee \
-  draft/sugarcube/infra/AllWidgets.twee \
-  draft/sugarcube/infra/CharacterSheet.twee \
-  draft/sugarcube/infra/QuestJournal.twee \
-  draft/sugarcube/infra/CombatUI.twee \
-  draft/sugarcube/infra/CombatBody.twee \
-  draft/sugarcube/infra/WorldMap.twee \
-  draft/sugarcube/infra/*.twee \
-  draft/sugarcube/LOC-*.twee \
-  draft/sugarcube/NODE-*.twee
+tweego -o specs/[FEATURE_DIR]/draft/sugarcube/[PROJECT_NAME].html \
+  specs/[FEATURE_DIR]/draft/sugarcube/infra/StoryInit.twee \
+  specs/[FEATURE_DIR]/draft/sugarcube/infra/AllWidgets.twee \
+  specs/[FEATURE_DIR]/draft/sugarcube/infra/CharacterSheet.twee \
+  specs/[FEATURE_DIR]/draft/sugarcube/infra/QuestJournal.twee \
+  specs/[FEATURE_DIR]/draft/sugarcube/infra/CombatUI.twee \
+  specs/[FEATURE_DIR]/draft/sugarcube/infra/CombatBody.twee \
+  specs/[FEATURE_DIR]/draft/sugarcube/infra/WorldMap.twee \
+  specs/[FEATURE_DIR]/draft/sugarcube/infra/*.twee \
+  specs/[FEATURE_DIR]/draft/sugarcube/LOC-*.twee \
+  specs/[FEATURE_DIR]/draft/sugarcube/NODE-*.twee
 ```
 
-Confirm: `✓ Phase 0 complete — [N] infrastructure files generated in draft/sugarcube/infra/`
+Confirm: `✓ Phase 0 complete — [N] infrastructure files generated in specs/[FEATURE_DIR]/draft/sugarcube/infra/`
 
 ---
 
@@ -189,7 +231,7 @@ Hub passages are navigation aggregation points. They do not carry story prose �
 
 **Generate hub passage per engine**:
 
-**SugarCube** (`draft/sugarcube/LOC-{ShortName}.twee`):
+**SugarCube** (`specs/[FEATURE_DIR]/draft/sugarcube/LOC-{ShortName}.twee`):
 
 > **CRITICAL: Follow `templates/sugarcube-hub-passage-template.twee` exactly.**
 > Copy its `:: LOC-[ShortName] [hub location]` passage structure and populate from `locations.md` and `world-map.md`.
@@ -205,7 +247,7 @@ Key rules from the template:
 - One `<<hubTravel "LOC-Adjacent" "Label">>` per travel exit (from `world-map.md` travel connections)
 - At least one unconditional travel exit; flag WARNING if all exits are gated
 
-**Ink** (`draft/ink/LOC-{ShortName}.ink`):
+**Ink** (`specs/[FEATURE_DIR]/draft/ink/LOC-{ShortName}.ink`):
 ```ink
 === LOC_{ShortName} ===
 [Location Name]
@@ -223,7 +265,7 @@ Rules:
 - Travel choices divert to other LOC_ labels
 - Loop back (`-> LOC_{ShortName}`) so player can choose again after returning
 
-**Tabletop / GM Reference** (`draft/tabletop/LOC-{ShortName}.md`):
+**Tabletop / GM Reference** (`specs/[FEATURE_DIR]/draft/tabletop/LOC-{ShortName}.md`):
 ```markdown
 ## [Location Name] — GM Hub Reference
 
@@ -247,7 +289,7 @@ Rules:
 | [Location Name] | [North / Port / etc.] | [Open / requires $area_xxx_cleared] |
 ```
 
-**Output file naming**: `draft/[ENGINE]/LOC-{ShortName}.twee` / `.ink` / `.md`
+**Output file naming**: `specs/[FEATURE_DIR]/draft/[ENGINE]/LOC-{ShortName}.twee` / `.ink` / `.md`
 **Do not create an outline file** for LOC-xxx hub passages.
 
 ---
@@ -314,7 +356,7 @@ variables_set: [var3, var4]   # From outline's "Variables Set" section
 **Engine output format** (determined by `SESSION.engine`):
 
 > **SugarCube** (`SESSION.engine = "sugarcube"`)
-> Output: `draft/sugarcube/NODE-{seq}_{Name}.twee` — Twee 3 passage format, SugarCube 2.x macro syntax
+> Output: `specs/[FEATURE_DIR]/draft/sugarcube/NODE-{seq}_{Name}.twee` — Twee 3 passage format, SugarCube 2.x macro syntax
 >
 > **CRITICAL: Follow `templates/node-outline-d5e-sugarcube.md` for all structural and macro patterns.**
 > The template defines the authoritative layout. Do not invent macro patterns not shown there.
@@ -332,7 +374,7 @@ variables_set: [var3, var4]   # From outline's "Variables Set" section
 > - **No speckit.export step required** — hand directly to `speckit.compile sugarcube`
 >
 > **Ink** (`SESSION.engine = "ink"`)
-> Output: `draft/ink/NODE-{seq}_{Name}.ink` — Ink knot format
+> Output: `specs/[FEATURE_DIR]/draft/ink/NODE-{seq}_{Name}.ink` — Ink knot format
 > **Follow `templates/node-outline-d5e-ink.md` for all structural and divert patterns.**
 > - Passage as `=== NODE_{seq}_{Name} ===` knot
 > - Variables as `~ var = value` and `{var}` conditionals
@@ -340,7 +382,7 @@ variables_set: [var3, var4]   # From outline's "Variables Set" section
 > - **No speckit.export step required** — hand directly to `speckit.compile ink`
 >
 > **Generic** (`SESSION.engine = "generic"` or not set)
-> Output: `draft/NODE-{seq}_{Name}.md` — engine-agnostic markdown
+> Output: `specs/[FEATURE_DIR]/draft/NODE-{seq}_{Name}.md` — engine-agnostic markdown
 > - Variables and hooks as `[MECHANIC:...]` token blocks (translated by speckit.export later)
 > - Choices as markdown links `[Label](TARGET_NODE)`
 > - **Requires speckit.export** to convert to engine format before speckit.compile
@@ -611,7 +653,7 @@ Before marking node as ready:
 ### 8. Output Format
 
 **Generic/Computer Game**:
-Create `draft/[ENGINE_NAME]/[NODE_ID].md` (engine-agnostic markdown):
+Create `specs/[FEATURE_DIR]/draft/[ENGINE_NAME]/[NODE_ID].md` (engine-agnostic markdown):
 
 ```markdown
 ---
@@ -638,7 +680,7 @@ outline_ref: outlines/[NODE_ID].md
 ```
 
 **Tabletop RPG**:
-Create `draft/SESSION-[N]/[NODE_ID].md` with **GM Notes** section at top:
+Create `specs/[FEATURE_DIR]/draft/SESSION-[N]/[NODE_ID].md` with **GM Notes** section at top:
 
 ```markdown
 ---
@@ -688,8 +730,8 @@ List all drafted nodes with:
 
 **Tabletop RPG** (if first-time setup):
 List all generated documents:
-- ✅ `draft/campaign-guide.md` — Campaign overview + player introduction
-- ✅ `draft/SESSION-0-BRIEFING.md` — Session 0 (character creation) briefing
+- ✅ `specs/[FEATURE_DIR]/draft/campaign-guide.md` — Campaign overview + player introduction
+- ✅ `specs/[FEATURE_DIR]/draft/SESSION-0-BRIEFING.md` — Session 0 (character creation) briefing
 - [NODE_ID] [title] — [N] vars, [N] hooks, [N] choices, session [N]
 - (repeat per drafted node)
 
@@ -758,9 +800,9 @@ Check `hooks.after_implement`: run if present.
 
 ## Tabletop RPG Campaign Prep (AUTO-GENERATED FOR FIRST SESSION)
 
-**Activated when**: `SESSION.is_rpg == "tabletop"` AND no `draft/campaign-guide.md` exists (first-time setup)
+**Activated when**: `SESSION.is_rpg == "tabletop"` AND no `specs/[FEATURE_DIR]/draft/campaign-guide.md` exists (first-time setup)
 
-**Generate Campaign Guide** (`draft/campaign-guide.md`):
+**Generate Campaign Guide** (`specs/[FEATURE_DIR]/draft/campaign-guide.md`):
 
 This document introduces the campaign to players before Session 1. Contents:
 
@@ -813,20 +855,20 @@ This document introduces the campaign to players before Session 1. Contents:
 ---
 
 **Generate Campaign Summary** (minimal, ~200 words for session prep):
-- Store as `draft/SESSION-0-BRIEFING.md` for Session 0 (character creation session)
+- Store as `specs/[FEATURE_DIR]/draft/SESSION-0-BRIEFING.md` for Session 0 (character creation session)
 - Used by GM to set tone and answer player questions before first play session
 
 ---
 
 ## Player Character Creation Implementation (Tabletop RPG)
 
-**Activated when**: `SESSION.is_rpg == "tabletop"` AND no `draft/SESSION-0-CHARACTER-SHEET.md` exists (first-time setup)
+**Activated when**: `SESSION.is_rpg == "tabletop"` AND no `specs/[FEATURE_DIR]/draft/SESSION-0-CHARACTER-SHEET.md` exists (first-time setup)
 
 Generates player-facing character sheet template and character creation walkthrough.
 
 ### Generate Character Sheet Template
 
-Create `draft/SESSION-0-CHARACTER-SHEET.md` with sections:
+Create `specs/[FEATURE_DIR]/draft/SESSION-0-CHARACTER-SHEET.md` with sections:
 
 #### D&D 5e Character Sheet
 
@@ -1016,7 +1058,7 @@ Create `draft/SESSION-0-CHARACTER-SHEET.md` with sections:
 
 ### Generate Character Creation Tutorial
 
-Create `draft/SESSION-0-CREATION-GUIDE.md` with step-by-step instructions:
+Create `specs/[FEATURE_DIR]/draft/SESSION-0-CREATION-GUIDE.md` with step-by-step instructions:
 
 #### For D&D 5e:
 
@@ -1202,7 +1244,7 @@ For each skill: Attribute + Skill + specialization (if applicable) = total dice 
 
 ### Generate Starting Equipment & Resources
 
-Create `draft/SESSION-0-EQUIPMENT-CHECKLIST.md` with:
+Create `specs/[FEATURE_DIR]/draft/SESSION-0-EQUIPMENT-CHECKLIST.md` with:
 
 - Class-specific starting equipment packages
 - Suggested gear for first session

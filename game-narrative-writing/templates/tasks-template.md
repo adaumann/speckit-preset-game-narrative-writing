@@ -129,6 +129,8 @@ Verify before proceeding:
 | T042 | Run `speckit.continuity` � variable state consistency, branch reachability | All nodes |
 | T043 | Revise flagged nodes (`speckit.revise`) | Failing nodes |
 | T044 | Re-run `speckit.checklist` on revised nodes | Revised nodes |
+| T045 | Run e2e tests (`speckit.compile`) — compile, playwright walkthrough, auto-fix | All nodes |
+| T046 | Re-run `speckit.checklist` on e2e-revised nodes | Revised nodes |
 
 ---
 

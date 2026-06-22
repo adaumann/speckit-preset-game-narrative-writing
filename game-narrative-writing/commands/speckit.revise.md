@@ -49,7 +49,7 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
 
 **CONSTITUTION AUTHORITY**: `.specify/memory/constitution.md` governs all prose and mechanic decisions. If a revision cannot fix the failure without violating the constitution, STOP and report the conflict — do not silently violate the constitution to pass a checklist item.
 
-**OUTLINE AUTHORITY**: `outlines/[NODE_ID].md` is authoritative for the node's structural intent: beat sequence, choice set, and variable contract must remain intact. Only the *execution* changes.
+**OUTLINE AUTHORITY**: `specs/[FEATURE_DIR]/outlines/[NODE_ID].md` is authoritative for the node's structural intent: beat sequence, choice set, and variable contract must remain intact. Only the *execution* changes.
 
 **PLAN AUTHORITY**: `specs/plan.md` is authoritative for target node IDs. A revision must not add or remove choices that change the branch graph without a corresponding `plan.md` update.
 
@@ -58,7 +58,7 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
 1. **Setup**: Run `{SCRIPT}` from repo root and parse JSON for spec file paths.
 
 2. **Identify the revision target**:
-   - Parse `$ARGUMENTS` for node ID. Resolve to `draft/[ENGINE]/[NODE_ID].[EXT]` (auto-detect engine from the first existing file).
+   - Parse `$ARGUMENTS` for node ID. Resolve to `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID].[EXT]` (auto-detect engine from the first existing file).
    - If no argument: scan `checklists/` for the most recently modified file with open failures — use its linked node as the target.
    - Abort with a clear error if the node file does not exist or has no valid YAML frontmatter header.
 
@@ -71,10 +71,10 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
    - **Failure scope is fixed at this step.** Do not expand it during revision.
 
 4. **Load required context**:
-   - Read `draft/[ENGINE]/[NODE_ID].[EXT]` in full (prose + YAML frontmatter)
+   - Read `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID].[EXT]` in full (prose + YAML frontmatter)
    - Read `.specify/memory/constitution.md` — POV rules, prohibited phrases, tone, Prose Style Mode (Section VII), `style_mode`, `prose_profile`
    - Read `.specify/memory/craft-rules.md` — craft rules (NR-NNN, PR-NNN per active prose profile), anti-AI clichés filter, prohibited phrases
-   - Read `outlines/[NODE_ID].md` — beat sequence, choices table, variable contract, Dialogue Tree field (if present)
+   - Read `specs/[FEATURE_DIR]/outlines/[NODE_ID].md` — beat sequence, choices table, variable contract, Dialogue Tree field (if present)
    - Read `specs/variables.md` — declared variables with types and value ranges
    - Read `specs/characters/[NPC_ID].md` for each NPC present — dialogue style (profile-tuned), trust thresholds, state values, Section VIII Dialogue Register by Trust State
    - **Optional (if dialogue revisions needed)**: Read `specs/relationships.md` for multi-party dialogue consistency
@@ -133,8 +133,8 @@ You **MUST** consider the user input before proceeding (if not empty). Accepted 
    - Add `revised: [YYYY-MM-DD]` field to the YAML frontmatter
 
 8. **Write output**:
-   - **Revised node**: save as `draft/[ENGINE]/[NODE_ID]_v[N].[EXT]` (e.g. `draft/ink/NODE-003_v2.ink`)
-   - **Keep the original** `draft/[ENGINE]/[NODE_ID].[EXT]` unchanged — it is the v1 record
+   - **Revised node**: save as `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID]_v[N].[EXT]` (e.g. `specs/[FEATURE_DIR]/draft/ink/NODE-003_v2.ink`)
+   - **Keep the original** `specs/[FEATURE_DIR]/draft/[ENGINE]/[NODE_ID].[EXT]` unchanged — it is the v1 record
    - **Revision notes**: append a `<!-- REVISION NOTES` comment block at the top of the revised file (after YAML frontmatter):
      ```
      <!-- REVISION NOTES v[N]

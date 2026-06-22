@@ -55,7 +55,7 @@ Accepted input:
 
 1. Load `specs/constitution.md`: Tone (§VII), Target Audience, Tense
 2. Load `specs/plan.md`: Act structure, node sequence per branch, target reading time
-3. Load all `draft/[ENGINE]/NODE-*.md` files
+3. Load all `specs/[FEATURE_DIR]/draft/[ENGINE]/NODE-*.md` files
 4. Parse node prose (exclude YAML frontmatter)
 5. Identify emotional beat markers (dialogue, action, revelation)
 6. Load `specs/themes.md` if present: Thematic resonance expectations

@@ -99,7 +99,7 @@ Then:
    - Every node in `plan.md` MUST have at least one outline task and one draft task
    - Phase 0 setup tasks are generated from actual spec content � never copied from template placeholders
    - No draft task may be `[P]` with a node it causally depends on (check branch dependencies in `plan.md`)
-   - Phase 6b Polish tasks: one task per node marked `status: APPROVED` in draft/[ENGINE]/. Can be `[P]` if nodes are independent.
+    - Phase 6b Polish tasks: one task per node marked `status: APPROVED` in specs/[FEATURE_DIR]/draft/[ENGINE]/. Can be `[P]` if nodes are independent.
    - **Phase 3.5 RPG Validation** (if platform=RPG, inserted after Phase 3 outlines): 
      - Tabletop-specific: CR calibration validation, Faction consistency check, Companion arc validation, Skill check coverage audit
      - Computer Game-specific: Playstyle routing validation, Difficulty scaling consistency check
@@ -130,6 +130,11 @@ Then:
   - `locations.md`: One entry per Location with LOC-ID, parent Region, parent Area, Hub Passage, Scene IDs — verify every Location listed in spec.md has an entry with `parent_area:` and `parent_region:` filled
   - Spatial checkpoint: All Locations registered; every Area has at least one rest Location and one entry travel scene planned; no Location is in `locations.md` without a parent Area in `world-map.md`
 - Mechanic schema verification from constitution.md
+- **Illustration setup** (if illustrations_enabled: yes in constitution.md):
+  - Define visual style guide matching the configured style, color range, and aspect ratio
+  - Create specs/[FEATURE_DIR]/assets/illustrations/ directory structure
+  - Optionally run speckit.illustrate --scene all and speckit.background --scene all to generate initial prompt briefs
+  - Generate illustration briefs for each node's setting
 - Checkpoint: All OQ-NNN items resolved or explicitly deferred; profiles, glossary, locations complete; spatial hierarchy registered
 
 **Phases 1�5: Narrative Structure** (per act)
@@ -157,7 +162,7 @@ Then:
 - Checkpoint per act: All node drafts reach `status: APPROVED` per verify
 
 **Phase 6b: Polish**
-- One task per node in draft/[ENGINE]/ with `status: APPROVED`
+- One task per node in specs/[FEATURE_DIR]/draft/[ENGINE]/ with `status: APPROVED`
 - Tasks can be `[P]` if nodes are independent of each other
 - Each node must be polished to completion: `polished: [YYYY-MM-DD]` field added
 - Checkpoint: All nodes have `polished: [date]` in frontmatter; no FAIL status on polish audit
@@ -194,9 +199,15 @@ Then:
 
 **Phase 8: Compilation**
 - Generate or verify theme files (story.css for SugarCube, ink-theme-*.html for Ink)
+- **Generate illustration assets** (if illustrations_enabled: yes in constitution.md):
+  - Run speckit.illustrate --scene all to generate illustration prompts for all nodes
+  - Run speckit.background --scene all to generate background prompts for all environments
+  - Process prompts through external image generation tool to produce PNG files
+  - Place generated PNG files in specs/[FEATURE_DIR]/assets/illustrations/ matching node IDs (<NODE_ID>.png)
 - Compile for each target engine via `speckit.compile --engine [ENGINE]` (sequential per engine)
-- Validate output structure in draft/[ENGINE]/ and story/ directories
-- Checkpoint: All target engines compile without errors; draft/[ENGINE]/story.* and story/ files present
+  - speckit.compile automatically embeds matching illustration PNGs at the start of each node
+- Validate output structure in specs/[FEATURE_DIR]/draft/[ENGINE]/ and specs/[FEATURE_DIR]/story/ directories
+- Checkpoint: All target engines compile without errors; specs/[FEATURE_DIR]/draft/[ENGINE]/story.* and specs/[FEATURE_DIR]/story/ files present
 
 **Phase 9: Export & Release**
 - Test compiled output in each engine environment (Twine player for SugarCube, Ink web player for Ink, etc.)
@@ -219,7 +230,7 @@ If `[PLATFORM]` is detected as "Tabletop" or "Computer Game" in constitution.md,
    - If balanced: task status `PASS`
 
 2. **Faction Reputation Consistency**: Read all factions from spec.md, generate task:
-   - Audit faction rep thresholds in spec/variables.md and spec/mechanics.md
+   - Audit faction rep thresholds in specs/variables.md and specs/mechanics.md
    - Scan all `[FACTION: faction-name, impact: ±N]` markers in plan.md
    - Verify no faction can reach impossible reputation combinations (e.g., +100 to two mutually hostile factions)
    - Flag any rep gates that create soft-locks (e.g., requiring ≥50 with Faction A AND ≤-50 with Faction B simultaneously)

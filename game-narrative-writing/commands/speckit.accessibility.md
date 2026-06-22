@@ -55,7 +55,7 @@ Accepted input:
 
 ## Pre-Execution Checks
 
-1. Load all `draft/[ENGINE]/NODE-*.md` files
+1. Load all `specs/[FEATURE_DIR]/draft/[ENGINE]/NODE-*.md` files
 2. Load `specs/constitution.md` target audience
 3. Load `specs/themes.md` if present (for content warning tracking)
 4. Extract prose text (separate from code/syntax)
