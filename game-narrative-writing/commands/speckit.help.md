@@ -355,6 +355,16 @@ Things that are not on the critical path but would strengthen the game:
 
 - All nodes drafted but no `consequences-audit.md` ? `speckit.branching` (verify choice branches lead to meaningful outcomes)
 
+- All nodes drafted but prose not yet polished ? `speckit.polish` (final line-edit: rhythm, repetition, adverb density, voice register)
+
+- All nodes drafted but foreshadowing not yet validated ? `speckit.foreshadow` (verify clues placed before revelations, no orphaned foreshadowing)
+
+- All nodes drafted but replayability not yet measured ? `speckit.replayability` (measure unique content per playthrough, branch coverage, hidden content)
+
+- All nodes drafted but narrative arcs not yet audited ? `speckit.narrative-arc` (character development, subplot resolution, ending quality)
+
+- Output compiles but no CSS theme applied ? `speckit.theme` (generate or adjust story.css with dark/light/minimal theme)
+
 - No accessibility audit run ? `speckit.accessibility` (check reading level, content warnings, contrast, ableist language)
 
 - No secret content documented ? `speckit.information` (map achievements, hidden content, easter eggs)
@@ -367,7 +377,7 @@ Things that are not on the critical path but would strengthen the game:
 
 - Puzzles exist but `puzzles.md` not documented ? `speckit.brainstorm puzzles` (document puzzle dependencies)
 
-- POV configured as switching but `pov-structure.md` incomplete ? `speckit.pov audit` (verify POV consistency)
+- POV configured as switching but `pov-structure.md` incomplete ? `speckit.narrative-arc` (verify POV consistency across character arcs)
 
 
 
@@ -411,7 +421,7 @@ Use these per-phase command sets:
 
 **Phase 2 (Pre-draft setup):**
 
-`speckit.plan`, `speckit.tasks`, `speckit.flowmap`, `speckit.mechanics`, `speckit.analyze`, `speckit.variables check`, `speckit.research status`
+`speckit.plan`, `speckit.tasks`, `speckit.flowmap`, `speckit.mechanics`, `speckit.analyze`, `speckit.quest-system`, `speckit.research status`
 
 
 
@@ -423,11 +433,11 @@ Use these per-phase command sets:
 
 **Phase 4 (Quality Review):**
 
-`speckit.analyze`, `speckit.continuity`, `speckit.verify`, `speckit.revise`, `speckit.readability`, `speckit.branching`, `speckit.accessibility`, `speckit.information`
+`speckit.analyze`, `speckit.continuity`, `speckit.verify`, `speckit.revise`, `speckit.polish`, `speckit.foreshadow`, `speckit.replayability`, `speckit.narrative-arc`, `speckit.readability`, `speckit.branching`, `speckit.accessibility`, `speckit.information`
 
 **Phase 5 (Export / Compilation):**
 
-`speckit.compile`, `speckit.export`, `speckit.postprocessing`, `speckit.illustrate`, `speckit.background`, `speckit.series update`, `speckit.analyze --report`
+`speckit.compile`, `speckit.export`, `speckit.postprocessing`, `speckit.theme`, `speckit.illustrate`, `speckit.background`, `speckit.series update`, `speckit.analyze --report`
 
 
 ---

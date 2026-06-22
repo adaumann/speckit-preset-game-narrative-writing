@@ -49,6 +49,8 @@ Accepted arguments:
 - `--all-engines` - compile all engines in export_engines configuration simultaneously
 - `--force-rebuild` - force full rebuild even if output exists
 - `--dry-run` - validate without writing output files
+- `--walkthrough` - run the full-story walkthrough (BFS traversal of all branches) after compilation
+- `--no-walkthrough` - skip runtime testing entirely (implies `--no-test`)
 - *(no argument)* - compile to the engine specified in `constitution.md`
 
 ## Pre-Execution Checks
@@ -221,11 +223,11 @@ speckit.compile --all-engines
    Check the errors above and fix the source files
 ```
 
-## Runtime Testing Loop (SugarCube)
+## Runtime Testing & Walkthrough (SugarCube)
 
-After successful compilation, `speckit.compile` automatically runs a **runtime validation session** to catch errors that only appear when the game runs.
+After successful compilation, `speckit.compile` runs a **runtime validation session** to catch errors that only appear when the game runs.
 
-### Test Session Steps
+### Phase 1 — Quick Runtime Test (always runs unless `--no-test` or `--no-walkthrough`)
 
 1. **Start browser session**: Open compiled `.html` in headless browser
 2. **Walk starting passage**: Load initial node, verify:
@@ -242,54 +244,35 @@ After successful compilation, `speckit.compile` automatically runs a **runtime v
 5. **Check console**: Report any JavaScript errors that occurred during test
 6. **Report results**: List any runtime issues found
 
-### Test Validation Checklist
+### Phase 2 — Full Story Walkthrough (with `--walkthrough`)
+
+When `--walkthrough` is passed, after Phase 1 passes, `speckit.compile` runs a **deep Playwright walkthrough** (`scripts/tests/full-story-walkthrough.spec.ts`) that explores the entire story graph:
+
+1. **First-choice path**: Clicks the first available choice at each passage until reaching an ending (or depth limit of 20)
+2. **All branches at depth 1**: Reloads and tries every top-level choice, verifying each leads to a valid passage
+3. **BFS traversal**: Breadth-first search through all reachable passages (up to 50 nodes), verifying:
+   - No passage contains `[error]` or `undefined` text
+   - Every choice leads to a valid target passage
+   - No JavaScript console errors
+
+The walkthrough uses Playwright with Chromium headless and reports failures with passage-level detail:
 
 ```
-✓ Initial passage loads
-✓ No console errors on startup
-✓ All UI buttons clickable
-✓ Menu passages navigate without errors
-✓ Widget macros execute (questList, inventory, etc.)
-✓ Conditional choices display correctly
-✓ Choice navigation works
-✓ Back button navigates correctly
-✓ No undefined variable errors
+🧪 Full-story walkthrough (--walkthrough)...
+  ✓ First-choice path: 12 passages walked
+  ✓ All branches at depth 1: 5/5 choices valid
+  ✓ BFS traversal: 24 nodes visited, 0 errors
+  ✓ No console errors detected
+
+✅ Walkthrough passed
 ```
 
-### Runtime Error Examples
+### Skipping Testing
 
-**Captured During Test**:
-```
-⚠️  Runtime validation found issues:
-
-❌ NODE-005-donate: Undefined variable $player.gold
-   → Suggestion: Add $player = {gold: 10} to StoryInit
-   
-❌ widget <<questList>>: Macro not found
-   → Suggestion: Check widgets.twee is included in compile order
-   
-⚠️  3 console warnings (non-fatal)
-   → Suggestion: Review console logs for details
-```
-
-**Test Output**:
-```
-Testing runtime...
- ✓ Start passage loaded
- ✓ Menu navigation working
- ✓ No console errors detected
- ✓ 3 passages walked
- ✓ 12 choices tested
-
-✅ Runtime validation passed
-```
-
-### Skipping Test Session
-
-To compile without testing:
 ```bash
-speckit.compile --no-test
-speckit.compile --dry-run  # Validate only, don't write output
+speckit.compile --no-test       # Skip Phase 1 (quick runtime)
+speckit.compile --no-walkthrough  # Skip both phases
+speckit.compile --dry-run       # Validate only, don't write output
 ```
 
 ## Compilation Success Output
@@ -305,8 +288,10 @@ When compilation completes successfully:
    ✓ 3 passages walked, 0 errors
    ✓ Menu navigation works
    ✓ Widget macros executing
+   ✓ Walkthrough: 24 nodes visited, 0 errors (with --walkthrough)
 
 Next steps:
+- Run deep walkthrough: `speckit.compile --walkthrough`
 - Run automated tests: `python scripts/python/run_tests.py --spec <specname> --engine <engine>`
 - Open story.html in browser to playtest manually
 - Gather feedback with speckit.feedback
