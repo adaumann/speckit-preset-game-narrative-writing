@@ -14,7 +14,7 @@ speckit-preset-game-narrative-writing/
     └── For choice-based stories, interactive fiction, branching narratives
 ```
 
-**See:** [game-narrative-writing/README.md](game-narrative-writing/README.md)
+**Full documentation:** [game-narrative-writing/README.md](game-narrative-writing/README.md)
 
 ---
 
@@ -25,6 +25,8 @@ Requires [Spec Kit](https://github.com/github/spec-kit) >= 0.5.0.
 ### Install for Narrative Writing
 
 ```bash
+specify preset add --from https://github.com/adaumann/speckit-preset-game-narrative-writing/archive/refs/tags/v1.1.0/V1.1.0-import.zip
+
 ```
 
 Or for local development:
